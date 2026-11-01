@@ -93,7 +93,7 @@ Entity, aggregate root. Identity is the binding tag. Owns its claim, chunks and 
 ### Behaviors
 
 - `Open(secret, human, recipientKey)`: factory. Computes the tag, creates the transfer. Repeating it with the same secret and key returns the existing transfer; the same secret with a different key is refused.
-- `Admits(secret, human)`: recomputes the tag and compares it in constant time. Every other call starts here. A transfer that does not admit the caller does not exist for that caller.
+- `Admits(secret, human)`: recomputes the tag from the authenticated human and the presented secret and looks it up by primary key. The tag is derived by the hub, never supplied by the client, so there is no client value to compare and nothing for a timing difference to reveal: a caller can only form tags for its own human. Every other call starts here. A transfer that does not admit the caller does not exist for that caller.
 - `Claim(encapsulatedKey)`: creates the claim. Repeating with the same key is a no-op; a different key is refused. Refused after the claim deadline.
 - `Append(index, ciphertext, final)`: stores a chunk. `index` must equal the stored chunk count (gapless, in order), or name an existing chunk with byte-identical ciphertext (a retried upload, no-op). `final` creates the seal with `chunkCount = index + 1`. Refused before a claim, after the seal, and at 128 chunks.
 - `Close()`: deletes the transfer and everything it owns. Idempotent.
@@ -202,9 +202,9 @@ New service `sock.v1.HistoryTransferService`, Connect over HTTPS, its own `ReadM
 | Caller | Desktop (any human session) |
 | Request | `transfer_secret` bytes(32); `recipient_key` bytes, exactly the X-Wing public key length (1216) |
 | Response | `expires_at` Timestamp: the claim deadline, `opened_at + 10 min` |
-| Errors | `CALLER_NOT_ALLOWED`; `FIELD_INVALID` (lengths); `IDEMPOTENCY_MISMATCH` (tag exists with a different key); `LIMIT_REACHED` (256 open transfers hub-wide; `ClaimHistoryTransfer` caps claimed ones at 32). No per-human limit: any per-human row is one a legal demand could tie to a human. Caps are placeholders until measured |
+| Errors | `CALLER_NOT_ALLOWED`; `FIELD_INVALID` (lengths); `IDEMPOTENCY_MISMATCH` (tag exists with a different key); `LIMIT_REACHED` (256 open transfers hub-wide; `ClaimHistoryTransfer` caps claimed ones at 32); `RATE_LIMITED` with `Retry-After` (10 new transfers an hour per account, burst 3). The per-account limit is a token bucket in each replica's memory, never persisted or logged: a stored per-human row is one a legal demand could tie to a human, a bucket that dies with the process is not (ADR 46). Only an open that creates a transfer spends a token; a repeat or a refusal puts it back. Caps and limits are placeholders until measured |
 | Idempotency | Same secret and key returns the existing transfer and its original `expires_at` |
-| Domain behavior | `HistoryTransfer.Open` |
+| Domain behavior | `HistoryTransfer.Open`. Emits `HistoryTransferChanged` when the row is created |
 
 ### GetHistoryTransferKey
 
@@ -224,7 +224,7 @@ New service `sock.v1.HistoryTransferService`, Connect over HTTPS, its own `ReadM
 | Caller | Phone, after the person confirms |
 | Request | `transfer_secret` bytes(32); `encapsulated_key` bytes, exactly the X-Wing encapsulation length (1120), from `NewSender` against the digest-checked key |
 | Response | `max_chunk_bytes` uint32 (1 MiB plaintext); `max_chunks` uint32 (128); `expires_at` Timestamp (`opened_at + 60 min`) |
-| Errors | `CALLER_NOT_ALLOWED`; `FIELD_INVALID`; `NOT_FOUND` (includes past the 10-minute claim deadline); `IDEMPOTENCY_MISMATCH` (claimed with a different key); `LIMIT_REACHED` (32 claimed transfers hub-wide) |
+| Errors | `CALLER_NOT_ALLOWED`; `FIELD_INVALID`; `NOT_FOUND` (includes past the 10-minute claim deadline); `IDEMPOTENCY_MISMATCH` (claimed with a different key); `LIMIT_REACHED` (32 claimed transfers hub-wide); `RATE_LIMITED` with `Retry-After` (4 new claims an hour per account, burst 2, in each replica's memory and never persisted, as for `OpenHistoryTransfer`; only a claim that creates the claim row spends a token) |
 | Idempotency | Same key repeats the response |
 | Domain behavior | `HistoryTransfer.Admits`, `HistoryTransfer.Claim`. Emits `HistoryTransferChanged` when the claim row is created |
 
@@ -248,7 +248,7 @@ Upload is sequential: the next chunk is sent when the previous call returns. The
 | Caller | Desktop |
 | Request | `transfer_secret` bytes(32); `from_index` uint32, the first chunk not yet received (0 on first open) |
 | Response stream | `oneof event`: `HistoryClaimed { encapsulated_key }`, sent once per stream when a claim exists; `HistoryChunk { index, ciphertext, final }` for each stored chunk from `from_index`, in order, as soon as it is stored; `Heartbeat` every 30 s. The stream ends with OK after the final chunk |
-| Errors | `CALLER_NOT_ALLOWED`; `FIELD_INVALID`; `NOT_FOUND`, at open or mid-stream when the transfer is closed or expires. The stream re-checks the caller's session on every wake and heartbeat, as `Subscribe` does, and ends with `Subscribe`'s error: `TOKEN_INVALID` when the device is revoked, `ACCOUNT_SUSPENDED` when the account is suspended |
+| Errors | `CALLER_NOT_ALLOWED`; `FIELD_INVALID`; `NOT_FOUND`, at open or mid-stream when the transfer is closed or expires. The stream re-checks the caller's session on every wake and heartbeat, as `Subscribe` does, and ends with `Subscribe`'s error: `TOKEN_INVALID` when the device is revoked, `ACCOUNT_SUSPENDED` when the account is suspended; `LIMIT_REACHED` ("streams per transfer") when a newer `ReceiveHistory` stream for the same transfer opens on the same replica: a transfer holds one stream per replica, and the newer one keeps receiving |
 | Idempotency | Read only. A dropped stream reopens with `from_index` |
 | Domain behavior | `HistoryTransfer.Admits`, then reads. Woken by `HistoryTransferChanged`; also re-reads on each heartbeat, so a lost notification delays at most 30 s |
 
@@ -271,9 +271,9 @@ No new `ErrorReason`.
 |---|---|
 | Name | `HistoryTransferChanged` |
 | Emitting aggregate | `HistoryTransfer` |
-| Emitting transitions | `Claim` (row created), `Append` (chunk or seal stored), `Close` (row deleted), the sweep (row deleted) |
+| Emitting transitions | `Open` (row created), `Claim` (row created), `Append` (chunk or seal stored), `Close` (row deleted), the sweep (row deleted) |
 | Payload | the binding tag, hex. Nothing else |
-| Consumers | Stream wake: `pg_notify('history_transfers', tag)` in the same transaction; each replica wakes its `ReceiveHistory` streams for that tag, which re-read the rows |
+| Consumers | `pg_notify('history_transfers', tag)` in the same transaction. Stream wake: each replica wakes its `ReceiveHistory` streams for that tag, which re-read the rows. Sweeper wake: the sweeper re-reads its next deadline, so an unclaimed transfer is deleted at its 10 minutes |
 | Delivery | At most once (`NOTIFY`). Not an outbox row: the rows are the truth, and the heartbeat re-read bounds a lost notification to 30 s. `onReconnect` wakes every stream, as the delivery hub does |
 | Boundary | Internal to History Transfer. The stream events are the published form |
 | Domain service | None: the reaction is a read |
@@ -327,7 +327,7 @@ DROP SCHEMA transfer CASCADE;
 
 5NF: each table holds one fact keyed by the tag (plus index for chunks); nothing nullable; nothing derived stored. Rules a CHECK cannot hold, enforced in the write path under `SELECT … FROM transfer.claims WHERE binding_tag = $1 FOR UPDATE`: gapless `idx`; seal `chunk_count = idx + 1` of the final chunk, written in the same transaction; no chunk after the seal; claim only before `opened_at + 10 min`.
 
-**Sweep.** The sweeper (deadline-driven, `NextDeadline` gains `min(opened_at) + 10 min` for unclaimed and `+ 60 min` for all) deletes `transfers` unclaimed past 10 minutes or any past 60, with `SKIP LOCKED`, and sends `HistoryTransferChanged` for each tag.
+**Sweep.** The sweeper (deadline-driven, `NextDeadline` gains `min(opened_at) + 10 min` for unclaimed and `+ 60 min` for all) deletes `transfers` unclaimed past 10 minutes or any past 60, with `SKIP LOCKED`, and sends `HistoryTransferChanged` for each tag. It also wakes on `HistoryTransferChanged`, as it does on a message hold change, so a transfer opened after a sweep is deleted at its own deadline rather than at the sweeper's hourly clamp.
 
 **Erasure and export.** `EraseAccount` cannot find a human's transfers and does not try: they hold no account id and are gone within an hour. `ExportIdentityData` and `ExportMessagingData` are unchanged for the same reason.
 
@@ -371,7 +371,7 @@ Known effect: the next conversation refresh prunes conversations the hub no long
 
 | Transition | API | Event | DDL |
 |---|---|---|---|
-| `Open` | `OpenHistoryTransfer` | none: no stream can exist before the desktop has the transfer | insert `transfer.transfers` |
+| `Open` | `OpenHistoryTransfer` | `HistoryTransferChanged`: no stream waits yet; it wakes the sweeper for the claim deadline | insert `transfer.transfers` |
 | `Admits` | every RPC | none: a read | PK lookup on `binding_tag` |
 | read key | `GetHistoryTransferKey` | none: a read | `transfer.transfers` by PK, no `transfer.claims` row |
 | `Claim` | `ClaimHistoryTransfer` | `HistoryTransferChanged` | insert `transfer.claims`, deadline checked against `opened_at` |
@@ -389,4 +389,4 @@ Gate: six RPCs, every field filled; one event, every field filled; four tables, 
 
 ## Required tests
 
-Black-box (server), every RPC called successfully and per error: open and repeat; open with a different key `IDEMPOTENCY_MISMATCH`; a second human's session gets `NOT_FOUND` on claim, upload, receive and a no-op close with the first human's secret; claim after 10 minutes `NOT_FOUND`; upload out of order, before claim and after seal `FIELD_INVALID`; repeated chunk identical OK, different `IDEMPOTENCY_MISMATCH`; `ReceiveHistory` receives chunks stored after it opened, resumes from `from_index`, ends after final, ends `NOT_FOUND` on close; sweep removes past-deadline transfers and ends their streams; puppet (owner with Pro, or the gate off) and machine key `CALLER_NOT_ALLOWED`; no `transfer` row holds any value equal to an account or device id; telemetry for the service carries no ids (log and span capture). Crypto: shared Go and Swift test vector for one archive. Clients: merge rules above against the real SQLite and SwiftData stores, including re-import of the same archive changing nothing; header account mismatch refused; truncated stream refused.
+Black-box (server), every RPC called successfully and per error: open and repeat; open with a different key `IDEMPOTENCY_MISMATCH`; a second human's session gets `NOT_FOUND` on claim, upload, receive and a no-op close with the first human's secret; claim after 10 minutes `NOT_FOUND`; upload out of order, before claim and after seal `FIELD_INVALID`; repeated chunk identical OK, different `IDEMPOTENCY_MISMATCH`; `ReceiveHistory` receives chunks stored after it opened, resumes from `from_index`, ends after final, ends `NOT_FOUND` on close; a newer stream on the same transfer ends the older `LIMIT_REACHED`; the 4th new open and the 3rd new claim in a row from one account `RATE_LIMITED` with `Retry-After` while another account still opens; an open wakes the sweeper; sweep removes past-deadline transfers and ends their streams; puppet (owner with Pro, or the gate off) and machine key `CALLER_NOT_ALLOWED`; no `transfer` row holds any value equal to an account or device id; telemetry for the service carries no ids (log and span capture). Crypto: shared Go and Swift test vector for one archive. Clients: merge rules above against the real SQLite and SwiftData stores, including re-import of the same archive changing nothing; header account mismatch refused; truncated stream refused.
