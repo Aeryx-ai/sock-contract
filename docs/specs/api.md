@@ -87,7 +87,9 @@ Activity: `SetActivity` draws no send bucket. It has its own, 1 a second with bu
 
 Exports: `ExportIdentityData` and `ExportMessagingData` 1 an hour per account each, burst 2, held in each replica's memory. Excess is `RATE_LIMITED` with `Retry-After`.
 
-Streams: at most 4 open `Subscribe` streams per device on each replica. A fifth ends the device's oldest with `LIMIT_REACHED`.
+History transfers: `OpenHistoryTransfer` 10 an hour per account, burst 3, and `ClaimHistoryTransfer` 4 an hour per account, burst 2, held in each replica's memory and never persisted. Only a call that creates a transfer or a claim spends a token. Excess is `RATE_LIMITED` with `Retry-After`. Placeholders, hub constants.
+
+Streams: at most 4 open `Subscribe` streams per device on each replica. A fifth ends the device's oldest with `LIMIT_REACHED`. At most 1 open `ReceiveHistory` stream per transfer on each replica: a newer one ends the older with `LIMIT_REACHED`.
 
 Apple identity tokens: every route that verifies one (`SignInWithApple`, `RegisterWithApple`, `SignInOperatorWithApple`, `/apple/oauth-callback`) accepts it once. The hub keeps the token's SHA-256 until the token's `exp` and refuses a second presentation as `APPLE_TOKEN_INVALID`, after every other check, so a replay learns nothing a bad token would not.
 
