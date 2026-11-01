@@ -1,6 +1,6 @@
 # CLI sign-in through AuthKit
 
-Draft, pass 1. Contexts: Identity. Builds on [Google and passkey sign-in on desktop](google-and-passkey-sign-in-on-desktop.md) (the hub's WorkOS relay and the loopback listener), [email sign-in, pass 2](email-sign-in-pass-2.md) (`SignInWithEmail` with an AuthKit code), [pass 3](email-sign-in-pass-3.md) (the registration ticket) and [feature flags](feature-flags.md) (the registration policy). All stay in force except where this spec says otherwise.
+Approved, pass 1. Contexts: Identity. Builds on [Google and passkey sign-in on desktop](google-and-passkey-sign-in-on-desktop.md) (the hub's WorkOS relay and the loopback listener), [email sign-in, pass 2](email-sign-in-pass-2.md) (`SignInWithEmail` with an AuthKit code), [pass 3](email-sign-in-pass-3.md) (the registration ticket) and [feature flags](feature-flags.md) (the registration policy). All stay in force except where this spec says otherwise.
 
 What changes:
 

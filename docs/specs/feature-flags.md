@@ -1,6 +1,6 @@
 # Feature flags and open registration
 
-Draft, pass 1. Contexts: Identity. Builds on [invite requests](invite-requests.md) (admission and the operator's audit), [email sign-in, pass 3](email-sign-in-pass-3.md) (the registration ticket) and the message hold ([email sign-in, pass 2](email-sign-in-pass-2.md)), whose shape every flag copies: a Postgres row the operator sets over the network, audited in the same transaction, with a `NOTIFY` that wakes whatever reads it.
+Approved, pass 1. Contexts: Identity. Builds on [invite requests](invite-requests.md) (admission and the operator's audit), [email sign-in, pass 3](email-sign-in-pass-3.md) (the registration ticket) and the message hold ([email sign-in, pass 2](email-sign-in-pass-2.md)), whose shape every flag copies: a Postgres row the operator sets over the network, audited in the same transaction, with a `NOTIFY` that wakes whatever reads it.
 
 What changes:
 
