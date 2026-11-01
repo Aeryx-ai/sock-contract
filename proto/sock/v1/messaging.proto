@@ -1,0 +1,236 @@
+syntax = "proto3";
+
+package sock.v1;
+
+import "google/protobuf/timestamp.proto";
+import "sock/v1/types.proto";
+
+option go_package = "github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1";
+
+// MessagingService: conversations, store-and-forward delivery, push
+// registration. Caller classes, authorization, errors and idempotency per
+// RPC: docs/specs/api.md.
+service MessagingService {
+  rpc CreateDirect(CreateDirectRequest) returns (CreateDirectResponse) {}
+  rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse) {}
+  rpc AddMember(AddMemberRequest) returns (AddMemberResponse) {}
+  rpc RemoveMember(RemoveMemberRequest) returns (RemoveMemberResponse) {}
+  rpc Leave(LeaveRequest) returns (LeaveResponse) {}
+  rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse) {}
+  // Advance the caller's read marker in one conversation. Human devices only.
+  rpc MarkRead(MarkReadRequest) returns (MarkReadResponse) {}
+
+  rpc Send(SendRequest) returns (SendResponse) {}
+  rpc NotifyOwner(NotifyOwnerRequest) returns (NotifyOwnerResponse) {}
+
+  rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {}
+  rpc FetchPending(FetchPendingRequest) returns (FetchPendingResponse) {}
+  rpc Ack(AckRequest) returns (AckResponse) {}
+  // Tell the other members the caller is working on a reply, or no longer is.
+  // Ephemeral: never stored or pushed.
+  rpc SetActivity(SetActivityRequest) returns (SetActivityResponse) {}
+
+  rpc RegisterPush(RegisterPushRequest) returns (RegisterPushResponse) {}
+
+  rpc ExportMessagingData(ExportMessagingDataRequest) returns (ExportMessagingDataResponse) {}
+
+  rpc BlockAccount(BlockAccountRequest) returns (BlockAccountResponse) {}
+  rpc UnblockAccount(UnblockAccountRequest) returns (UnblockAccountResponse) {}
+  rpc ListBlockedAccounts(ListBlockedAccountsRequest) returns (ListBlockedAccountsResponse) {}
+}
+
+message CreateDirectRequest {
+  // One of the caller's own puppets, or the support puppet.
+  string peer_id = 1;
+}
+message CreateDirectResponse {
+  // The existing direct conversation with the peer, or a new one.
+  Conversation conversation = 1;
+}
+
+message CreateGroupRequest {
+  // Accounts to add besides the caller. 0 to 19 ids. Each listed puppet's
+  // owner must be the caller or another listed member.
+  repeated string member_ids = 1;
+}
+message CreateGroupResponse {
+  Conversation conversation = 1;
+}
+
+message AddMemberRequest {
+  string conversation_id = 1;
+  string account_id = 2;
+}
+message AddMemberResponse {
+  Conversation conversation = 1;
+}
+
+message RemoveMemberRequest {
+  string conversation_id = 1;
+  string account_id = 2;
+}
+message RemoveMemberResponse {
+  Conversation conversation = 1;
+}
+
+message LeaveRequest {
+  string conversation_id = 1;
+}
+message LeaveResponse {}
+
+message ListConversationsRequest {}
+message ListConversationsResponse {
+  repeated Conversation conversations = 1;
+}
+
+message MarkReadRequest {
+  string conversation_id = 1;
+  // 1 or more, at most the highest seq the conversation has issued.
+  int64 read_through_seq = 2;
+}
+message MarkReadResponse {
+  // The marker after the call: never below the request's, larger when the
+  // account had read further.
+  int64 read_through_seq = 1;
+}
+
+message SendRequest {
+  string conversation_id = 1;
+  // UTF-8 Markdown, 1 to 65536 bytes.
+  string text = 2;
+  // Client-chosen, up to 128 characters, unique per sending device for 24h.
+  // Empty means no deduplication: a retry may post twice. Lets a puppet send
+  // with a bare one-line curl; SDKs and the CLI always set it.
+  string idempotency_key = 3;
+}
+message SendResponse {
+  Message message = 1;
+}
+
+message NotifyOwnerRequest {
+  // UTF-8 Markdown, 1 to 65536 bytes.
+  string text = 1;
+  // Same rules as SendRequest.idempotency_key.
+  string idempotency_key = 2;
+}
+message NotifyOwnerResponse {
+  Message message = 1;
+}
+
+message SubscribeRequest {}
+message SubscribeResponse {
+  oneof event {
+    Message message = 1;
+    // Sent every 30s with no traffic, so idle intermediaries keep the stream.
+    Heartbeat heartbeat = 2;
+    // The caller read further on one of its devices. Sent to every device of
+    // the account, the one that called MarkRead included. A hint: at
+    // most once, so clients reconcile with ListConversations when a stream
+    // opens. Human streams only.
+    ReadMarker read_marker = 3;
+    // Another member started or stopped working on a reply. A hint: at most
+    // once, never stored. Clients drop WORKING at expires_at on their own and
+    // treat a message from account_id in conversation_id as IDLE.
+    Activity activity = 4;
+    // One of the caller's puppets was archived or unarchived. A
+    // hint: at most once, so clients reconcile with ListPuppets when a
+    // stream opens. The owner's human streams only.
+    PuppetArchive puppet_archive = 5;
+  }
+}
+message Heartbeat {}
+message ReadMarker {
+  string conversation_id = 1;
+  int64 read_through_seq = 2;
+}
+
+enum ActivityState {
+  ACTIVITY_STATE_UNSPECIFIED = 0;
+  // Working on a reply: a puppet's agent running, a human typing.
+  ACTIVITY_STATE_WORKING = 1;
+  ACTIVITY_STATE_IDLE = 2;
+}
+
+message SetActivityRequest {
+  string conversation_id = 1;
+  // Required. UNSPECIFIED is FIELD_INVALID.
+  ActivityState state = 2;
+}
+message SetActivityResponse {
+  // When the hub drops WORKING unless refreshed: 30 s after the call. Unset
+  // for IDLE.
+  google.protobuf.Timestamp expires_at = 1;
+}
+
+message Activity {
+  string conversation_id = 1;
+  // The member who is working: a puppet or a human.
+  string account_id = 2;
+  // WORKING or IDLE, never UNSPECIFIED.
+  ActivityState state = 3;
+  // WORKING only: when clients stop showing it unless a newer Activity
+  // arrives. Unset for IDLE.
+  google.protobuf.Timestamp expires_at = 4;
+}
+
+message PuppetArchive {
+  string puppet_id = 1;
+  // True: the puppet's session ended. False: it resumed.
+  bool archived = 2;
+}
+
+message FetchPendingRequest {
+  // 0 means 500; otherwise 1 to 500.
+  int32 limit = 1;
+}
+message FetchPendingResponse {
+  // Oldest first by (conversation_id, seq). More may remain; fetch until empty.
+  repeated Message messages = 1;
+}
+
+message AckRequest {
+  // 1 to 500 message ids. Unknown or already-acked ids are ignored.
+  repeated string message_ids = 1;
+}
+message AckResponse {}
+
+message RegisterPushRequest {
+  // APNs device token bytes. 1 to 100 bytes.
+  bytes apns_token = 1;
+  // Required. UNSPECIFIED is FIELD_INVALID.
+  ApnsEnvironment environment = 2;
+}
+message RegisterPushResponse {}
+
+message ExportMessagingDataRequest {}
+// Messaging's half of the GDPR export. No message content: the server holds
+// only undelivered messages, and an undelivered message belongs to its
+// recipients until acked.
+message ExportMessagingDataResponse {
+  repeated Conversation conversations = 1;
+  // Devices of the caller with a push registration, by device id.
+  repeated string push_registered_device_ids = 2;
+  // Accounts the caller has blocked.
+  repeated string blocked_account_ids = 3;
+}
+
+message BlockAccountRequest {
+  // Any account but the caller and the caller's own puppets. Blocking a human
+  // also stops messages from that human's puppets.
+  string account_id = 1;
+}
+message BlockAccountResponse {}
+
+message UnblockAccountRequest {
+  string account_id = 1;
+}
+message UnblockAccountResponse {}
+
+message ListBlockedAccountsRequest {}
+message ListBlockedAccountsResponse {
+  repeated BlockedAccount blocked = 1;
+}
+message BlockedAccount {
+  string account_id = 1;
+  google.protobuf.Timestamp blocked_at = 2;
+}

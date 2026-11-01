@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package sock.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1";
+
+// ModerationService: reports to the operator. The operator reads and resolves
+// them through OperatorService. Rules: docs/specs/api.md.
+service ModerationService {
+  rpc FileReport(FileReportRequest) returns (FileReportResponse) {}
+}
+
+message FileReportRequest {
+  // The account reported: any account but the caller.
+  string subject_id = 1;
+  // Required. UNSPECIFIED is FIELD_INVALID.
+  ReportReason reason = 2;
+  // The reporter's own words, 0 to 1000 characters.
+  string note = 3;
+  // 0 to 20 messages from the caller's history, each sent by the subject or
+  // a puppet the subject owns, as the caller received them, each with its
+  // evidence tag.
+  repeated ReportedMessage evidence = 4;
+}
+message FileReportResponse {
+  string report_id = 1;
+}
+
+message ReportedMessage {
+  string message_id = 1;
+  string conversation_id = 2;
+  // At least 1.
+  int64 seq = 3;
+  string sender_id = 4;
+  google.protobuf.Timestamp sent_at = 5;
+  // UTF-8, 1 to 65536 bytes.
+  string text = 6;
+  // Message.evidence_tag as received. Required: evidence the server did not
+  // deliver is refused.
+  bytes evidence_tag = 7;
+}
+
+// Report is a filed report as the operator reads it.
+message Report {
+  string id = 1;
+  // A human's account id.
+  string reporter_id = 2;
+  // The account reported, human or puppet.
+  string subject_id = 3;
+  ReportReason reason = 4;
+  // The reporter's own words, 0 to 1000 characters. Empty: they wrote none.
+  string note = 5;
+  // 0 to 20 messages, each verified against its evidence tag at filing.
+  repeated ReportedMessage evidence = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+// Resolution is the operator's decision on a report. A report has at most one.
+message Resolution {
+  ResolutionOutcome outcome = 1;
+  google.protobuf.Timestamp resolved_at = 2;
+}
+
+enum ResolutionOutcome {
+  RESOLUTION_OUTCOME_UNSPECIFIED = 0;
+  // No action.
+  RESOLUTION_OUTCOME_DISMISSED = 1;
+  // The subject is suspended.
+  RESOLUTION_OUTCOME_SUBJECT_SUSPENDED = 2;
+  // The subject is a puppet; its owner is suspended, and with it every
+  // puppet the owner has.
+  RESOLUTION_OUTCOME_OWNER_SUSPENDED = 3;
+}
+
+enum ReportReason {
+  REPORT_REASON_UNSPECIFIED = 0;
+  REPORT_REASON_SPAM = 1;
+  REPORT_REASON_HARASSMENT = 2;
+  REPORT_REASON_HATE = 3;
+  REPORT_REASON_SEXUAL_CONTENT = 4;
+  REPORT_REASON_VIOLENCE = 5;
+  REPORT_REASON_SELF_HARM = 6;
+  REPORT_REASON_IMPERSONATION = 7;
+  REPORT_REASON_OTHER = 8;
+}

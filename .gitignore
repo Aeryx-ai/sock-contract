@@ -1,0 +1,12 @@
+.build/
+.swiftpm/
+*.xcodeproj/xcuserdata/
+node_modules/
+
+# Local tooling, never published
+.beads/
+.dolt/
+*.db
+.beads-credential-key
+.claude/
+.superpowers/

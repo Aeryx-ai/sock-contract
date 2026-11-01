@@ -1,0 +1,145 @@
+syntax = "proto3";
+
+package sock.v1;
+
+import "google/protobuf/timestamp.proto";
+import "sock/v1/messaging.proto";
+import "sock/v1/types.proto";
+
+option go_package = "github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1";
+
+// HistoryTransferService: moves a phone's local history to a newly signed-in
+// desktop of the same human, once, through the hub, sealed to a key only the
+// desktop holds. The hub stores ciphertext for at most an hour. Every RPC is
+// Human device only and every lookup is by the binding tag the hub recomputes
+// from the caller and the presented secret, so an unknown, expired, closed or
+// other human's transfer is the same NOT_FOUND. Caller classes, errors and
+// idempotency per RPC: docs/specs/api.md; the design: docs/specs/history-transfer.md.
+// Request bodies carry the transfer secret and must never be logged.
+service HistoryTransferService {
+  // Desktop: open a transfer and bind it to the caller and the secret.
+  rpc OpenHistoryTransfer(OpenHistoryTransferRequest) returns (OpenHistoryTransferResponse) {}
+  // Phone: read the desktop's key after scanning, before confirming.
+  rpc GetHistoryTransferKey(GetHistoryTransferKeyRequest) returns (GetHistoryTransferKeyResponse) {}
+  // Phone: accept the transfer, carrying its HPKE encapsulated key.
+  rpc ClaimHistoryTransfer(ClaimHistoryTransferRequest) returns (ClaimHistoryTransferResponse) {}
+  // Phone: store the next sealed chunk. Sequential and retry-safe.
+  rpc UploadHistoryChunk(UploadHistoryChunkRequest) returns (UploadHistoryChunkResponse) {}
+  // Desktop: the claim, then each stored chunk in order, then OK after the
+  // final one. A dropped stream reopens with from_index.
+  rpc ReceiveHistory(ReceiveHistoryRequest) returns (stream ReceiveHistoryResponse) {}
+  // Either device: delete the transfer. Closing a missing transfer is OK.
+  rpc CloseHistoryTransfer(CloseHistoryTransferRequest) returns (CloseHistoryTransferResponse) {}
+}
+
+message OpenHistoryTransferRequest {
+  // Exactly 32 random bytes the desktop generates and shows in the QR code.
+  bytes transfer_secret = 1;
+  // The desktop's one-time X-Wing HPKE public key, exactly 1216 bytes.
+  bytes recipient_key = 2;
+}
+message OpenHistoryTransferResponse {
+  // The claim deadline, 10 minutes after the transfer opened.
+  google.protobuf.Timestamp expires_at = 1;
+}
+
+message GetHistoryTransferKeyRequest {
+  // Exactly 32 bytes.
+  bytes transfer_secret = 1;
+}
+message GetHistoryTransferKeyResponse {
+  // The desktop's key, as sent to OpenHistoryTransfer. The phone checks its
+  // SHA-256 against the digest in the QR code.
+  bytes recipient_key = 1;
+  // The claim deadline, 10 minutes after the transfer opened.
+  google.protobuf.Timestamp claim_by = 2;
+}
+
+message ClaimHistoryTransferRequest {
+  // Exactly 32 bytes.
+  bytes transfer_secret = 1;
+  // HPKE enc from the phone's sender against the digest-checked key, exactly
+  // 1120 bytes.
+  bytes encapsulated_key = 2;
+}
+message ClaimHistoryTransferResponse {
+  // Plaintext bytes per chunk, at most: 1 MiB.
+  uint32 max_chunk_bytes = 1;
+  // Chunks per transfer, at most: 128.
+  uint32 max_chunks = 2;
+  // The transfer's deletion deadline, 60 minutes after it opened.
+  google.protobuf.Timestamp expires_at = 3;
+}
+
+message UploadHistoryChunkRequest {
+  // Exactly 32 bytes.
+  bytes transfer_secret = 1;
+  // Zero-based position. The next chunk, or a stored one being retried.
+  uint32 index = 2;
+  // One HPKE Seal output, 17 bytes to 1 MiB + 16.
+  bytes ciphertext = 3;
+  // True on the last chunk; stores the seal.
+  bool final = 4;
+}
+message UploadHistoryChunkResponse {
+  // Chunk count after the call.
+  uint32 stored_chunks = 1;
+}
+
+message ReceiveHistoryRequest {
+  // Exactly 32 bytes.
+  bytes transfer_secret = 1;
+  // The first chunk not yet received; 0 on first open.
+  uint32 from_index = 2;
+}
+message ReceiveHistoryResponse {
+  oneof event {
+    // Sent once per stream when a claim exists.
+    HistoryClaimed claimed = 1;
+    // Each stored chunk from from_index, in order, as soon as it is stored.
+    HistoryChunk chunk = 2;
+    // Sent every 30s, so idle intermediaries keep the stream.
+    Heartbeat heartbeat = 3;
+  }
+}
+message HistoryClaimed {
+  // The phone's HPKE enc, as sent to ClaimHistoryTransfer.
+  bytes encapsulated_key = 1;
+}
+message HistoryChunk {
+  uint32 index = 1;
+  bytes ciphertext = 2;
+  // The last chunk; the stream ends with OK after it.
+  bool final = 3;
+}
+
+message CloseHistoryTransferRequest {
+  // Exactly 32 bytes.
+  bytes transfer_secret = 1;
+}
+message CloseHistoryTransferResponse {}
+
+// The archive: a stream of length-delimited (varint prefix) HistoryRecord
+// messages, cut into chunks at arbitrary byte boundaries and sealed. Order:
+// one header, then all accounts, then for each conversation its conversation
+// record followed by its message records in seq order. Never sent in the
+// clear: the hub only ever holds the sealed chunks.
+message HistoryRecord {
+  oneof record {
+    HistoryHeader header = 1;
+    // As the phone last stored it.
+    Account account = 2;
+    // read_through_seq is the phone's local read position.
+    Conversation conversation = 3;
+    // Confirmed only, evidence_tag included.
+    Message message = 4;
+  }
+}
+message HistoryHeader {
+  // 1. An importer refuses a higher version.
+  uint32 format_version = 1;
+  // The human whose history this is. The importer refuses an archive whose id
+  // is not its signed-in account.
+  string account_id = 2;
+  google.protobuf.Timestamp exported_at = 3;
+}

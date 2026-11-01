@@ -1,0 +1,18 @@
+version: v2
+inputs:
+  - directory: proto
+    exclude_paths:
+      - proto/sock/v1/operator.proto
+plugins:
+  - local: .build/release/protoc-gen-swift
+    out: gen/swift
+    opt:
+      - Visibility=Public
+      - FileNaming=PathToUnderscores
+  - local: .build/release/protoc-gen-connect-swift
+    out: gen/swift
+    opt:
+      - Visibility=Public
+      - FileNaming=PathToUnderscores
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=false

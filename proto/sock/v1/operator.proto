@@ -1,0 +1,383 @@
+syntax = "proto3";
+
+package sock.v1;
+
+import "google/protobuf/timestamp.proto";
+import "sock/v1/identity.proto";
+import "sock/v1/invite_request.proto";
+import "sock/v1/moderation.proto";
+import "sock/v1/types.proto";
+
+option go_package = "github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1";
+
+// OperatorService: the operator's actions, for the operator CLI and the web
+// console. Every RPC requires `Authorization: Bearer sock_ot_...`; anything
+// else is CALLER_NOT_ALLOWED. Rules: docs/specs/api.md.
+// OperatorSignInService, below, is the one anonymous way to get such a token.
+service OperatorService {
+  rpc MintInvite(MintInviteRequest) returns (MintInviteResponse) {}
+  rpc ListReports(ListReportsRequest) returns (ListReportsResponse) {}
+  rpc ResolveReport(ResolveReportRequest) returns (ResolveReportResponse) {}
+  rpc ReinstateAccount(ReinstateAccountRequest) returns (ReinstateAccountResponse) {}
+  rpc RevokeOperatorToken(RevokeOperatorTokenRequest) returns (RevokeOperatorTokenResponse) {}
+  // The console's Users page. All four are full scope only.
+  rpc ListHumans(ListHumansRequest) returns (ListHumansResponse) {}
+  rpc GetHuman(GetHumanRequest) returns (GetHumanResponse) {}
+  rpc ListAccountReports(ListAccountReportsRequest) returns (ListAccountReportsResponse) {}
+  rpc EraseHuman(EraseHumanRequest) returns (EraseHumanResponse) {}
+  // The console's invite request queue. ListInviteRequests takes
+  // full or read (sock-triage polls it); approve and decline are full only.
+  rpc ListInviteRequests(ListInviteRequestsRequest) returns (ListInviteRequestsResponse) {}
+  rpc ApproveInviteRequests(ApproveInviteRequestsRequest) returns (ApproveInviteRequestsResponse) {}
+  rpc DeclineInviteRequests(DeclineInviteRequestsRequest) returns (DeclineInviteRequestsResponse) {}
+  // How many days the hub keeps a message any recipient has not received:
+  // devices, humans with no device and puppets. Get takes full or read; Set
+  // is full only and records an operator action.
+  rpc GetMessageHold(GetMessageHoldRequest) returns (GetMessageHoldResponse) {}
+  rpc SetMessageHold(SetMessageHoldRequest) returns (SetMessageHoldResponse) {}
+  // Free Sock Pro for a human until a date, and its revocation. Full scope
+  // only; each records an operator action.
+  rpc GrantPro(GrantProRequest) returns (GrantProResponse) {}
+  rpc RevokeProGrant(RevokeProGrantRequest) returns (RevokeProGrantResponse) {}
+}
+
+// Not idempotent: each call adds a grant. GetHuman lists them, so a retry
+// shows and can be revoked.
+message GrantProRequest {
+  // A human's account id. A puppet's id is NOT_FOUND.
+  string account_id = 1;
+  // After now and at most 10 years ahead, else FIELD_INVALID.
+  google.protobuf.Timestamp ends_at = 2;
+}
+message GrantProResponse {
+  ProGrant grant = 1;
+}
+
+// Idempotent: revoking a revoked grant succeeds and records another action.
+message RevokeProGrantRequest {
+  string grant_id = 1;
+}
+message RevokeProGrantResponse {}
+
+// ProGrant is free Sock Pro the operator gave a human.
+message ProGrant {
+  string id = 1;
+  google.protobuf.Timestamp granted_at = 2;
+  // Sock Pro is active until this time unless revoked.
+  google.protobuf.Timestamp ends_at = 3;
+  // Unset: not revoked.
+  google.protobuf.Timestamp revoked_at = 4;
+}
+
+// ProTrial is a human's one trial.
+message ProTrial {
+  google.protobuf.Timestamp started_at = 1;
+  // started_at + 7 days.
+  google.protobuf.Timestamp ends_at = 2;
+}
+
+// ProSubscriptionSummary is a Stripe subscription as the hub last fetched it.
+message ProSubscriptionSummary {
+  // Stripe's id, sub_...
+  string subscription_id = 1;
+  // How long it keeps Sock Pro active; in the past when it ended.
+  google.protobuf.Timestamp active_until = 2;
+}
+
+message GetMessageHoldRequest {}
+message GetMessageHoldResponse {
+  int32 days = 1;
+}
+
+message SetMessageHoldRequest {
+  // At least 1. Lowering it deletes held messages older than the new value
+  // at once.
+  int32 days = 1;
+}
+message SetMessageHoldResponse {
+  // The stored value.
+  int32 days = 1;
+}
+
+message MintInviteRequest {}
+message MintInviteResponse {
+  // Single-use code for RegisterWithAppleRequest.invite_code. Returned once;
+  // the server keeps only its hash.
+  string code = 1;
+  // For a CLI-minted operator token, the earlier of mint time plus 7 days
+  // and that token's expiry. For a console sign-in token, mint time plus 7
+  // days: its invites outlive it.
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+message ListReportsRequest {
+  // 0 means 10; at most 25.
+  int32 limit = 1;
+  // Continue after this report id, the last one of the previous page. Empty
+  // starts at the oldest open report.
+  string after_report_id = 2;
+}
+message ListReportsResponse {
+  // Open reports, oldest first. Fewer than the limit means no more.
+  repeated Report reports = 1;
+  // Every account the reports name (reporters, subjects, evidence senders)
+  // and the owner of each puppet among them, in no particular order. An
+  // account erased after its report was filed is omitted until Moderation
+  // deletes the report.
+  repeated Account accounts = 2;
+}
+
+message ResolveReportRequest {
+  string report_id = 1;
+  // Required. OWNER_SUSPENDED needs a puppet subject.
+  ResolutionOutcome outcome = 2;
+}
+message ResolveReportResponse {
+  // The report's resolution: the new one, or the existing one when this is a
+  // retry with the same outcome.
+  Resolution resolution = 1;
+}
+
+message ReinstateAccountRequest {
+  // A suspended account. Reinstating an account that is not suspended
+  // succeeds unchanged.
+  string account_id = 1;
+}
+message ReinstateAccountResponse {}
+
+// Revokes the operator token the request presents. For a CLI-minted token it
+// also deletes the invites it minted that are still unredeemed; a console
+// sign-in token's invites survive. Other tokens are revoked with the
+// bootstrap CLI.
+message RevokeOperatorTokenRequest {}
+message RevokeOperatorTokenResponse {}
+
+message ListHumansRequest {
+  // 0 means 25; at most 100.
+  int32 limit = 1;
+  // Continue after this account id, the last one of the previous page.
+  // Empty starts at the newest human.
+  string after_account_id = 2;
+  // Empty lists every human. Otherwise 1 to 20 characters of [A-Za-z0-9_],
+  // lowercased by the server; only humans whose handle starts with it are
+  // listed.
+  string handle_prefix = 3;
+}
+message ListHumansResponse {
+  // Newest first, by account id, which is time-ordered. Fewer than the
+  // limit means no more.
+  repeated HumanSummary humans = 1;
+}
+
+// HumanSummary is one human as the operator's Users page lists it.
+message HumanSummary {
+  // A human: kind is always human.
+  Account account = 1;
+  // When the account was created.
+  google.protobuf.Timestamp joined_at = 2;
+  // When the account was suspended. Unset: not suspended.
+  google.protobuf.Timestamp suspended_at = 3;
+  // Every puppet the human owns, system and connector puppets included.
+  int32 puppet_count = 4;
+}
+
+message GetHumanRequest {
+  // A human's account id. A puppet's id is NOT_FOUND.
+  string account_id = 1;
+}
+message GetHumanResponse {
+  HumanSummary human = 1;
+  // The human's own devices: sessions and machine keys, each with its kind.
+  repeated Device devices = 2;
+  // Every puppet the human owns, each with its tokens. Puppet.connector is
+  // never set here: a platform name reaches only the owner.
+  repeated PuppetWithDevices puppets = 3;
+  // Every terms version the human accepted, oldest first.
+  repeated TermsAcceptance terms_acceptances = 4;
+  // An acceptance of the server's current terms version exists.
+  bool terms_current = 5;
+  // What keeps Sock Pro active longest.
+  ProStatus pro = 6;
+  // Unset: the human never started a trial.
+  ProTrial trial = 7;
+  // Every Stripe subscription of the human's, as last fetched.
+  repeated ProSubscriptionSummary subscriptions = 8;
+  // Every grant, revoked ones included, newest first.
+  repeated ProGrant grants = 9;
+}
+
+// TermsAcceptance is a human's agreement to one terms version.
+message TermsAcceptance {
+  // 1 to 32 characters, as configured on the server.
+  string version = 1;
+  google.protobuf.Timestamp accepted_at = 2;
+}
+
+message ListAccountReportsRequest {
+  // Any account. For a human, the reports it filed and the reports about it
+  // or any puppet it owns; for a puppet, the reports about it.
+  string account_id = 1;
+  // 0 means 25; at most 100.
+  int32 limit = 2;
+  // Continue after this report id, the last one of the previous page. Empty
+  // starts at the newest report.
+  string after_report_id = 3;
+}
+message ListAccountReportsResponse {
+  // Open and resolved, newest first by id, which is time-ordered. Fewer than
+  // the limit means no more.
+  repeated ReportSummary reports = 1;
+  // Every reporter and subject the reports name and the owner of each puppet
+  // among them, in no particular order. An erased account is omitted.
+  repeated Account accounts = 2;
+}
+
+// ReportSummary is a report without its content: no note and no evidence
+// text. Open reports are read in full with ListReports.
+message ReportSummary {
+  string id = 1;
+  // A human's account id.
+  string reporter_id = 2;
+  // The account reported, human or puppet.
+  string subject_id = 3;
+  ReportReason reason = 4;
+  google.protobuf.Timestamp created_at = 5;
+  // 0 to 20.
+  int32 evidence_count = 6;
+  // Unset: the report is open.
+  Resolution resolution = 7;
+}
+
+// Erases a human, its puppets and all their devices: Account.Erase, as
+// IdentityService.EraseAccount does for the human itself. Irreversible.
+message EraseHumanRequest {
+  // A human's account id. A puppet's id is NOT_FOUND.
+  string account_id = 1;
+  // The human's current handle, typed by the operator. Anything else is
+  // FIELD_INVALID and erases nothing, so a stale page or a wrong id cannot
+  // erase the wrong person.
+  string confirm_handle = 2;
+}
+message EraseHumanResponse {}
+
+// OperatorSignInService: the web console's Sign in with Apple.
+// Anonymous: no Authorization header; a sock_ot_ bearer is
+// CALLER_NOT_ALLOWED. Kept apart from OperatorService so every
+// OperatorService RPC keeps requiring an operator token. Rules:
+// docs/specs/api.md.
+service OperatorSignInService {
+  // Mints a 12-hour operator token for the Apple identity named by
+  // SOCK_OPERATOR_APPLE_SUB. Anyone else, or a server with console sign-in
+  // disabled, gets CALLER_NOT_ALLOWED.
+  rpc SignInOperatorWithApple(SignInOperatorWithAppleRequest) returns (SignInOperatorWithAppleResponse) {}
+}
+
+message SignInOperatorWithAppleRequest {
+  // The id_token Apple posted to the server's console callback, which the
+  // callback relayed to the console in the URL fragment, or to sock-admin's
+  // loopback listener through the CLI callback. aud must be the
+  // Services ID.
+  string identity_token = 1;
+  // The client's raw nonce: 43 base64url characters (32 random bytes). The
+  // token's nonce claim must be the lowercase hex SHA-256 of the client's
+  // binding: "sock-operator-signin " (console) or "sock-operator-cli-signin "
+  // (CLI) + the hub's host + " " + this value, which binds the token to that
+  // client's sign-in on this hub.
+  string nonce = 2;
+  // Which client is signing in; it selects the nonce binding and the token's
+  // label. Unset is the console.
+  OperatorSignInClient client = 3;
+}
+enum OperatorSignInClient {
+  // The console.
+  OPERATOR_SIGN_IN_CLIENT_UNSPECIFIED = 0;
+  // Same as UNSPECIFIED. Clients may name it explicitly.
+  OPERATOR_SIGN_IN_CLIENT_CONSOLE = 1;
+  // sock-admin, the operator CLI.
+  OPERATOR_SIGN_IN_CLIENT_CLI = 2;
+}
+message SignInOperatorWithAppleResponse {
+  // sock_ot_<token id>_<secret>. Returned once; the server keeps only its
+  // hash. Revoke with OperatorService.RevokeOperatorToken to sign out.
+  string token = 1;
+  // 12 hours after mint. Invites this token mints expire 7 days after their
+  // own mint and survive this token's revocation or expiry.
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+message ListInviteRequestsRequest {
+  // 0 means 25; at most 100.
+  int32 limit = 1;
+  // Continue after this request id, the last one of the previous page.
+  // Empty starts at the newest request.
+  string after_request_id = 2;
+  // Unset lists every request.
+  InviteRequestState state = 3;
+}
+message ListInviteRequestsResponse {
+  // Newest first, by id, which is time-ordered. Fewer than the limit means
+  // no more.
+  repeated InviteRequest requests = 1;
+}
+
+enum InviteRequestState {
+  INVITE_REQUEST_STATE_UNSPECIFIED = 0;
+  // No decision.
+  INVITE_REQUEST_STATE_PENDING = 1;
+  INVITE_REQUEST_STATE_APPROVED = 2;
+  INVITE_REQUEST_STATE_DECLINED = 3;
+}
+
+message ApproveInviteRequestsRequest {
+  // 1 to 100 distinct request ids. Each is decided in its own transaction.
+  repeated string request_ids = 1;
+}
+message ApproveInviteRequestsResponse {
+  // One per id, in request order.
+  repeated ApproveInviteRequestResult results = 1;
+}
+
+message ApproveInviteRequestResult {
+  string request_id = 1;
+  ApproveInviteRequestOutcome outcome = 2;
+  // Set only when outcome is APPROVED.
+  ApprovedInvite invite = 3;
+}
+
+enum ApproveInviteRequestOutcome {
+  APPROVE_INVITE_REQUEST_OUTCOME_UNSPECIFIED = 0;
+  // Approved by this call or earlier; invite is the live one. A repeat
+  // approve mints and mails nothing.
+  APPROVE_INVITE_REQUEST_OUTCOME_APPROVED = 1;
+  // Approved earlier; the invite was redeemed or expired, or its code does
+  // not open under the current key. Nothing minted.
+  APPROVE_INVITE_REQUEST_OUTCOME_APPROVED_NO_CODE = 2;
+  // Refused: declined earlier.
+  APPROVE_INVITE_REQUEST_OUTCOME_DECLINED = 3;
+  // No such request, or deleted by retention.
+  APPROVE_INVITE_REQUEST_OUTCOME_NOT_FOUND = 4;
+}
+
+message DeclineInviteRequestsRequest {
+  // 1 to 100 distinct request ids. Each is decided in its own transaction.
+  repeated string request_ids = 1;
+}
+message DeclineInviteRequestsResponse {
+  // One per id, in request order.
+  repeated DeclineInviteRequestResult results = 1;
+}
+
+message DeclineInviteRequestResult {
+  string request_id = 1;
+  DeclineInviteRequestOutcome outcome = 2;
+}
+
+enum DeclineInviteRequestOutcome {
+  DECLINE_INVITE_REQUEST_OUTCOME_UNSPECIFIED = 0;
+  // Declined by this call or earlier.
+  DECLINE_INVITE_REQUEST_OUTCOME_DECLINED = 1;
+  // Refused: approved earlier.
+  DECLINE_INVITE_REQUEST_OUTCOME_APPROVED = 2;
+  // No such request, or deleted by retention.
+  DECLINE_INVITE_REQUEST_OUTCOME_NOT_FOUND = 3;
+}

@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package sock.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1";
+
+// InviteRequestService: a person asks for an invite from joinsock.com.
+// Anonymous: no Authorization header; a sock_ot_ bearer is
+// CALLER_NOT_ALLOWED. Browsers reach it from the origins in
+// SOCK_INVITE_ORIGINS only. Rules: docs/specs/invite-requests.md.
+service InviteRequestService {
+  rpc RequestInvite(RequestInviteRequest) returns (RequestInviteResponse) {}
+}
+
+message RequestInviteRequest {
+  // 1 to 254 bytes. Trimmed and ASCII-lowercased by the server; one @, a
+  // non-empty local part and a domain with a dot.
+  string email = 1;
+  // 0 to 500 characters: what the person will use sock for.
+  string note = 2;
+  // The Cloudflare Turnstile token from the form, 1 to 2048 bytes. Verified
+  // once with Cloudflare; a refused token is HUMAN_CHECK_FAILED.
+  string turnstile_token = 3;
+}
+
+// Empty for every well-formed, verified request, whether or not the address
+// was already known: the answer never says who has asked.
+message RequestInviteResponse {}
+
+// InviteRequest is one person's ask, as the operator's queue lists it.
+message InviteRequest {
+  string id = 1;
+  // Normalized: trimmed and ASCII-lowercased.
+  string email = 2;
+  // Empty: the person wrote nothing.
+  string note = 3;
+  google.protobuf.Timestamp created_at = 4;
+  // Unset: pending.
+  InviteRequestDecision decision = 5;
+  // Unset: no delivery recorded. On an approved request, the mail is still
+  // queued or being retried.
+  InviteDelivery delivery = 6;
+  // The invite minted on approval, for a full operator token only, while the
+  // invite is live and its kept code opens. Unset otherwise, and always for
+  // a read token.
+  ApprovedInvite invite = 7;
+}
+
+message InviteRequestDecision {
+  InviteRequestOutcome outcome = 1;
+  google.protobuf.Timestamp decided_at = 2;
+}
+
+enum InviteRequestOutcome {
+  INVITE_REQUEST_OUTCOME_UNSPECIFIED = 0;
+  INVITE_REQUEST_OUTCOME_APPROVED = 1;
+  INVITE_REQUEST_OUTCOME_DECLINED = 2;
+}
+
+// InviteDelivery is how the one mail of an approved request ended.
+message InviteDelivery {
+  InviteDeliveryOutcome outcome = 1;
+  // SENT: delivered or queued, as Cloudflare reported it. REJECTED:
+  // permanent_bounce, suppressed (on Cloudflare's suppression list), or
+  // Cloudflare's numeric error code. Empty otherwise.
+  string detail = 2;
+  google.protobuf.Timestamp delivered_at = 3;
+}
+
+enum InviteDeliveryOutcome {
+  INVITE_DELIVERY_OUTCOME_UNSPECIFIED = 0;
+  // Cloudflare accepted the mail.
+  INVITE_DELIVERY_OUTCOME_SENT = 1;
+  // Cloudflare refused it for good. Not retried.
+  INVITE_DELIVERY_OUTCOME_REJECTED = 2;
+  // The invite was redeemed or expired before the mail went out.
+  INVITE_DELIVERY_OUTCOME_CODE_GONE = 3;
+  // The kept code did not open under the current key. Nothing sent.
+  INVITE_DELIVERY_OUTCOME_CODE_UNOPENABLE = 4;
+}
+
+// ApprovedInvite is the live invite an approval minted.
+message ApprovedInvite {
+  // Single-use code for RegisterWithAppleRequest.invite_code.
+  string code = 1;
+  // MintInvite's rule, from the approving token: for a
+  // CLI-minted operator token, the earlier of approval time plus 7 days and
+  // that token's expiry; for a console sign-in token, approval time plus 7
+  // days. A repeat approve returns the live invite's original expiry.
+  google.protobuf.Timestamp expires_at = 2;
+}

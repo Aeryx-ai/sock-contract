@@ -1,0 +1,99 @@
+import Foundation
+import SockContract
+import SwiftProtobuf
+
+/// The archive format this build writes and the highest it reads.
+public let formatVersion = 1
+
+/// Writes HistoryRecords, each prefixed by its varint length.
+public struct ArchiveWriter {
+    private let stream: OutputStream
+
+    /// The stream must already be open.
+    public init(_ stream: OutputStream) { self.stream = stream }
+
+    public func write(_ record: Sock_V1_HistoryRecord) throws {
+        do {
+            try BinaryDelimited.serialize(message: record, to: stream)
+        } catch {
+            throw HistoryTransferError("write record: \(error)")
+        }
+    }
+}
+
+/// Reads the records an ArchiveWriter wrote.
+public struct ArchiveReader {
+    private let stream: InputStream
+
+    /// The stream must already be open.
+    public init(_ stream: InputStream) { self.stream = stream }
+
+    /// Returns the next record, or nil after the last one. A stream cut inside
+    /// a record is an error, not nil.
+    public mutating func next() throws -> Sock_V1_HistoryRecord? {
+        do {
+            return try BinaryDelimited.parse(messageType: Sock_V1_HistoryRecord.self, from: stream)
+        } catch let e as SwiftProtobufError where e.code == .binaryStreamDecodingError {
+            // From an InputStream, BinaryDelimited throws this code only as
+            // noBytesAvailable: the stream ended on a record boundary.
+            return nil
+        } catch {
+            throw HistoryTransferError("read record: \(error)")
+        }
+    }
+}
+
+/// Checks an archive's record order, one record at a time: one header first,
+/// then accounts, then each conversation once, followed by its messages in
+/// rising seq from 1 up. A new value is ready for the first record. A refused
+/// record leaves the validator where it was.
+public struct OrderValidator {
+    private var prev: Sock_V1_HistoryRecord.OneOf_Record?
+    private var seen = Set<String>()
+
+    public init() {}
+
+    /// Throws unless next may follow the records already checked.
+    public mutating func check(_ next: Sock_V1_HistoryRecord) throws {
+        try validate(next)
+        if case .conversation(let c)? = next.record {
+            seen.insert(c.id)
+        }
+        prev = next.record
+    }
+
+    private func validate(_ next: Sock_V1_HistoryRecord) throws {
+        switch next.record {
+        case .header(let h)?:
+            if prev != nil { throw HistoryTransferError("header after the first record") }
+            if h.formatVersion == 0 || h.formatVersion > formatVersion {
+                throw HistoryTransferError("archive format \(h.formatVersion), this build reads 1 to \(formatVersion)")
+            }
+            if h.accountID.isEmpty { throw HistoryTransferError("header has no account id") }
+        case nil:
+            throw HistoryTransferError("empty record")
+        case .account?:
+            switch prev {
+            case .header?, .account?: return
+            case nil: throw HistoryTransferError("archive does not start with a header")
+            default: throw HistoryTransferError("account after a conversation")
+            }
+        case .conversation(let c)?:
+            if prev == nil { throw HistoryTransferError("archive does not start with a header") }
+            if seen.contains(c.id) { throw HistoryTransferError("conversation \"\(c.id)\" repeated") }
+        case .message(let m)?:
+            switch prev {
+            case .conversation(let c)?:
+                if m.conversationID != c.id { throw HistoryTransferError("message outside the current conversation") }
+                if m.seq <= 0 { throw HistoryTransferError("first message seq \(m.seq), want 1 or more") }
+            case .message(let p)?:
+                if m.conversationID != p.conversationID { throw HistoryTransferError("message outside the current conversation") }
+                if m.seq <= p.seq { throw HistoryTransferError("seq \(m.seq) after \(p.seq)") }
+            case nil:
+                throw HistoryTransferError("archive does not start with a header")
+            default:
+                throw HistoryTransferError("message before any conversation")
+            }
+        }
+    }
+}

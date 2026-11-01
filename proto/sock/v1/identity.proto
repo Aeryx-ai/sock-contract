@@ -1,0 +1,584 @@
+syntax = "proto3";
+
+package sock.v1;
+
+import "google/protobuf/timestamp.proto";
+import "sock/v1/types.proto";
+
+option go_package = "github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1";
+
+// IdentityService: accounts, devices, puppets, invites. Caller classes,
+// authorization, errors and idempotency per RPC: docs/specs/api.md.
+service IdentityService {
+  rpc SignInWithApple(SignInWithAppleRequest) returns (SignInWithAppleResponse) {}
+  rpc RegisterWithApple(RegisterWithAppleRequest) returns (RegisterWithAppleResponse) {}
+  // Email through WorkOS AuthKit's hosted page (docs/specs/email-sign-in-pass-2.md).
+  rpc SignInWithEmail(SignInWithEmailRequest) returns (SignInWithEmailResponse) {}
+  rpc RegisterWithEmail(RegisterWithEmailRequest) returns (RegisterWithEmailResponse) {}
+  // A signed-in human adds email sign-in: the session proves the person,
+  // AuthKit, an email code or Google the address.
+  rpc AddEmailSignIn(AddEmailSignInRequest) returns (AddEmailSignInResponse) {}
+  // Email as a six-digit code typed into the app (docs/specs/email-sign-in-pass-3.md).
+  rpc StartEmailSignIn(StartEmailSignInRequest) returns (StartEmailSignInResponse) {}
+  rpc VerifyEmailSignIn(VerifyEmailSignInRequest) returns (VerifyEmailSignInResponse) {}
+  // The address and the WorkOS user's password instead of a code
+  // (operator-created humans, the App Review account).
+  rpc SignInWithEmailPassword(SignInWithEmailPasswordRequest) returns (SignInWithEmailPasswordResponse) {}
+  // Google through WorkOS (docs/specs/google-and-passkey-sign-in.md).
+  rpc SignInWithGoogle(SignInWithGoogleRequest) returns (SignInWithGoogleResponse) {}
+  // Passkeys for relying party joinsock.com, verified by the hub
+  // (docs/specs/google-and-passkey-sign-in.md). Added by a signed-in human;
+  // a passkey never creates an account.
+  rpc StartPasskeyRegistration(StartPasskeyRegistrationRequest) returns (StartPasskeyRegistrationResponse) {}
+  rpc FinishPasskeyRegistration(FinishPasskeyRegistrationRequest) returns (FinishPasskeyRegistrationResponse) {}
+  rpc ListPasskeys(ListPasskeysRequest) returns (ListPasskeysResponse) {}
+  rpc RemovePasskey(RemovePasskeyRequest) returns (RemovePasskeyResponse) {}
+  rpc StartPasskeySignIn(StartPasskeySignInRequest) returns (StartPasskeySignInResponse) {}
+  rpc SignInWithPasskey(SignInWithPasskeyRequest) returns (SignInWithPasskeyResponse) {}
+  rpc SignOut(SignOutRequest) returns (SignOutResponse) {}
+
+  rpc GetMe(GetMeRequest) returns (GetMeResponse) {}
+  rpc AcceptTerms(AcceptTermsRequest) returns (AcceptTermsResponse) {}
+  rpc GetAccounts(GetAccountsRequest) returns (GetAccountsResponse) {}
+  rpc LookupHandle(LookupHandleRequest) returns (LookupHandleResponse) {}
+  rpc UpdateDisplayName(UpdateDisplayNameRequest) returns (UpdateDisplayNameResponse) {}
+  rpc ChangeHandle(ChangeHandleRequest) returns (ChangeHandleResponse) {}
+
+  rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse) {}
+  rpc RevokeDevice(RevokeDeviceRequest) returns (RevokeDeviceResponse) {}
+  rpc MintMachineKey(MintMachineKeyRequest) returns (MintMachineKeyResponse) {}
+
+  rpc CreatePuppet(CreatePuppetRequest) returns (CreatePuppetResponse) {}
+  rpc ListPuppets(ListPuppetsRequest) returns (ListPuppetsResponse) {}
+  rpc MintPuppetToken(MintPuppetTokenRequest) returns (MintPuppetTokenResponse) {}
+  rpc ErasePuppet(ErasePuppetRequest) returns (ErasePuppetResponse) {}
+  // A puppet whose agent session ended, and its resumption.
+  rpc ArchivePuppet(ArchivePuppetRequest) returns (ArchivePuppetResponse) {}
+  rpc UnarchivePuppet(UnarchivePuppetRequest) returns (UnarchivePuppetResponse) {}
+
+  // Connector service only (sock_ct_ bearer).
+  rpc IssueConnectorPuppetToken(IssueConnectorPuppetTokenRequest) returns (IssueConnectorPuppetTokenResponse) {}
+  rpc RevokeConnectorDevice(RevokeConnectorDeviceRequest) returns (RevokeConnectorDeviceResponse) {}
+
+  rpc ExportIdentityData(ExportIdentityDataRequest) returns (ExportIdentityDataResponse) {}
+  rpc EraseAccount(EraseAccountRequest) returns (EraseAccountResponse) {}
+
+  // Sock Pro on the web, through Stripe (docs/specs/sock-pro-billing.md).
+  // Both open a page in the browser; the app re-reads GetMe on return.
+  rpc StartCheckout(StartCheckoutRequest) returns (StartCheckoutResponse) {}
+  rpc OpenBillingPortal(OpenBillingPortalRequest) returns (OpenBillingPortalResponse) {}
+}
+
+message SignInWithAppleRequest {
+  // JWT from ASAuthorizationAppleIDCredential.identityToken (app), or the
+  // id_token Apple posted to the server's callback (web).
+  string identity_token = 1;
+  // Raw nonce whose lowercase hex SHA-256 the client put in the Apple
+  // request, in both clients.
+  string nonce = 2;
+  // Label for the new device, 1 to 64 characters.
+  string device_label = 3;
+  // ASAuthorizationAppleIDCredential.authorizationCode, UTF-8 (app), or the
+  // code Apple posted to the server's callback (web). Single-use;
+  // the server exchanges it for the grant it revokes when the account is
+  // erased.
+  string authorization_code = 4;
+  // Which Sign in with Apple client produced identity_token and
+  // authorization_code. The server verifies the token's aud against exactly
+  // that client's identifier and exchanges the code as that client, never
+  // the other. UNSPECIFIED is the app, so existing app builds keep working.
+  AppleClient apple_client = 5;
+}
+
+// AppleClient names the Sign in with Apple client a credential was issued to.
+// Each has its own client_id at Apple; a token or code from one is refused
+// when presented as the other.
+enum AppleClient {
+  // The app: client_id is the bundle id ai.aeryx.sock. What the app sends
+  // today by leaving the field unset.
+  APPLE_CLIENT_UNSPECIFIED = 0;
+  // Same as UNSPECIFIED. Clients may name it explicitly.
+  APPLE_CLIENT_APP = 1;
+  // The web flow used by `sock login`: client_id is the Services ID, the code
+  // was issued for the server's registered callback URL. FIELD_INVALID on a
+  // server with no Services ID configured.
+  APPLE_CLIENT_WEB = 2;
+}
+
+message SignInWithAppleResponse {
+  Session session = 1;
+}
+
+message RegisterWithAppleRequest {
+  string identity_token = 1;
+  string nonce = 2;
+  string device_label = 3;
+  // Single-use invite code minted by the operator.
+  string invite_code = 4;
+  string handle = 5;
+  string display_name = 6;
+  // Same as SignInWithAppleRequest.authorization_code.
+  string authorization_code = 7;
+  // The terms version the person agreed to. Must equal the current version
+  // (GetMe after sign-in, or the version the app ships with).
+  string accepted_terms_version = 8;
+  // Same as SignInWithAppleRequest.apple_client.
+  AppleClient apple_client = 9;
+}
+
+message RegisterWithAppleResponse {
+  Session session = 1;
+}
+
+message SignInWithEmailRequest {
+  // The code AuthKit returned to https://<hub host>/workos/app-callback,
+  // 1 to 512 printable ASCII. Single use at WorkOS.
+  string code = 1;
+  // The PKCE verifier whose S256 challenge the client sent to AuthKit,
+  // 43 to 128 of [A-Za-z0-9._~-] (RFC 7636). The hub redeems code and
+  // verifier together; neither is stored.
+  string code_verifier = 2;
+  // Label for the new device, 1 to 64 characters.
+  string device_label = 3;
+}
+
+message SignInWithEmailResponse {
+  Session session = 1;
+}
+
+message RegisterWithEmailRequest {
+  // Same as SignInWithEmailRequest. Taken from AuthKit's sign-up screen;
+  // the address must be verified at WorkOS. The pass 2 proof, kept for
+  // released builds: exactly one of this pair and registration_ticket.
+  string code = 1;
+  string code_verifier = 2;
+  string device_label = 3;
+  // Same as RegisterWithAppleRequest: checked before the code is redeemed.
+  string invite_code = 4;
+  string handle = 5;
+  string display_name = 6;
+  string accepted_terms_version = 7;
+  // sock_rg_<id>_<secret> from VerifyEmailSignIn or SignInWithGoogle: proof,
+  // for 15 minutes, of a verified WorkOS user that holds no human. Checked
+  // after invite, handle and terms; spent by any later outcome.
+  string registration_ticket = 8;
+}
+
+message RegisterWithEmailResponse {
+  Session session = 1;
+}
+
+message AddEmailSignInRequest {
+  // Same as SignInWithEmailRequest: the code AuthKit returned for the
+  // address being added, and its PKCE verifier. The pass 2 proof, kept for
+  // released builds: exactly one of this pair and proof.
+  string code = 1;
+  string code_verifier = 2;
+  oneof proof {
+    // An email code for the address being added (pass 3).
+    EmailCodeProof email_code = 3;
+    // A Google sign-in through WorkOS.
+    WorkOSCodeProof google = 4;
+  }
+}
+
+// EmailCodeProof is an address and the six-digit code WorkOS emailed to it.
+message EmailCodeProof {
+  // The address as typed, at most 254 characters; the hub trims it and
+  // lowercases the domain.
+  string email = 1;
+  // Six ASCII digits.
+  string code = 2;
+}
+
+// WorkOSCodeProof is a WorkOS authorization code with its PKCE verifier,
+// from the authorize URL the app opened (for Google, provider=GoogleOAuth).
+message WorkOSCodeProof {
+  // 1 to 512 printable ASCII, returned to https://<hub host>/workos/app-callback.
+  string code = 1;
+  // 43 to 128 of [A-Za-z0-9._~-] (RFC 7636).
+  string code_verifier = 2;
+}
+
+message StartEmailSignInRequest {
+  // As EmailCodeProof.email. The answer is the same whether or not the
+  // address has an account.
+  string email = 1;
+}
+
+message StartEmailSignInResponse {}
+
+message VerifyEmailSignInRequest {
+  string email = 1;
+  // Six ASCII digits.
+  string code = 2;
+  // Label for the new device, 1 to 64 characters.
+  string device_label = 3;
+}
+
+message VerifyEmailSignInResponse {
+  oneof result {
+    // The address belongs to a human: signed in.
+    Session session = 1;
+    // It belongs to none: present the ticket to RegisterWithEmail.
+    RegistrationTicket registration = 2;
+  }
+}
+
+message SignInWithEmailPasswordRequest {
+  // As EmailCodeProof.email.
+  string email = 1;
+  // 1 to 1024 characters, checked by WorkOS. Never logged or stored.
+  string password = 2;
+  // Label for the new device, 1 to 64 characters.
+  string device_label = 3;
+}
+
+message SignInWithEmailPasswordResponse {
+  oneof result {
+    Session session = 1;
+    RegistrationTicket registration = 2;
+  }
+}
+
+// RegistrationTicket carries a verified WorkOS user to registration.
+message RegistrationTicket {
+  // sock_rg_<id>_<secret>. Returned once; the server keeps only a hash.
+  string registration_ticket = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+message SignInWithGoogleRequest {
+  // The WorkOS code and verifier from the Google sign-in session.
+  string code = 1;
+  string code_verifier = 2;
+  // Label for the new device, 1 to 64 characters.
+  string device_label = 3;
+}
+
+message SignInWithGoogleResponse {
+  oneof result {
+    Session session = 1;
+    RegistrationTicket registration = 2;
+  }
+}
+
+message StartPasskeyRegistrationRequest {}
+
+// The fields ASAuthorizationPlatformPublicKeyCredentialProvider needs to
+// create a passkey.
+message StartPasskeyRegistrationResponse {
+  // 32 bytes, single use, 5 minutes.
+  bytes challenge = 1;
+  // joinsock.com.
+  string rp_id = 2;
+  // The WebAuthn user handle: the account id's 16 bytes.
+  bytes user_handle = 3;
+  // @handle, shown by the platform's passkey sheet.
+  string user_name = 4;
+  // The human's registered credential ids, so the platform refuses a second
+  // passkey on the same authenticator.
+  repeated bytes exclude_credential_ids = 5;
+}
+
+message FinishPasskeyRegistrationRequest {
+  // The challenge from StartPasskeyRegistration.
+  bytes challenge = 1;
+  // As the platform returns them; the hub parses and never re-encodes.
+  bytes credential_id = 2;
+  bytes client_data_json = 3;
+  bytes attestation_object = 4;
+  // 1 to 64 characters, normally the device label.
+  string label = 5;
+}
+
+message FinishPasskeyRegistrationResponse {
+  Passkey passkey = 1;
+}
+
+message Passkey {
+  string id = 1;
+  string label = 2;
+  google.protobuf.Timestamp created_at = 3;
+  // The password manager or authenticator that holds it, when known
+  // (iCloud Keychain, 1Password); empty otherwise.
+  string provider = 4;
+}
+
+message ListPasskeysRequest {}
+
+message ListPasskeysResponse {
+  // Newest first.
+  repeated Passkey passkeys = 1;
+}
+
+message RemovePasskeyRequest {
+  string id = 1;
+}
+
+message RemovePasskeyResponse {}
+
+message StartPasskeySignInRequest {}
+
+message StartPasskeySignInResponse {
+  // 32 bytes, single use, 5 minutes.
+  bytes challenge = 1;
+  // joinsock.com.
+  string rp_id = 2;
+}
+
+message SignInWithPasskeyRequest {
+  // The challenge from StartPasskeySignIn.
+  bytes challenge = 1;
+  // As the platform returns them.
+  bytes credential_id = 2;
+  bytes client_data_json = 3;
+  bytes authenticator_data = 4;
+  bytes signature = 5;
+  bytes user_handle = 6;
+  // Label for the new device, 1 to 64 characters.
+  string device_label = 7;
+}
+
+message SignInWithPasskeyResponse {
+  Session session = 1;
+}
+
+message AddEmailSignInResponse {}
+
+message Session {
+  Account account = 1;
+  Device device = 2;
+  // sock_st_<device id>_<secret>. Returned once; the server keeps only a hash.
+  string token = 3;
+}
+
+message SignOutRequest {}
+message SignOutResponse {}
+
+message GetMeRequest {}
+message GetMeResponse {
+  Account account = 1;
+  // The latest terms version this human accepted. Empty: never accepted
+  // (registered before terms existed) or a puppet, whose terms are its owner's.
+  string accepted_terms_version = 2;
+  // The version the server currently requires.
+  string current_terms_version = 3;
+  // Sock Pro is active for this human, or for a puppet's owner: true while
+  // the server does not enforce Sock Pro, otherwise true while any source in
+  // pro is active.
+  bool pro_active = 4;
+  // The support puppet's account id: open a direct with it to send
+  // feedback. Empty: this server has no support desk, so offer none.
+  string support_account_id = 5;
+  // What keeps Sock Pro active for this human, or a puppet's owner, longest:
+  // whether or not the server enforces Sock Pro.
+  ProStatus pro = 6;
+  // The human never had a trial: the first CreatePuppet, MintPuppetToken,
+  // MintMachineKey or connector issue starts its 7 days. False for a puppet.
+  bool trial_available = 7;
+}
+
+// ProSource is one reason Sock Pro is active.
+enum ProSource {
+  // No source is active.
+  PRO_SOURCE_UNSPECIFIED = 0;
+  // The human's one 7-day trial.
+  PRO_SOURCE_TRIAL = 1;
+  // A Stripe subscription.
+  PRO_SOURCE_SUBSCRIPTION = 2;
+  // Free Sock Pro the operator granted.
+  PRO_SOURCE_GRANT = 3;
+}
+
+// ProStatus is the source that keeps Sock Pro active longest.
+message ProStatus {
+  ProSource source = 1;
+  // When that source stops keeping Sock Pro active. Unset with
+  // PRO_SOURCE_UNSPECIFIED. A subscription that renews moves it forward.
+  google.protobuf.Timestamp active_until = 2;
+}
+
+// ProPlan is a Sock Pro price: $14.99 a month or $149.99 a year, tax
+// included.
+enum ProPlan {
+  PRO_PLAN_UNSPECIFIED = 0;
+  PRO_PLAN_MONTHLY = 1;
+  PRO_PLAN_YEARLY = 2;
+}
+
+// Starts a Stripe Checkout for the calling human. Human sessions only.
+// ALREADY_SUBSCRIBED when a subscription already keeps Sock Pro active.
+message StartCheckoutRequest {
+  // Unspecified is FIELD_INVALID.
+  ProPlan plan = 1;
+}
+message StartCheckoutResponse {
+  // The Checkout page, valid 24 hours. Open it in the browser; it returns
+  // to https://joinsock.com/pro.
+  string url = 1;
+}
+
+// Opens the Stripe Customer Portal for the calling human: cancel, switch
+// plans, change the card, invoices. Human sessions only. NO_SUBSCRIPTION
+// when the human never started a checkout. Not gated on terms.
+message OpenBillingPortalRequest {}
+message OpenBillingPortalResponse {
+  // A portal session. Open it in the browser.
+  string url = 1;
+}
+
+message AcceptTermsRequest {
+  // Must equal GetMeResponse.current_terms_version.
+  string terms_version = 1;
+}
+message AcceptTermsResponse {}
+
+message GetAccountsRequest {
+  // 1 to 100 account ids.
+  repeated string ids = 1;
+}
+message GetAccountsResponse {
+  // Accounts that exist, in no particular order. Unknown ids are omitted.
+  repeated Account accounts = 1;
+}
+
+message LookupHandleRequest {
+  // Exact match after lowercasing.
+  string handle = 1;
+}
+message LookupHandleResponse {
+  Account account = 1;
+}
+
+message UpdateDisplayNameRequest {
+  string display_name = 1;
+}
+message UpdateDisplayNameResponse {
+  Account account = 1;
+}
+
+message ChangeHandleRequest {
+  string handle = 1;
+}
+message ChangeHandleResponse {
+  Account account = 1;
+}
+
+message ListDevicesRequest {}
+message ListDevicesResponse {
+  // The caller's own devices, including the calling one: sessions and
+  // machine keys, each with its kind.
+  repeated Device devices = 1;
+}
+
+message RevokeDeviceRequest {
+  // One of the caller's devices (a session or a machine key) or one of the
+  // caller's puppets' tokens.
+  string device_id = 1;
+}
+message RevokeDeviceResponse {}
+
+message MintMachineKeyRequest {
+  // Label for the key, 1 to 64 characters; the host it is for.
+  string label = 1;
+}
+message MintMachineKeyResponse {
+  // kind DEVICE_KIND_MACHINE_KEY.
+  Device device = 1;
+  // sock_mk_<device id>_<secret>. Returned once; the server keeps only a hash.
+  string token = 2;
+}
+
+message CreatePuppetRequest {
+  string name = 1;
+  // Label for the first token, 1 to 64 characters.
+  string token_label = 2;
+}
+message CreatePuppetResponse {
+  Account puppet = 1;
+  Device device = 2;
+  // sock_pt_<device id>_<secret>. Returned once.
+  string token = 3;
+}
+
+message ListPuppetsRequest {}
+message ListPuppetsResponse {
+  repeated PuppetWithDevices puppets = 1;
+}
+message PuppetWithDevices {
+  Account puppet = 1;
+  repeated Device devices = 2;
+  // When the puppet's agent session ended. Unset: not archived.
+  // Owner-only: never in GetAccounts or Account. Clients list archived
+  // puppets under Archived and derive an archived direct from its member.
+  google.protobuf.Timestamp archived_at = 3;
+}
+
+message MintPuppetTokenRequest {
+  string puppet_id = 1;
+  string label = 2;
+}
+message MintPuppetTokenResponse {
+  Device device = 1;
+  string token = 2;
+}
+
+message ErasePuppetRequest {
+  string puppet_id = 1;
+}
+message ErasePuppetResponse {}
+
+message ArchivePuppetRequest {
+  string puppet_id = 1;
+}
+message ArchivePuppetResponse {
+  // The archive's time; the existing one when already archived.
+  google.protobuf.Timestamp archived_at = 1;
+}
+
+message UnarchivePuppetRequest {
+  string puppet_id = 1;
+}
+message UnarchivePuppetResponse {}
+
+message IssueConnectorPuppetTokenRequest {
+  // A live access token the hub issued for the grant (ES256 JWT),
+  // 1 to 8192 bytes. A claim about which grant, never the caller's credential.
+  string access_token = 1;
+}
+message IssueConnectorPuppetTokenResponse {
+  // The connector puppet's one device: kind DEVICE_KIND_PUPPET_TOKEN, label
+  // "connector", account_id the connector puppet.
+  Device device = 1;
+  // sock_pt_<device id>_<secret>. Returned once; the server keeps only a hash.
+  string token = 2;
+  // The grant's OAuth client, as Puppet.connector names it to the owner, so
+  // the resource server can name the platform in what it tells the owner.
+  // client_name is the client's display name as published or
+  // registered; show "(unverified)" beside it unless verified is true.
+  string client_name = 3;
+  // The hub lists the client in SOCK_OAUTH_VERIFIED_CLIENTS: the hub's own
+  // check on the client id, never anything the client supplied.
+  bool verified = 4;
+}
+
+message RevokeConnectorDeviceRequest {
+  // Same rule as IssueConnectorPuppetTokenRequest.access_token.
+  string access_token = 1;
+}
+message RevokeConnectorDeviceResponse {}
+
+message ExportIdentityDataRequest {}
+// Identity's half of the GDPR export. MessagingService.ExportMessagingData returns
+// the other half; the client presents both.
+message ExportIdentityDataResponse {
+  Account account = 1;
+  repeated Device devices = 2;
+  repeated PuppetWithDevices puppets = 3;
+  // Apple's stable subject for the caller, which Identity holds (GDPR export).
+  string apple_subject = 4;
+}
+
+message EraseAccountRequest {}
+message EraseAccountResponse {}

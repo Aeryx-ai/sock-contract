@@ -1,0 +1,154 @@
+syntax = "proto3";
+
+package sock.v1;
+
+option go_package = "github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1";
+
+// ErrorInfo is attached as a Connect error detail to every non-internal
+// error. The Connect code says what class of failure it is; the reason says
+// which one, so clients branch on reason, never on message text.
+message ErrorInfo {
+  ErrorReason reason = 1;
+}
+
+// Closed taxonomy. Each value lists the one Connect code it is sent with.
+enum ErrorReason {
+  ERROR_REASON_UNSPECIFIED = 0;
+
+  // unauthenticated: bearer token missing, malformed, or matching no device.
+  ERROR_REASON_TOKEN_INVALID = 1;
+  // unauthenticated: Apple identity token failed verification (signature,
+  // issuer, audience, expiry or nonce).
+  ERROR_REASON_APPLE_TOKEN_INVALID = 2;
+  // unauthenticated: WorkOS refused the AuthKit code or its verifier, or the
+  // session was impersonated (SignInWithEmail, RegisterWithEmail). Start
+  // AuthKit again.
+  ERROR_REASON_EMAIL_CODE_INVALID = 3;
+
+  // permission_denied: caller class may not call this RPC. Every
+  // OperatorService call without a valid operator token gets this (no token,
+  // a session or puppet token, or an operator token that is malformed,
+  // unknown, expired or revoked), and so does any other RPC called with an
+  // operator token. SignInOperatorWithApple also gets it for a verified Apple
+  // identity that is not the configured operator, and when console sign-in
+  // is disabled. A machine key gets it from every RPC but CreatePuppet,
+  // ListPuppets, MintPuppetToken, ErasePuppet, ArchivePuppet and
+  // UnarchivePuppet; a connector service token from every RPC but
+  // IssueConnectorPuppetToken and RevokeConnectorDevice, and so does any
+  // other caller of those two.
+  ERROR_REASON_CALLER_NOT_ALLOWED = 10;
+  // permission_denied: caller is not a member of the conversation.
+  ERROR_REASON_NOT_A_MEMBER = 11;
+  // permission_denied: caller does not own the puppet or device.
+  ERROR_REASON_NOT_OWNER = 12;
+  // permission_denied: the account, or the owner of the calling puppet, is
+  // suspended. Sign-in is refused and no device authenticates.
+  ERROR_REASON_ACCOUNT_SUSPENDED = 13;
+  // permission_denied: Cloudflare refused the Turnstile token
+  // (RequestInvite). Get a fresh token and retry.
+  ERROR_REASON_HUMAN_CHECK_FAILED = 14;
+  // failed_precondition: the WorkOS user's address is not verified
+  // (RegisterWithEmail).
+  ERROR_REASON_EMAIL_NOT_VERIFIED = 15;
+
+  // invalid_argument: a field failed validation. The field name is in the
+  // Connect error message.
+  ERROR_REASON_FIELD_INVALID = 20;
+
+  // not_found: the Apple identity or WorkOS user has no account yet. Client
+  // calls RegisterWithApple or RegisterWithEmail.
+  ERROR_REASON_NOT_REGISTERED = 30;
+  // not_found: referenced account, conversation, device or handle does not
+  // exist or is not visible to the caller.
+  ERROR_REASON_NOT_FOUND = 31;
+
+  // already_exists: handle is taken.
+  ERROR_REASON_HANDLE_TAKEN = 40;
+  // already_exists: the Apple identity or WorkOS user already has an account.
+  ERROR_REASON_ALREADY_REGISTERED = 41;
+  // already_exists: owner already has a puppet with this name.
+  ERROR_REASON_PUPPET_NAME_TAKEN = 42;
+
+  // failed_precondition: invite code unknown, used or expired.
+  ERROR_REASON_INVITE_INVALID = 50;
+  // failed_precondition: group is at its member cap.
+  ERROR_REASON_GROUP_FULL = 51;
+  // failed_precondition: puppet cannot join a conversation its owner is not in.
+  ERROR_REASON_OWNER_NOT_MEMBER = 52;
+  // failed_precondition: membership of a direct conversation cannot change.
+  ERROR_REASON_DIRECT_IMMUTABLE = 53;
+  // failed_precondition: a direct conversation needs the caller's own puppet
+  // or the support puppet; a direct between two humans is never started.
+  ERROR_REASON_PEER_NOT_ALLOWED = 54;
+  // failed_precondition: idempotency key reused with a different request.
+  ERROR_REASON_IDEMPOTENCY_MISMATCH = 55;
+  // failed_precondition: the human (or the calling puppet's owner) has not
+  // accepted the current terms version. GetMe returns the current version;
+  // the client shows the terms and calls AcceptTerms.
+  ERROR_REASON_TERMS_NOT_ACCEPTED = 56;
+
+  // failed_precondition: the report already has a resolution with a
+  // different outcome. Resolving again with the same outcome succeeds.
+  ERROR_REASON_REPORT_ALREADY_RESOLVED = 57;
+
+  // failed_precondition: Sock Pro is required and the human (or the calling
+  // puppet's owner) has none active: the trial is spent and no subscription
+  // or grant is active. Sent only while the server enforces Sock Pro, for
+  // every call with a puppet token (the moderation and support puppets
+  // excepted) and for CreatePuppet, MintPuppetToken, MintMachineKey and
+  // IssueConnectorPuppetToken, which start the human's one trial instead
+  // when it was never started. GetMe's pro says what is active.
+  ERROR_REASON_SUBSCRIPTION_REQUIRED = 58;
+
+  // failed_precondition: the puppet is a system puppet (Puppet.system), run
+  // by the server. ErasePuppet refuses it; CreateGroup and AddMember refuse
+  // to add it. CreateDirect and MintPuppetToken refuse the moderation puppet
+  // and allow the support puppet. OperatorService.EraseHuman
+  // refuses a human that owns one, since erasing it would erase the puppet.
+  ERROR_REASON_SYSTEM_PUPPET = 59;
+
+  // resource_exhausted: puppet or human send rate, anonymous sign-in rate per
+  // client address, invite requests per client address, or reports per
+  // reporter exceeded. Retry-After header set.
+  ERROR_REASON_RATE_LIMITED = 60;
+
+  // failed_precondition: a limit is reached. MintMachineKey at 10 live
+  // machine keys per human: revoke one first. MintPuppetToken for the support
+  // puppet at 10 live tokens: revoke one first. Any other
+  // puppet at 10 live tokens is never refused: its oldest token other than
+  // the connector device is removed instead. The error's message
+  // names which limit, never anyone else's count. Sign-in at 10 live sessions
+  // removes the oldest session and is never refused. Subscribe: a fifth open
+  // stream on one device and replica ends the device's oldest stream with
+  // this reason; a client does not reconnect a stream that ended so.
+  ERROR_REASON_LIMIT_REACHED = 61;
+
+  // already_exists: the connector puppet's device is already issued for this
+  // grant (IssueConnectorPuppetToken). RevokeConnectorDevice first, then
+  // issue again.
+  ERROR_REASON_ALREADY_ISSUED = 62;
+  // already_exists: the caller already has email sign-in (AddEmailSignIn).
+  ERROR_REASON_EMAIL_ALREADY_ADDED = 63;
+  // failed_precondition: a human posts only into a conversation with an
+  // active puppet: the moderation or support puppet, or a puppet that is not
+  // archived whose owner is not suspended and has Sock Pro (Send, CreateGroup).
+  // Conversation.humans_can_post says so before a send.
+  ERROR_REASON_NO_ACTIVE_PUPPET = 64;
+  // failed_precondition: the human already has a subscription keeping Sock Pro
+  // active (StartCheckout). Manage it with OpenBillingPortal.
+  ERROR_REASON_ALREADY_SUBSCRIBED = 65;
+  // failed_precondition: the human has never started a checkout, so there is
+  // no billing account to manage (OpenBillingPortal).
+  ERROR_REASON_NO_SUBSCRIPTION = 66;
+  // unauthenticated: the registration ticket is unknown, wrong or expired
+  // (RegisterWithEmail). Start email or Google sign-in again.
+  ERROR_REASON_REGISTRATION_TICKET_INVALID = 67;
+  // unauthenticated: the passkey did not verify: unknown credential, bad
+  // signature, wrong user handle, counter not advanced, or an unknown or
+  // expired challenge (FinishPasskeyRegistration, SignInWithPasskey).
+  ERROR_REASON_PASSKEY_INVALID = 68;
+  // unauthenticated: the address and password do not match a WorkOS user
+  // (SignInWithEmailPassword). One answer for an unknown address, a wrong
+  // password and a user with no password.
+  ERROR_REASON_PASSWORD_INVALID = 69;
+}
