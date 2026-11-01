@@ -4,7 +4,7 @@ Approved, pass 1. Contexts: Identity. Builds on [invite requests](invite-request
 
 What changes:
 
-- The hub gains platform flags: a closed set of keys the hub declares, each on or off for everyone. The operator reads, sets and watches them from the console's new Flags page and from `sock-admin flags`.
+- The hub gains platform flags: a closed set of keys the hub declares, each on or off for everyone. The operator reads and sets them from the console's new Flags page and from `sock-admin flags`.
 - The first flag is `open_registration`, off by default. On, a person registers without an invite; off, everything is as today. Flipping it takes effect on every replica within the `NOTIFY`'s latency, with no restart.
 - Anonymous callers can ask whether an invite is required, so the apps, the website and `sock login` show the right screen.
 - Room is left for targeting a flag at individual accounts: evaluation takes an account, and nothing here precludes an overrides table. None is built.
@@ -16,7 +16,6 @@ What changes:
 | Feature flag | One of the keys the hub declares, on or off for everyone. Not a rollout percentage and not per account | Stored (`identity.feature_flags`) |
 | Flag key | The flag's name, lowercase `[a-z_]`, declared in the hub with its description. A build declares the keys it reads; a migration seeds each one | Code and the seed row |
 | Flag set | The fact that an operator token set a flag to a value at a time: the `OperatorAction` with target `FlagSet` | Stored (audit) |
-| Flag watch | An operator stream that sends every flag when it opens and each change after | Not stored |
 | Registration policy | `invite_only` or `open`: whether registering needs an invite. `open` exactly when `open_registration` is on | Derived from the flag |
 | Admission (changed) | How a registration gets in: redeeming an invite, the operator's waiver, or the open policy | Not stored: the human is the trace |
 
@@ -73,7 +72,7 @@ Email registration (`RegisterWithEmail`, ticket or AuthKit code) builds it the s
 
 #### Evaluation (hub, not the model)
 
-The hub keeps every flag in memory: loaded at start, reloaded in one query on each `feature_flags` notification and after the listener reconnects, which covers a notification missed while it was down. `Set` runs on the replica that took the call; every replica's reload feeds its own open watches. A replica whose listener is down keeps its last values until it reconnects: a flip is late there, never lost.
+The hub keeps every flag in memory: loaded at start, reloaded in one query on each `feature_flags` notification and after the listener reconnects, which covers a notification missed while it was down. `Set` runs on the replica that took the call; every other replica learns of it from the notification. A replica whose listener is down keeps its last values until it reconnects: a flip is late there, never lost.
 
 ## Configuration
 
@@ -94,7 +93,6 @@ None new. The listener uses the hub's existing `pgnotify` connection.
 |---|---|---|---|---|---|---|---|
 | `GetFeatureFlags` | Operator | Any valid operator token, `full` or `read` | none | `flags`: every declared flag, key order, each with `key`, `description`, `enabled` and `last_set` (`at`, `operator_token_id`, `operator_token_label`; unset when no `setFeatureFlag` for the key is within the audit's 365 days) | none | A read; writes no action | none: a read |
 | `SetFeatureFlag` | Operator | Any valid `full` operator token | `key` (a declared key), `enabled` | `flag`, the stored flag as `GetFeatureFlags` shows it | `FIELD_INVALID` (`key`: not declared) | Idempotent: the current value succeeds and still records an action | `FeatureFlag.Set(enabled)` with `OperatorAction(setFeatureFlag)` in the same transaction; notifies `feature_flags` |
-| `WatchFeatureFlags` | Operator | Any valid operator token, `full` or `read` | none | A server stream: first `snapshot` (as `GetFeatureFlags`), then `change` (one `FeatureFlag`) for each set on any replica, and `heartbeat` every 30 s with no traffic. At most 4 open watches per token; a fifth ends the token's oldest with `LIMIT_REACHED`, as `Subscribe` does per device. A revoked or expired token ends the stream `CALLER_NOT_ALLOWED` at its next check (within the heartbeat) | `CALLER_NOT_ALLOWED` | A client that reconnects gets a fresh snapshot, so a change missed while down is never lost | none: a read fed by the replica's reload |
 
 `operator_token_label` is the token's label while its row exists (`console sign-in`, `sock-admin sign-in`, or a bootstrap token's `--label`) and empty once the token is swept 30 days after expiry; the id stays.
 
@@ -103,7 +101,6 @@ Proto, `operator.proto`:
 ```proto
 rpc GetFeatureFlags(GetFeatureFlagsRequest) returns (GetFeatureFlagsResponse) {}
 rpc SetFeatureFlag(SetFeatureFlagRequest) returns (SetFeatureFlagResponse) {}
-rpc WatchFeatureFlags(WatchFeatureFlagsRequest) returns (stream WatchFeatureFlagsResponse) {}
 
 message FeatureFlag {
   string key = 1;
@@ -122,14 +119,6 @@ message GetFeatureFlagsRequest {}
 message GetFeatureFlagsResponse { repeated FeatureFlag flags = 1; }
 message SetFeatureFlagRequest { string key = 1; bool enabled = 2; }
 message SetFeatureFlagResponse { FeatureFlag flag = 1; }
-message WatchFeatureFlagsRequest {}
-message WatchFeatureFlagsResponse {
-  oneof event {
-    GetFeatureFlagsResponse snapshot = 1;
-    FeatureFlag change = 2;
-    Heartbeat heartbeat = 3; // messaging.proto's
-  }
-}
 ```
 
 ### IdentityService (added and changed)
@@ -189,7 +178,7 @@ Not created: `identity.feature_flag_overrides (key, account_id, enabled)`, the s
 
 ## Console
 
-A new tab, Flags, after Message hold. It opens `WatchFeatureFlags` and renders the snapshot: one row per flag with its description, a switch, and "set on by `<label or id>` at `<local time>`" (or "never set"). A `change` updates its row in place and announces it, so a flip from `sock-admin` shows without a refresh. Flipping a switch calls `SetFeatureFlag` and asks for confirmation first, naming the flag and the new value; a `read` token sees the switches disabled. A dropped stream reconnects with backoff and re-renders from the new snapshot. Sign-out ends the stream.
+A new tab, Flags, after Message hold. It calls `GetFeatureFlags` when it opens and renders one row per flag: the description, a switch, and "set on by `<label or id>` at `<local time>`" (or "never set"), with a Refresh button that reads again. Flipping a switch asks for confirmation first, naming the flag and the new value, then calls `SetFeatureFlag` and re-renders the row from the response. A `read` token's flip is refused as every console write with a `read` token is today (`CALLER_NOT_ALLOWED`, which signs the console out); the console cannot tell the scopes apart and does not try.
 
 ## sock-admin
 
@@ -199,7 +188,6 @@ Added to [admin-cli](admin-cli.md):
 |---|---|---|---|
 | `sock-admin flags list` | `GetFeatureFlags` | none | `<key>  on|off  <description>` per flag, then `  set by <label or id> at <local time>` when set; json: `FeatureFlag` per line |
 | `sock-admin flags set <key> on\|off` | `SetFeatureFlag` | key, value | `<key> on|off`; json: `FeatureFlag`. Asks for confirmation on a terminal; off one, `--yes` |
-| `sock-admin flags watch` | `WatchFeatureFlags` | none | The snapshot as `list`, then one line per change as it arrives, until interrupted; json: `WatchFeatureFlagsResponse` per line, heartbeats omitted. Reconnects with the retrier's backoff after a dropped stream |
 
 ## Website
 
@@ -217,14 +205,13 @@ The iOS, Mac and desktop registration screens call `GetRegistrationPolicy` and h
 | A flag read by an anonymous caller | `GetRegistrationPolicy` reveals only `invite_required`, which trying to register would reveal anyway. The flag list and audit stay operator-only |
 | A replica evaluating a stale value | Bounded by the listener's reconnect; the audit records the set time, so a late replica is explainable. Accepted: no registration is wrongly refused by staleness, only admitted a little late or a little long |
 | A `read` token setting a flag | `SetFeatureFlag` needs `full`, as every operator write does |
-| A watch held open after revocation | Ended at the next token check, within the heartbeat |
 
 ## Cross-check
 
 | Transition | API | Event | DDL |
 |---|---|---|---|
 | `FeatureFlag.Set` | `SetFeatureFlag` | none: Identity's own row; the notification is invalidation | `feature_flags` update, `operator_actions` and `operator_action_feature_flags` insert |
-| `FeatureFlag.Enabled` | `GetFeatureFlags`, `WatchFeatureFlags`, `GetRegistrationPolicy` | none: a read | `feature_flags` |
+| `FeatureFlag.Enabled` | `GetFeatureFlags`, `GetRegistrationPolicy` | none: a read | `feature_flags` |
 | Admission under `open` | `RegisterWithApple`, `RegisterWithEmail` with empty `invite_code` | `HumanRegistered`, `DeviceAdded` as today | no `invites` delete; the human's rows as today |
 | Flag declared | none: a migration | none | `feature_flags` insert |
 
