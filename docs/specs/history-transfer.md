@@ -248,7 +248,7 @@ Upload is sequential: the next chunk is sent when the previous call returns. The
 | Caller | Desktop |
 | Request | `transfer_secret` bytes(32); `from_index` uint32, the first chunk not yet received (0 on first open) |
 | Response stream | `oneof event`: `HistoryClaimed { encapsulated_key }`, sent once per stream when a claim exists; `HistoryChunk { index, ciphertext, final }` for each stored chunk from `from_index`, in order, as soon as it is stored; `Heartbeat` every 30 s. The stream ends with OK after the final chunk |
-| Errors | `CALLER_NOT_ALLOWED`; `FIELD_INVALID`; `NOT_FOUND`, at open or mid-stream when the transfer is closed or expires |
+| Errors | `CALLER_NOT_ALLOWED`; `FIELD_INVALID`; `NOT_FOUND`, at open or mid-stream when the transfer is closed or expires. The stream re-checks the caller's session on every wake and heartbeat, as `Subscribe` does, and ends with `Subscribe`'s error: `TOKEN_INVALID` when the device is revoked, `ACCOUNT_SUSPENDED` when the account is suspended |
 | Idempotency | Read only. A dropped stream reopens with `from_index` |
 | Domain behavior | `HistoryTransfer.Admits`, then reads. Woken by `HistoryTransferChanged`; also re-reads on each heartbeat, so a lost notification delays at most 30 s |
 
