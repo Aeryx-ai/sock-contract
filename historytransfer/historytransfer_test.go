@@ -748,3 +748,66 @@ func TestOpenSwiftVector(t *testing.T) {
 		}
 	}
 }
+
+// Go and Swift write the same archive bytes and the same code for the same
+// input: the Swift vector's plaintext is Swift's ArchiveWriter output.
+func TestArchiveAndPayloadBytesMatchSwift(t *testing.T) {
+	b, err := os.ReadFile(swiftVectorPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, err := unmarshalVector(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var swift, mine bytes.Buffer
+	for _, c := range v.chunks {
+		swift.Write(c.plaintext)
+	}
+	w := NewArchiveWriter(&mine)
+	for _, r := range sampleArchive(5) {
+		if err := w.Write(r); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !bytes.Equal(mine.Bytes(), swift.Bytes()) {
+		t.Fatalf("Go archive (%d bytes) differs from Swift's (%d bytes)", mine.Len(), swift.Len())
+	}
+	p, err := ParsePayload(v.payload)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := (Payload{Secret: v.secret, KeyDigest: KeyDigest(v.public), Host: p.Host}).String(); got != v.payload {
+		t.Fatalf("Go code %q, Swift's %q", got, v.payload)
+	}
+}
+
+// A record over MaxRecordBytes is refused, as Swift's ArchiveDecoder does.
+func TestArchiveReaderCap(t *testing.T) {
+	if MaxRecordBytes != 4<<20 {
+		t.Fatalf("MaxRecordBytes %d, Swift's maxRecordBytes is 4 MiB", MaxRecordBytes)
+	}
+	for _, over := range []bool{false, true} {
+		want := MaxRecordBytes
+		if over {
+			want++
+		}
+		// grow a display name until the record is exactly want bytes
+		rec := &sockv1.HistoryRecord{Record: &sockv1.HistoryRecord_Account{Account: &sockv1.Account{Id: "a"}}}
+		rec.GetAccount().DisplayName = strings.Repeat("x", want-16)
+		for proto.Size(rec) < want {
+			rec.GetAccount().DisplayName += "x"
+		}
+		if proto.Size(rec) != want {
+			t.Fatalf("built a %d byte record, want %d", proto.Size(rec), want)
+		}
+		var buf bytes.Buffer
+		if err := NewArchiveWriter(&buf).Write(rec); err != nil {
+			t.Fatal(err)
+		}
+		_, err := NewArchiveReader(&buf).Next()
+		if (err != nil) != over {
+			t.Fatalf("record of %d bytes (cap %d): err %v", want, MaxRecordBytes, err)
+		}
+	}
+}

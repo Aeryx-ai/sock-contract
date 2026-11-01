@@ -15,6 +15,10 @@ import (
 // reads.
 const FormatVersion = 1
 
+// MaxRecordBytes caps one archive record; the reader refuses a longer one.
+// Swift's maxRecordBytes is the same.
+const MaxRecordBytes = 4 << 20
+
 // ArchiveWriter writes HistoryRecords, each prefixed by its varint length.
 type ArchiveWriter struct{ w io.Writer }
 
@@ -36,7 +40,7 @@ func NewArchiveReader(r io.Reader) *ArchiveReader { return &ArchiveReader{r: buf
 // inside a record is an error, not io.EOF.
 func (a *ArchiveReader) Next() (*sockv1.HistoryRecord, error) {
 	rec := &sockv1.HistoryRecord{}
-	if err := protodelim.UnmarshalFrom(a.r, rec); err != nil {
+	if err := (protodelim.UnmarshalOptions{MaxSize: MaxRecordBytes}).UnmarshalFrom(a.r, rec); err != nil {
 		if err == io.EOF {
 			return nil, io.EOF
 		}

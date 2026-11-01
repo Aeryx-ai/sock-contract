@@ -21,9 +21,67 @@ public struct ArchiveWriter {
     }
 }
 
-/// Reads the records an ArchiveWriter wrote.
+/// The longest record an archive may hold, as Go's ArchiveReader (protodelim's
+/// default MaxSize). A longer length prefix is refused before its bytes arrive.
+public let maxRecordBytes = 4 << 20
+
+/// Decodes an archive's records from bytes fed in any cut: a record split
+/// across feeds comes out of the feed that completes it.
+public struct ArchiveDecoder {
+    private var pending = Data()
+
+    public init() {}
+
+    /// Takes the next bytes and returns every record they complete, in order.
+    /// Throws on a length prefix that is not a varint or over maxRecordBytes,
+    /// and on a record that does not decode.
+    public mutating func feed(_ bytes: Data) throws -> [Sock_V1_HistoryRecord] {
+        pending.append(bytes)
+        var records: [Sock_V1_HistoryRecord] = []
+        var at = pending.startIndex
+        while let (length, body) = try Self.prefix(pending, at), body + length <= pending.endIndex {
+            do {
+                records.append(try Sock_V1_HistoryRecord(serializedBytes: pending[body..<body + length]))
+            } catch {
+                throw HistoryTransferError("read record: \(error)")
+            }
+            at = body + length
+        }
+        pending = Data(pending[at...])
+        return records
+    }
+
+    /// After the last bytes: throws when they end inside a record.
+    public func finish() throws {
+        guard pending.isEmpty else { throw HistoryTransferError("read record: archive ends inside a record") }
+    }
+
+    /// The record length at `at` and where its bytes start, or nil while the
+    /// length itself is still cut short.
+    private static func prefix(_ data: Data, _ at: Data.Index) throws -> (Int, Data.Index)? {
+        var length = 0
+        var i = at
+        for shift in stride(from: 0, to: 64, by: 7) {
+            guard i < data.endIndex else { return nil }
+            let b = data[i]
+            i += 1
+            length |= Int(b & 0x7F) << shift
+            guard length <= maxRecordBytes else {
+                throw HistoryTransferError("read record: longer than \(maxRecordBytes) bytes")
+            }
+            if b & 0x80 == 0 { return (length, i) }
+        }
+        throw HistoryTransferError("read record: length is not a varint")
+    }
+}
+
+/// Reads the records an ArchiveWriter wrote from a stream, through
+/// ArchiveDecoder.
 public struct ArchiveReader {
     private let stream: InputStream
+    private var decoder = ArchiveDecoder()
+    private var ready: [Sock_V1_HistoryRecord] = []
+    private var buffer = [UInt8](repeating: 0, count: 64 << 10)
 
     /// The stream must already be open.
     public init(_ stream: InputStream) { self.stream = stream }
@@ -31,15 +89,16 @@ public struct ArchiveReader {
     /// Returns the next record, or nil after the last one. A stream cut inside
     /// a record is an error, not nil.
     public mutating func next() throws -> Sock_V1_HistoryRecord? {
-        do {
-            return try BinaryDelimited.parse(messageType: Sock_V1_HistoryRecord.self, from: stream)
-        } catch let e as SwiftProtobufError where e.code == .binaryStreamDecodingError {
-            // From an InputStream, BinaryDelimited throws this code only as
-            // noBytesAvailable: the stream ended on a record boundary.
-            return nil
-        } catch {
-            throw HistoryTransferError("read record: \(error)")
+        while ready.isEmpty {
+            let n = stream.read(&buffer, maxLength: buffer.count)
+            if n < 0 { throw HistoryTransferError("read record: \(stream.streamError.map { "\($0)" } ?? "stream error")") }
+            if n == 0 {
+                try decoder.finish()
+                return nil
+            }
+            ready = try decoder.feed(Data(buffer[..<n]))
         }
+        return ready.removeFirst()
     }
 }
 

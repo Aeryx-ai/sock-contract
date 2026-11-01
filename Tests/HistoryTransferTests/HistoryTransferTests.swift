@@ -266,6 +266,82 @@ func readArchive(_ data: Data) throws -> [Rec] {
     #expect(throws: (any Error).self) { try r.next() }
 }
 
+/// Feeds data to a fresh decoder in pieces cut at `cuts` and returns every record.
+func decode(_ data: Data, cuts: [Int]) throws -> [Rec] {
+    var d = ArchiveDecoder()
+    var out: [Rec] = []
+    var from = 0
+    for cut in cuts + [data.count] {
+        out += try d.feed(data.subdata(in: from..<cut))
+        from = cut
+    }
+    try d.finish()
+    return out
+}
+
+@Test func testArchiveDecoderEveryCut() throws {
+    let recs = sampleArchive(5)
+    let data = try writeArchive(recs)
+    for cut in 0...data.count {
+        #expect(try decode(data, cuts: [cut]) == recs, "cut at \(cut)")
+    }
+    #expect(try decode(data, cuts: Array(1..<data.count)) == recs, "a byte at a time")
+}
+
+@Test func testArchiveDecoderRecordsComeOutOfTheFeedThatCompletesThem() throws {
+    let recs = sampleArchive(1)
+    let first = try writeArchive([recs[0]])
+    let data = try writeArchive(recs)
+    var d = ArchiveDecoder()
+    #expect(try d.feed(data.prefix(first.count - 1)).isEmpty)
+    #expect(try d.feed(data.subdata(in: first.count - 1..<first.count)) == [recs[0]])
+}
+
+@Test func testArchiveDecoderCutInsideARecord() throws {
+    let data = try writeArchive([sampleArchive(0)[0]])
+    var d = ArchiveDecoder()
+    #expect(try d.feed(data.dropLast()).isEmpty)
+    #expect(throws: HistoryTransferError.self) { try d.finish() }
+}
+
+/// A varint prefix for n.
+func varint(_ n: Int) -> Data {
+    var n = n
+    var out = Data()
+    while n >= 0x80 {
+        out.append(UInt8(n & 0x7F) | 0x80)
+        n >>= 7
+    }
+    out.append(UInt8(n))
+    return out
+}
+
+@Test func testArchiveDecoderCap() throws {
+    // at the cap the decoder waits for the bytes; one over, it refuses the
+    // prefix alone, before any of them arrive
+    var atCap = ArchiveDecoder()
+    #expect(try atCap.feed(varint(maxRecordBytes)).isEmpty)
+    var over = ArchiveDecoder()
+    #expect(throws: HistoryTransferError.self) { try over.feed(varint(maxRecordBytes + 1)) }
+    var huge = ArchiveDecoder()
+    #expect(throws: HistoryTransferError.self) { try huge.feed(Data(repeating: 0xFF, count: 11)) }
+    #expect(maxRecordBytes == 4 << 20)
+}
+
+@Test func testArchiveReaderCap() throws {
+    // a well-formed record one byte over the cap
+    let fits = try writeArchive([account("a", String(repeating: "x", count: maxRecordBytes - 16))])
+    var big = account("a", String(repeating: "x", count: maxRecordBytes - 16))
+    let body = try big.serializedData().count
+    big.account.displayName += String(repeating: "x", count: maxRecordBytes + 1 - body)
+    #expect(try decode(fits, cuts: []).count == 1)
+    let input = InputStream(data: try writeArchive([big]))
+    input.open()
+    defer { input.close() }
+    var r = ArchiveReader(input)
+    #expect(throws: HistoryTransferError.self) { try r.next() }
+}
+
 @Test func testOrderValidator() throws {
     let hdr = header(1, "a")
     let acct = account("a")
@@ -426,6 +502,16 @@ func openVector(_ v: Vector) throws -> [Rec] {
     let v = try Vector(Data(contentsOf: vectorDir.appendingPathComponent("go-sealed.bin")))
     #expect(v.chunks.count == 2)
     #expect(try openVector(v) == sampleArchive(5))
+}
+
+/// Go and Swift write the same archive bytes and the same code for the same
+/// input: the Go vector's plaintext is Go's ArchiveWriter output.
+@Test func testArchiveAndPayloadBytesMatchGo() throws {
+    let go = try Vector(Data(contentsOf: vectorDir.appendingPathComponent("go-sealed.bin")))
+    let goArchive = go.chunks.reduce(Data()) { $0 + $1.plaintext }
+    #expect(try writeArchive(sampleArchive(5)) == goArchive)
+    let host = try Payload(parsing: go.payload).host
+    #expect(try Payload(secret: go.secret, keyDigest: keyDigest(go.publicKey), host: host).string == go.payload)
 }
 
 @Test func testWriteSwiftVector() throws {
