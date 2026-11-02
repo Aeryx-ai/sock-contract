@@ -107,9 +107,9 @@ Puppet deliveries are never pushed.
 
 | Name | Emitting aggregate | Emitting transition | Payload | Consumers | Boundary | Domain service |
 |---|---|---|---|---|---|---|
-| `HistoryTransferChanged` | HistoryTransfer | `Claim` (row created), `Append` (chunk or seal stored), `Close` (row deleted), the sweep (row deleted) | The binding tag, hex. Nothing else | Stream wake: `pg_notify('history_transfers', tag)` in the same transaction; each replica wakes its `ReceiveHistory` streams for that tag, which re-read the rows | Internal; the stream events are the published form | none: the reaction is a read |
+| `HistoryTransferChanged` | HistoryTransfer | `Open` (row created), `Claim` (row created), `Append` (chunk or seal stored), `Close` (row deleted), the sweep (row deleted) | The binding tag, hex. Nothing else | `pg_notify('history_transfers', tag)` in the same transaction. Stream wake: each replica wakes its `ReceiveHistory` streams for that tag, which re-read the rows. Sweeper wake: each replica's sweeper re-reads its next deadline, so an unclaimed transfer is deleted at its 10 minutes | Internal; the stream events are the published form | none: the reaction is a read |
 
-At most once (`NOTIFY`). Not an outbox row: the rows are the truth, and the heartbeat re-read bounds a lost notification to 30 s. `onReconnect` wakes every stream, as the delivery hub does. `Open` emits nothing: no stream can exist before the desktop has the transfer.
+At most once (`NOTIFY`). Not an outbox row: the rows are the truth, and the heartbeat re-read bounds a lost notification to 30 s. `onReconnect` wakes every stream, as the delivery hub does. On `Open` no stream waits yet; the notify is for the sweeper.
 
 ## Deadlines (not events)
 
@@ -227,7 +227,7 @@ Every aggregate transition, traced through the three contracts. DDL table names 
 | `Conversation.Post` | `Send`, `NotifyOwner` | `MessagePosted` | `messaging.conversations.next_seq`, `messaging.messages`, `messaging.*_deliveries`, `messaging.send_receipts`; a human sender reads the three projections (an active puppet) |
 | Read-only conversation | `ListConversations` (`humans_can_post`) | none: derived at read | reads the three projections |
 | `Message.Ack` | `Ack` | none: nothing reacts | `messaging.*_deliveries` delete, `messaging.messages` delete on last delivery once the watermark has reached `sentAt`, else the message stays held with none |
-| `HistoryTransfer.Open` | `OpenHistoryTransfer` | none: no stream can exist yet | `transfer.transfers` |
+| `HistoryTransfer.Open` | `OpenHistoryTransfer` | `HistoryTransferChanged`: wakes the sweeper for the claim deadline | `transfer.transfers` |
 | `HistoryTransfer.Admits` | every `HistoryTransferService` RPC | none: a read | `transfer.transfers` by primary key |
 | `HistoryTransfer.Claim` | `ClaimHistoryTransfer` | `HistoryTransferChanged` | `transfer.claims` |
 | `HistoryTransfer.Append` | `UploadHistoryChunk` | `HistoryTransferChanged` | `transfer.chunks`; with `final`, `transfer.seals` |

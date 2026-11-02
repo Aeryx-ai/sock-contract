@@ -993,7 +993,7 @@ Entity, aggregate root. Identity is the binding tag. Owns its claim, chunks and 
 ### Behaviors
 
 - `Open(secret, human, recipientKey)`: factory. Computes the tag and creates the transfer. The same secret and key returns the existing one; the same secret with a different key is refused
-- `Admits(secret, human)`: recomputes the tag and compares in constant time. Every other call starts here; a transfer that does not admit the caller does not exist for that caller
+- `Admits(secret, human)`: recomputes the tag from the authenticated human and the presented secret and looks it up by primary key. The tag is hub-derived, never supplied by the client, so there is no client value to compare. Every other call starts here; a transfer that does not admit the caller does not exist for that caller
 - `Claim(encapsulatedKey)`: creates the claim. The same key is a no-op, a different key is refused, and it is refused after the claim deadline
 - `Append(index, ciphertext, final)`: stores a chunk. `index` must equal the stored count or name a stored chunk with byte-identical ciphertext (a no-op). `final` creates the seal. Refused before a claim, after the seal and at 128 chunks
 - `Close()`: deletes the transfer and everything it owns. Idempotent

@@ -153,7 +153,7 @@ Relationships: `HistoryTransfer` has-a `TransferClaim` 1 to 0..1; `TransferClaim
 
 ## Archive
 
-Plaintext is a stream of `HistoryRecord` messages, each prefixed by its length as a varint (protobuf delimited). Records are cut into chunks at arbitrary byte boundaries. Order: one `header`, then all `account` records, then for each conversation its `conversation` record followed by its `message` records in `seq` order.
+Plaintext is a stream of `HistoryRecord` messages, each prefixed by its length as a varint (protobuf delimited), at most 4 MiB a record: a longer length prefix is refused before its bytes arrive (Go `MaxRecordBytes`, Swift `maxRecordBytes`). Records are cut into chunks at arbitrary byte boundaries; Swift's `ArchiveDecoder` takes bytes in any cut and hands back the records they complete, as Go's `ArchiveReader` does over a pipe. Order: one `header`, then all `account` records, then for each conversation its `conversation` record followed by its `message` records in `seq` order.
 
 ```proto
 // history_transfer.proto
@@ -247,9 +247,9 @@ Upload is sequential: the next chunk is sent when the previous call returns. The
 |---|---|
 | Caller | Desktop |
 | Request | `transfer_secret` bytes(32); `from_index` uint32, the first chunk not yet received (0 on first open) |
-| Response stream | `oneof event`: `HistoryClaimed { encapsulated_key }`, sent once per stream when a claim exists; `HistoryChunk { index, ciphertext, final }` for each stored chunk from `from_index`, in order, as soon as it is stored; `Heartbeat` every 30 s. The stream ends with OK after the final chunk |
+| Response stream | `oneof event`: `HistoryClaimed { encapsulated_key }`, sent once per stream when a claim exists; `HistoryChunk { index, ciphertext, final }` for each stored chunk from `from_index`, in order, as soon as it is stored; `Heartbeat` every 30 s. The stream ends with OK after the final chunk and only then: a stream a shutdown or restart cuts before it ends `unavailable` |
 | Errors | `CALLER_NOT_ALLOWED`; `FIELD_INVALID`; `NOT_FOUND`, at open or mid-stream when the transfer is closed or expires. The stream re-checks the caller's session on every wake and heartbeat, as `Subscribe` does, and ends with `Subscribe`'s error: `TOKEN_INVALID` when the device is revoked, `ACCOUNT_SUSPENDED` when the account is suspended; `LIMIT_REACHED` ("streams per transfer") when a newer `ReceiveHistory` stream for the same transfer opens on the same replica: a transfer holds one stream per replica, and the newer one keeps receiving |
-| Idempotency | Read only. A dropped stream reopens with `from_index` |
+| Idempotency | Read only. A dropped stream reopens with `from_index`. A client treats an OK end before the final chunk as a drop too; only an opened final chunk (its `final` bound in the AAD) ends a transfer, so a cut stream is never taken for a whole one |
 | Domain behavior | `HistoryTransfer.Admits`, then reads. Woken by `HistoryTransferChanged`; also re-reads on each heartbeat, so a lost notification delays at most 30 s |
 
 ### CloseHistoryTransfer
@@ -346,24 +346,29 @@ DROP SCHEMA transfer CASCADE;
 - Parses the payload; a host other than the session's slot says "This code is for another Sock server" and stops.
 - Calls `GetHistoryTransferKey`, checks the key's SHA-256 against the digest, asks for confirmation, creates the HPKE sender, calls `ClaimHistoryTransfer`, then streams: reads the SwiftData store in pages (accounts, then conversation by conversation, messages by `seq`), writes delimited records, seals and uploads each 1 MiB slice, the last with `final`.
 - Keeps the screen awake (`isIdleTimerDisabled`) and stays in the foreground, saying so. Leaving the app or any non-retryable error calls `Close` and tells the person to scan again.
-- Transient errors retry the same chunk under SockKit's `Backoff`, honouring `SockError.retryAfter`.
+- Transient errors retry the same chunk under SockKit's `Backoff`, honouring `SockError.retryAfter`. A wait on `ClaimHistoryTransfer` that would end past `claim_by` stops at once with "Try again in a few minutes" and closes nothing, since the phone holds no claim. A retried final chunk that gets `NOT_FOUND` was stored by the try whose answer was lost, and the desktop has imported and closed: the phone reports it sent.
 
 ### Desktop (target): Linux/Windows app and the Mac app
 
-- "Transfer history from your phone" in Settings, as a sheet. Generates the secret and an X-Wing key pair in memory only, calls `OpenHistoryTransfer`, shows the QR and the time left, opens `ReceiveHistory`.
+- "Transfer history from your phone" in Settings, as a sheet. Generates the secret and an X-Wing key pair in memory only, calls `OpenHistoryTransfer`, shows the QR (naming the API host as configured, port included) and the time left, opens `ReceiveHistory`.
 - On `HistoryClaimed`: "Receiving from your phone…" with progress by chunk. Decrypts each chunk in order as it arrives and feeds the record decoder; the stream is imported as it decrypts, in batches of a few hundred records per store transaction.
 - On the final chunk: commits the last batch, then `CloseHistoryTransfer` (store first, then close, as sync stores before it acks). A crash before close loses the in-memory key; the transfer expires on its own and the person scans a new code.
-- Refuses and closes on: a header whose `account_id` is not the signed-in account, a higher `format_version`, an AEAD failure, a stream without a final chunk.
+- Refuses the archive on: a header whose `account_id` is not the signed-in account, a higher `format_version`, records out of order, a record over 4 MiB, an AEAD failure. A stream that ends, OK or not, before the final chunk is a drop: it reopens from `from_index` under the backoff, and only the retries running out stop the run.
+- Once the import has ended, every terminal error closes the transfer, except `NOT_FOUND` (the hub no longer has it) and a cancel by the person or the session (whoever cancelled closes it): nothing resumes a run whose key is gone, so ciphertext is not left on the hub until expiry.
+- Batches that committed before a stop stay imported; a repeat import of them changes nothing. The stopped sheet says "Transfer stopped. Scan a new code to get the rest." and, when any arrived, "N messages arrived."
+- With no signed-in account the import fails rather than store nothing and report success.
 
 **Merge rules** (both desktop stores, idempotent, so a partial import repeated is safe):
 
 | Record | Rule |
 |---|---|
 | `account` | Insert if absent. An existing row is newer (fetched from the hub) and wins |
-| `conversation` | Insert if absent with its kind and members. Existing: kind and members untouched (the hub's list is newer); read position raised to the record's `read_through_seq` through the existing raise-only path, which reports it with `MarkRead` on the next refresh |
+| `conversation` | Refused when the signed-in account is not among its members: not theirs, so it and its messages are skipped. Otherwise insert if absent with its kind and members. Existing: kind and members untouched (the hub's list is newer); read position raised to the record's `read_through_seq` through the existing raise-only path, which reports it with `MarkRead` on the next refresh |
 | `message` | Through the existing message insert (Go `insertMessage`, Apple `upsert`), so dedupe by id (and on Go by `(conversation_id, seq)`), evidence tags, unsupported bytes and the search fold stay consistent. Never overwrites |
 
 A `message` whose conversation is missing at insert (a sync refresh pruned it between import batches, so the account is no longer a member) is skipped and counted, never fatal; sync is not paused. My call.
+
+A record the store cannot hold is left out, as sync leaves one out, so one odd record never fails the transfer: an account with no id, a human with no handle, a puppet with no owner or name; a conversation of an unknown kind; a message with an id that is not a UUID, no or an out-of-range `sent_at`, a `seq` below 1, or an evidence tag neither empty nor 32 bytes. Both desktops and the phone's sync map by these same rules, so a phone never holds, and never exports, a record a desktop refuses. The done sheet counts messages left out, whether they did not map or their conversation is missing, refused or did not map, as "N messages were left out: Sock couldn't read them or find their conversations." A conversation left out is not counted itself; its messages are.
 
 Known effect: the next conversation refresh prunes conversations the hub no longer lists, with their imported messages, as it does for synced ones. The phone prunes the same way, so this removes only conversations left between export and import.
 
@@ -384,9 +389,9 @@ Gate: six RPCs, every field filled; one event, every field filled; four tables, 
 
 ## Open questions
 
-1. Resolved: CryptoKit's X-Wing HPKE and Go's `crypto/hpke` `MLKEM768X25519` interoperate, with the 1216-byte key and 1120-byte `enc` the DDL pins. Swift imports the 32-byte seed Go writes (`XWingMLKEM768X25519.PrivateKey(seedRepresentation:publicKey:)`). Pinned both ways by checked-in vectors in `testdata/history-transfer/`: Swift `testOpenGoVector` opens `go-sealed.bin`, Go `TestOpenSwiftVector` opens `swift-sealed.bin`. The archive bytes and QR payload each side writes are identical.
+1. Resolved: CryptoKit's X-Wing HPKE and Go's `crypto/hpke` `MLKEM768X25519` interoperate, with the 1216-byte key and 1120-byte `enc` the DDL pins. Swift imports the 32-byte seed Go writes (`XWingMLKEM768X25519.PrivateKey(seedRepresentation:publicKey:)`). Pinned both ways by checked-in vectors in `testdata/history-transfer/`: Swift `testOpenGoVector` opens `go-sealed.bin`, Go `TestOpenSwiftVector` opens `swift-sealed.bin`. The archive bytes and QR payload each side writes are identical, asserted both ways from the same vectors: Swift `testArchiveAndPayloadBytesMatchGo`, Go `TestArchiveAndPayloadBytesMatchSwift`.
 
 
 ## Required tests
 
-Black-box (server), every RPC called successfully and per error: open and repeat; open with a different key `IDEMPOTENCY_MISMATCH`; a second human's session gets `NOT_FOUND` on claim, upload, receive and a no-op close with the first human's secret; claim after 10 minutes `NOT_FOUND`; upload out of order, before claim and after seal `FIELD_INVALID`; repeated chunk identical OK, different `IDEMPOTENCY_MISMATCH`; `ReceiveHistory` receives chunks stored after it opened, resumes from `from_index`, ends after final, ends `NOT_FOUND` on close; a newer stream on the same transfer ends the older `LIMIT_REACHED`; the 4th new open and the 3rd new claim in a row from one account `RATE_LIMITED` with `Retry-After` while another account still opens; an open wakes the sweeper; sweep removes past-deadline transfers and ends their streams; puppet (owner with Pro, or the gate off) and machine key `CALLER_NOT_ALLOWED`; no `transfer` row holds any value equal to an account or device id; telemetry for the service carries no ids (log and span capture). Crypto: shared Go and Swift test vector for one archive. Clients: merge rules above against the real SQLite and SwiftData stores, including re-import of the same archive changing nothing; header account mismatch refused; truncated stream refused.
+Black-box (server), every RPC called successfully and per error: open and repeat; open with a different key `IDEMPOTENCY_MISMATCH`; a second human's session gets `NOT_FOUND` on claim, upload, receive and a no-op close with the first human's secret; claim after 10 minutes `NOT_FOUND`; upload out of order, before claim and after seal `FIELD_INVALID`; repeated chunk identical OK, different `IDEMPOTENCY_MISMATCH`; `ReceiveHistory` receives chunks stored after it opened, resumes from `from_index`, ends after final, ends `NOT_FOUND` on close, ends `unavailable` when the hub shuts down under it; a newer stream on the same transfer ends the older `LIMIT_REACHED`; the 4th new open and the 3rd new claim in a row from one account `RATE_LIMITED` with `Retry-After` while another account still opens; an open wakes the sweeper; sweep removes past-deadline transfers and ends their streams; puppet (owner with Pro, or the gate off) and machine key `CALLER_NOT_ALLOWED`; no `transfer` row holds any value equal to an account or device id; telemetry for the service carries no ids (log and span capture). Crypto: shared Go and Swift test vector for one archive. Clients: merge rules above against the real SQLite and SwiftData stores, including re-import of the same archive changing nothing; header account mismatch refused; a stream that ends OK before the final chunk reopens from `from_index` and finishes, and one that never sends the final chunk does not finish; unmappable records skipped and counted. Archive: Swift `ArchiveDecoder` across every cut and its 4 MiB cap, Go's reader cap, identical archive and code bytes from Go and Swift.
