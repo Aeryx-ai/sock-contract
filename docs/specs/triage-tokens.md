@@ -13,7 +13,7 @@ Gains the scope `triage`. Fields unchanged; a triage token also owns a `TokenDer
 - **Admits exactly** `VerifyTriageToken` and `RevokeOperatorToken`, each for the presenting token only. Every other procedure refuses it with `CALLER_NOT_ALLOWED`, through the same allowlist as `read` (ADR 15): a procedure added later refuses `triage` until it is listed.
 - **`MintTriage(parent)`**, the only way to a triage token, from `MintTriageToken` under a live `full` token. `sockd operator token mint --scope triage` is refused: a triage token always has a parent.
 - **Expiry:** the earlier of the parent's `expiresAt` and 12 hours after mint, by the database clock.
-- **Revocation:** revoking a token revokes every triage token derived from it, in the same transaction, on every path: `RevokeOperatorToken` and `sockd operator token revoke` both run `OperatorToken.Revoke`. Revoking a triage token leaves its parent alone. A revoked triage token stops working at triage within triage's 60 s verification cache.
+- **Revocation:** revoking a token revokes every triage token derived from it, in the same statement, whoever writes the revocation: an `AFTER INSERT` trigger on `operator_token_revocations` revokes the token's children at the parent's `revoked_at`, so `RevokeOperatorToken`, `sockd operator token revoke`, an older binary and a stale CLI all cascade. Revoking a triage token leaves its parent alone. A revoked triage token stops working at triage within triage's 60 s verification cache.
 
 ### TokenDerivation (value object, new)
 
@@ -73,7 +73,7 @@ CREATE TABLE identity.operator_action_token_mints (
 );
 ```
 
-The target table carries the operator audit's two triggers: the deferred constraint trigger matching target to kind (`identity.assert_action_target` gains `mintTriageToken`) and the append-only `UPDATE` refusal. Down deletes every `triage` token first, since before 00034 an unknown scope cannot be read, and fires the deferred trigger with `SET CONSTRAINTS ... IMMEDIATE` before dropping the target table, as 00033 does.
+`operator_token_revocations` gains an `AFTER INSERT` trigger that inserts a revocation, at `NEW.revoked_at`, for every child of `NEW.token_id` in `operator_token_derivations`, `ON CONFLICT (token_id) DO NOTHING`. The target table carries the operator audit's two triggers: the deferred constraint trigger matching target to kind (`identity.assert_action_target` gains `mintTriageToken`) and the append-only `UPDATE` refusal. Down drops the cascade trigger, deletes every `triage` token first, since before 00034 an unknown scope cannot be read, and fires the deferred trigger with `SET CONSTRAINTS ... IMMEDIATE` before dropping the target table, as 00033 does.
 
 The rule that a `triage` token has a derivation whose parent is `full` holds in the mint, not in a constraint: a cross-row check would need a trigger, and `MintTriage` is the only writer. Recorded reason: a single writer, covered by a test asserting no `triage` token exists without a derivation.
 
