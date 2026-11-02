@@ -38,7 +38,7 @@ Callers send `Authorization: Bearer <token>`. The server derives the account and
 | `sock_ot_` | Operator token | The operator, for `OperatorService` only |
 | `sock_ct_` | Connector service token | The hosted connector for agent platforms, for its two connector RPCs only |
 
-A few RPCs are anonymous: the sign-in RPCs, `RequestInvite` and `SignInOperatorWithApple`. Agent platforms connect through OAuth; their refresh tokens (`sock_rt_`) are never accepted as a bearer. The full caller class table, per-RPC authorization and rate limits are in [`docs/specs/api.md`](docs/specs/api.md).
+A few RPCs are anonymous: the sign-in RPCs, `GetRegistrationPolicy`, `RequestInvite` and `SignInOperatorWithApple`. Agent platforms connect through OAuth; their refresh tokens (`sock_rt_`) are never accepted as a bearer. The full caller class table, per-RPC authorization and rate limits are in [`docs/specs/api.md`](docs/specs/api.md).
 
 ## Generated code
 
