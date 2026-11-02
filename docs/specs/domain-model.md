@@ -578,6 +578,14 @@ Entity, aggregate root. One per declared key, created by the migration that decl
 
 Enumeration, declared in the hub: `open_registration`. Adding a key is a code change and a migration, not an operator action.
 
+## RegistrationPolicy
+
+Enumeration, derived, not stored: `open` when `FeatureFlag(open_registration).Enabled(0)`, else `invite_only`. Read by every registration and by `GetRegistrationPolicy`.
+
+## Admission
+
+Value object, built by each registration from the invite code, the policy and, for Apple, the verified subject. A non-empty code is always redeemed (`Invite.Redeem`), whatever the policy; a stale code while open is `INVITE_INVALID`. An empty code is admitted when the policy is `open` or the Apple subject is the operator's; otherwise `INVITE_INVALID`. The zero value admits no one.
+
 ## Invite
 
 Entity, aggregate root. One registration, once.

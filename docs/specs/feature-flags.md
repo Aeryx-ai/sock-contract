@@ -217,4 +217,4 @@ The iOS, Mac and desktop registration screens call `GetRegistrationPolicy` and h
 
 ## Open questions
 
-- The confirmation wording for `open_registration` in the console and `sock-admin`: it should say what opens.
+None. The confirmation in the console and `sock-admin` reads `Set <key> <on|off>? <description>`; `sock-admin` fetches the description with `GetFeatureFlags` when it prompts.
