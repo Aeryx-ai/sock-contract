@@ -1,6 +1,6 @@
 # Context map: sock v1
 
-Pass 10: History Transfer. Pass 9: the operator CLI signs in with Apple. Pass 8: triage runs outside the hub and polls it for reports. Pass 7: agent platforms connect through OAuth. Pass 6: Sock Pro gates puppets. Pass 5: the operator console signs in with Apple. Pass 4: humans sign in from the CLI. Pass 3: the operator as a network caller; Moderation, terms, suspension, blocks and Apple grants; public network.
+Pass 11: feature flags and open registration. Pass 10: History Transfer. Pass 9: the operator CLI signs in with Apple. Pass 8: triage runs outside the hub and polls it for reports. Pass 7: agent platforms connect through OAuth. Pass 6: Sock Pro gates puppets. Pass 5: the operator console signs in with Apple. Pass 4: humans sign in from the CLI. Pass 3: the operator as a network caller; Moderation, terms, suspension, blocks and Apple grants; public network.
 
 ## Ubiquitous language
 
@@ -20,6 +20,10 @@ Pass 10: History Transfer. Pass 9: the operator CLI signs in with Apple. Pass 8:
 | Operator Apple subject | The Apple `sub` configured as the operator's (`SOCK_OPERATOR_APPLE_SUB`). Not an account | Identity |
 | Invite mint | The fact that an operator token minted an invite over the network | Identity |
 | Operator action | The record of one thing the operator did over the network, kept 365 days | Identity |
+| Feature flag | One of the keys the hub declares, on or off for everyone. Not a rollout percentage and not per account | Identity |
+| Flag key | The flag's name, lowercase `[a-z_]`, declared in the hub with its description | Identity |
+| Flag set | The fact that an operator token set a flag to a value at a time: the `OperatorAction` with target `FlagSet` | Identity |
+| Registration policy | `invite_only` or `open`: whether registering needs an invite. `open` exactly when `open_registration` is on | Identity |
 | Invite | Single-use code that lets one Apple identity register | Identity |
 | Participant | An account as Messaging sees it: human, or puppet with an owner | Messaging |
 | Endpoint | A human's device as a place deliveries go | Messaging |

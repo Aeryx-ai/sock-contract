@@ -35,6 +35,9 @@ service OperatorService {
   // is full only and records an operator action.
   rpc GetMessageHold(GetMessageHoldRequest) returns (GetMessageHoldResponse) {}
   rpc SetMessageHold(SetMessageHoldRequest) returns (SetMessageHoldResponse) {}
+  // Platform flags (feature flags spec). read tokens reach GetFeatureFlags.
+  rpc GetFeatureFlags(GetFeatureFlagsRequest) returns (GetFeatureFlagsResponse) {}
+  rpc SetFeatureFlag(SetFeatureFlagRequest) returns (SetFeatureFlagResponse) {}
   // Free Sock Pro for a human until a date, and its revocation. Full scope
   // only; each records an operator action.
   rpc GrantPro(GrantProRequest) returns (GrantProResponse) {}
@@ -97,6 +100,31 @@ message SetMessageHoldRequest {
 message SetMessageHoldResponse {
   // The stored value.
   int32 days = 1;
+}
+
+message FeatureFlag {
+  string key = 1;
+  string description = 2;
+  bool enabled = 3;
+  // Unset: no set for this key within the audit's 365 days.
+  FeatureFlagSet last_set = 4;
+}
+message FeatureFlagSet {
+  google.protobuf.Timestamp at = 1;
+  string operator_token_id = 2;
+  // Empty once the token's row is swept.
+  string operator_token_label = 3;
+}
+message GetFeatureFlagsRequest {}
+message GetFeatureFlagsResponse {
+  repeated FeatureFlag flags = 1;
+}
+message SetFeatureFlagRequest {
+  string key = 1;
+  bool enabled = 2;
+}
+message SetFeatureFlagResponse {
+  FeatureFlag flag = 1;
 }
 
 message MintInviteRequest {}

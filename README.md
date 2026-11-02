@@ -60,7 +60,7 @@ Swift omits `operator.proto`: the operator surface is reached from Go and TypeSc
 Go 1.26.2 or later.
 
 ```sh
-go get github.com/aeryx-ai/sock-contract@v0.18.0
+go get github.com/aeryx-ai/sock-contract@v0.19.0
 ```
 
 ```go
@@ -110,7 +110,7 @@ A `UnaryInterceptorFunc` covers unary calls only; for `Subscribe`, set the heade
 iOS 26 or macOS 26, Swift tools 6.2.
 
 ```swift
-.package(url: "https://github.com/aeryx-ai/sock-contract.git", exact: "0.18.0")
+.package(url: "https://github.com/aeryx-ai/sock-contract.git", exact: "0.19.0")
 ```
 
 Depend on the product `SockContract` (messages and Connect clients with async methods) and, for history transfer, `HistoryTransfer`. The package pulls in [connect-swift](https://github.com/connectrpc/connect-swift) and [swift-protobuf](https://github.com/apple/swift-protobuf).
@@ -118,7 +118,7 @@ Depend on the product `SockContract` (messages and Connect clients with async me
 ## Use from TypeScript
 
 ```sh
-npm install github:aeryx-ai/sock-contract#v0.18.0
+npm install github:aeryx-ai/sock-contract#v0.19.0
 ```
 
 Import from `@guygrigsby/sock-contract/gen/ts/sock/v1/<file>_pb`. The package exports `.ts` sources, so it needs bundler module resolution and `@bufbuild/protobuf` v2 as a peer dependency. Pair the generated service descriptors with `@connectrpc/connect` for a client.

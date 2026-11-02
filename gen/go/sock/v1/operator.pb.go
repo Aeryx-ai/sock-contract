@@ -775,6 +775,312 @@ func (x *SetMessageHoldResponse) GetDays() int32 {
 	return 0
 }
 
+type FeatureFlag struct {
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	Key         string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Description string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Enabled     bool                   `protobuf:"varint,3,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// Unset: no set for this key within the audit's 365 days.
+	LastSet       *FeatureFlagSet `protobuf:"bytes,4,opt,name=last_set,json=lastSet,proto3" json:"last_set,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FeatureFlag) Reset() {
+	*x = FeatureFlag{}
+	mi := &file_sock_v1_operator_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FeatureFlag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FeatureFlag) ProtoMessage() {}
+
+func (x *FeatureFlag) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FeatureFlag.ProtoReflect.Descriptor instead.
+func (*FeatureFlag) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *FeatureFlag) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *FeatureFlag) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *FeatureFlag) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *FeatureFlag) GetLastSet() *FeatureFlagSet {
+	if x != nil {
+		return x.LastSet
+	}
+	return nil
+}
+
+type FeatureFlagSet struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	At              *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=at,proto3" json:"at,omitempty"`
+	OperatorTokenId string                 `protobuf:"bytes,2,opt,name=operator_token_id,json=operatorTokenId,proto3" json:"operator_token_id,omitempty"`
+	// Empty once the token's row is swept.
+	OperatorTokenLabel string `protobuf:"bytes,3,opt,name=operator_token_label,json=operatorTokenLabel,proto3" json:"operator_token_label,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *FeatureFlagSet) Reset() {
+	*x = FeatureFlagSet{}
+	mi := &file_sock_v1_operator_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FeatureFlagSet) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FeatureFlagSet) ProtoMessage() {}
+
+func (x *FeatureFlagSet) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FeatureFlagSet.ProtoReflect.Descriptor instead.
+func (*FeatureFlagSet) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *FeatureFlagSet) GetAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.At
+	}
+	return nil
+}
+
+func (x *FeatureFlagSet) GetOperatorTokenId() string {
+	if x != nil {
+		return x.OperatorTokenId
+	}
+	return ""
+}
+
+func (x *FeatureFlagSet) GetOperatorTokenLabel() string {
+	if x != nil {
+		return x.OperatorTokenLabel
+	}
+	return ""
+}
+
+type GetFeatureFlagsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetFeatureFlagsRequest) Reset() {
+	*x = GetFeatureFlagsRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetFeatureFlagsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetFeatureFlagsRequest) ProtoMessage() {}
+
+func (x *GetFeatureFlagsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetFeatureFlagsRequest.ProtoReflect.Descriptor instead.
+func (*GetFeatureFlagsRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{13}
+}
+
+type GetFeatureFlagsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Flags         []*FeatureFlag         `protobuf:"bytes,1,rep,name=flags,proto3" json:"flags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetFeatureFlagsResponse) Reset() {
+	*x = GetFeatureFlagsResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetFeatureFlagsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetFeatureFlagsResponse) ProtoMessage() {}
+
+func (x *GetFeatureFlagsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetFeatureFlagsResponse.ProtoReflect.Descriptor instead.
+func (*GetFeatureFlagsResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GetFeatureFlagsResponse) GetFlags() []*FeatureFlag {
+	if x != nil {
+		return x.Flags
+	}
+	return nil
+}
+
+type SetFeatureFlagRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Enabled       bool                   `protobuf:"varint,2,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetFeatureFlagRequest) Reset() {
+	*x = SetFeatureFlagRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetFeatureFlagRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetFeatureFlagRequest) ProtoMessage() {}
+
+func (x *SetFeatureFlagRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetFeatureFlagRequest.ProtoReflect.Descriptor instead.
+func (*SetFeatureFlagRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *SetFeatureFlagRequest) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *SetFeatureFlagRequest) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+type SetFeatureFlagResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Flag          *FeatureFlag           `protobuf:"bytes,1,opt,name=flag,proto3" json:"flag,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetFeatureFlagResponse) Reset() {
+	*x = SetFeatureFlagResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetFeatureFlagResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetFeatureFlagResponse) ProtoMessage() {}
+
+func (x *SetFeatureFlagResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetFeatureFlagResponse.ProtoReflect.Descriptor instead.
+func (*SetFeatureFlagResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *SetFeatureFlagResponse) GetFlag() *FeatureFlag {
+	if x != nil {
+		return x.Flag
+	}
+	return nil
+}
+
 type MintInviteRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -783,7 +1089,7 @@ type MintInviteRequest struct {
 
 func (x *MintInviteRequest) Reset() {
 	*x = MintInviteRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[11]
+	mi := &file_sock_v1_operator_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -795,7 +1101,7 @@ func (x *MintInviteRequest) String() string {
 func (*MintInviteRequest) ProtoMessage() {}
 
 func (x *MintInviteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[11]
+	mi := &file_sock_v1_operator_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -808,7 +1114,7 @@ func (x *MintInviteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MintInviteRequest.ProtoReflect.Descriptor instead.
 func (*MintInviteRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{11}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{17}
 }
 
 type MintInviteResponse struct {
@@ -826,7 +1132,7 @@ type MintInviteResponse struct {
 
 func (x *MintInviteResponse) Reset() {
 	*x = MintInviteResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[12]
+	mi := &file_sock_v1_operator_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -838,7 +1144,7 @@ func (x *MintInviteResponse) String() string {
 func (*MintInviteResponse) ProtoMessage() {}
 
 func (x *MintInviteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[12]
+	mi := &file_sock_v1_operator_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -851,7 +1157,7 @@ func (x *MintInviteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MintInviteResponse.ProtoReflect.Descriptor instead.
 func (*MintInviteResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{12}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *MintInviteResponse) GetCode() string {
@@ -881,7 +1187,7 @@ type ListReportsRequest struct {
 
 func (x *ListReportsRequest) Reset() {
 	*x = ListReportsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[13]
+	mi := &file_sock_v1_operator_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -893,7 +1199,7 @@ func (x *ListReportsRequest) String() string {
 func (*ListReportsRequest) ProtoMessage() {}
 
 func (x *ListReportsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[13]
+	mi := &file_sock_v1_operator_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -906,7 +1212,7 @@ func (x *ListReportsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListReportsRequest.ProtoReflect.Descriptor instead.
 func (*ListReportsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{13}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListReportsRequest) GetLimit() int32 {
@@ -938,7 +1244,7 @@ type ListReportsResponse struct {
 
 func (x *ListReportsResponse) Reset() {
 	*x = ListReportsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[14]
+	mi := &file_sock_v1_operator_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -950,7 +1256,7 @@ func (x *ListReportsResponse) String() string {
 func (*ListReportsResponse) ProtoMessage() {}
 
 func (x *ListReportsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[14]
+	mi := &file_sock_v1_operator_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -963,7 +1269,7 @@ func (x *ListReportsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListReportsResponse.ProtoReflect.Descriptor instead.
 func (*ListReportsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{14}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListReportsResponse) GetReports() []*Report {
@@ -991,7 +1297,7 @@ type ResolveReportRequest struct {
 
 func (x *ResolveReportRequest) Reset() {
 	*x = ResolveReportRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[15]
+	mi := &file_sock_v1_operator_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1003,7 +1309,7 @@ func (x *ResolveReportRequest) String() string {
 func (*ResolveReportRequest) ProtoMessage() {}
 
 func (x *ResolveReportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[15]
+	mi := &file_sock_v1_operator_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1016,7 +1322,7 @@ func (x *ResolveReportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveReportRequest.ProtoReflect.Descriptor instead.
 func (*ResolveReportRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{15}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ResolveReportRequest) GetReportId() string {
@@ -1044,7 +1350,7 @@ type ResolveReportResponse struct {
 
 func (x *ResolveReportResponse) Reset() {
 	*x = ResolveReportResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[16]
+	mi := &file_sock_v1_operator_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1056,7 +1362,7 @@ func (x *ResolveReportResponse) String() string {
 func (*ResolveReportResponse) ProtoMessage() {}
 
 func (x *ResolveReportResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[16]
+	mi := &file_sock_v1_operator_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1069,7 +1375,7 @@ func (x *ResolveReportResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveReportResponse.ProtoReflect.Descriptor instead.
 func (*ResolveReportResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{16}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ResolveReportResponse) GetResolution() *Resolution {
@@ -1090,7 +1396,7 @@ type ReinstateAccountRequest struct {
 
 func (x *ReinstateAccountRequest) Reset() {
 	*x = ReinstateAccountRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[17]
+	mi := &file_sock_v1_operator_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1102,7 +1408,7 @@ func (x *ReinstateAccountRequest) String() string {
 func (*ReinstateAccountRequest) ProtoMessage() {}
 
 func (x *ReinstateAccountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[17]
+	mi := &file_sock_v1_operator_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1115,7 +1421,7 @@ func (x *ReinstateAccountRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReinstateAccountRequest.ProtoReflect.Descriptor instead.
 func (*ReinstateAccountRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{17}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ReinstateAccountRequest) GetAccountId() string {
@@ -1133,7 +1439,7 @@ type ReinstateAccountResponse struct {
 
 func (x *ReinstateAccountResponse) Reset() {
 	*x = ReinstateAccountResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[18]
+	mi := &file_sock_v1_operator_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1145,7 +1451,7 @@ func (x *ReinstateAccountResponse) String() string {
 func (*ReinstateAccountResponse) ProtoMessage() {}
 
 func (x *ReinstateAccountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[18]
+	mi := &file_sock_v1_operator_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1158,7 +1464,7 @@ func (x *ReinstateAccountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReinstateAccountResponse.ProtoReflect.Descriptor instead.
 func (*ReinstateAccountResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{18}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{24}
 }
 
 // Revokes the operator token the request presents. For a CLI-minted token it
@@ -1173,7 +1479,7 @@ type RevokeOperatorTokenRequest struct {
 
 func (x *RevokeOperatorTokenRequest) Reset() {
 	*x = RevokeOperatorTokenRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[19]
+	mi := &file_sock_v1_operator_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1185,7 +1491,7 @@ func (x *RevokeOperatorTokenRequest) String() string {
 func (*RevokeOperatorTokenRequest) ProtoMessage() {}
 
 func (x *RevokeOperatorTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[19]
+	mi := &file_sock_v1_operator_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1198,7 +1504,7 @@ func (x *RevokeOperatorTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeOperatorTokenRequest.ProtoReflect.Descriptor instead.
 func (*RevokeOperatorTokenRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{19}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{25}
 }
 
 type RevokeOperatorTokenResponse struct {
@@ -1209,7 +1515,7 @@ type RevokeOperatorTokenResponse struct {
 
 func (x *RevokeOperatorTokenResponse) Reset() {
 	*x = RevokeOperatorTokenResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[20]
+	mi := &file_sock_v1_operator_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1221,7 +1527,7 @@ func (x *RevokeOperatorTokenResponse) String() string {
 func (*RevokeOperatorTokenResponse) ProtoMessage() {}
 
 func (x *RevokeOperatorTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[20]
+	mi := &file_sock_v1_operator_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1234,7 +1540,7 @@ func (x *RevokeOperatorTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeOperatorTokenResponse.ProtoReflect.Descriptor instead.
 func (*RevokeOperatorTokenResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{20}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{26}
 }
 
 type ListHumansRequest struct {
@@ -1254,7 +1560,7 @@ type ListHumansRequest struct {
 
 func (x *ListHumansRequest) Reset() {
 	*x = ListHumansRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[21]
+	mi := &file_sock_v1_operator_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1266,7 +1572,7 @@ func (x *ListHumansRequest) String() string {
 func (*ListHumansRequest) ProtoMessage() {}
 
 func (x *ListHumansRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[21]
+	mi := &file_sock_v1_operator_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1279,7 +1585,7 @@ func (x *ListHumansRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListHumansRequest.ProtoReflect.Descriptor instead.
 func (*ListHumansRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{21}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ListHumansRequest) GetLimit() int32 {
@@ -1314,7 +1620,7 @@ type ListHumansResponse struct {
 
 func (x *ListHumansResponse) Reset() {
 	*x = ListHumansResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[22]
+	mi := &file_sock_v1_operator_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1326,7 +1632,7 @@ func (x *ListHumansResponse) String() string {
 func (*ListHumansResponse) ProtoMessage() {}
 
 func (x *ListHumansResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[22]
+	mi := &file_sock_v1_operator_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1339,7 +1645,7 @@ func (x *ListHumansResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListHumansResponse.ProtoReflect.Descriptor instead.
 func (*ListHumansResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{22}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ListHumansResponse) GetHumans() []*HumanSummary {
@@ -1366,7 +1672,7 @@ type HumanSummary struct {
 
 func (x *HumanSummary) Reset() {
 	*x = HumanSummary{}
-	mi := &file_sock_v1_operator_proto_msgTypes[23]
+	mi := &file_sock_v1_operator_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1378,7 +1684,7 @@ func (x *HumanSummary) String() string {
 func (*HumanSummary) ProtoMessage() {}
 
 func (x *HumanSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[23]
+	mi := &file_sock_v1_operator_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1391,7 +1697,7 @@ func (x *HumanSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HumanSummary.ProtoReflect.Descriptor instead.
 func (*HumanSummary) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{23}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *HumanSummary) GetAccount() *Account {
@@ -1432,7 +1738,7 @@ type GetHumanRequest struct {
 
 func (x *GetHumanRequest) Reset() {
 	*x = GetHumanRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[24]
+	mi := &file_sock_v1_operator_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1444,7 +1750,7 @@ func (x *GetHumanRequest) String() string {
 func (*GetHumanRequest) ProtoMessage() {}
 
 func (x *GetHumanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[24]
+	mi := &file_sock_v1_operator_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1457,7 +1763,7 @@ func (x *GetHumanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHumanRequest.ProtoReflect.Descriptor instead.
 func (*GetHumanRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{24}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *GetHumanRequest) GetAccountId() string {
@@ -1493,7 +1799,7 @@ type GetHumanResponse struct {
 
 func (x *GetHumanResponse) Reset() {
 	*x = GetHumanResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[25]
+	mi := &file_sock_v1_operator_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1505,7 +1811,7 @@ func (x *GetHumanResponse) String() string {
 func (*GetHumanResponse) ProtoMessage() {}
 
 func (x *GetHumanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[25]
+	mi := &file_sock_v1_operator_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1518,7 +1824,7 @@ func (x *GetHumanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHumanResponse.ProtoReflect.Descriptor instead.
 func (*GetHumanResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{25}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *GetHumanResponse) GetHuman() *HumanSummary {
@@ -1596,7 +1902,7 @@ type TermsAcceptance struct {
 
 func (x *TermsAcceptance) Reset() {
 	*x = TermsAcceptance{}
-	mi := &file_sock_v1_operator_proto_msgTypes[26]
+	mi := &file_sock_v1_operator_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1608,7 +1914,7 @@ func (x *TermsAcceptance) String() string {
 func (*TermsAcceptance) ProtoMessage() {}
 
 func (x *TermsAcceptance) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[26]
+	mi := &file_sock_v1_operator_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1621,7 +1927,7 @@ func (x *TermsAcceptance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TermsAcceptance.ProtoReflect.Descriptor instead.
 func (*TermsAcceptance) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{26}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *TermsAcceptance) GetVersion() string {
@@ -1654,7 +1960,7 @@ type ListAccountReportsRequest struct {
 
 func (x *ListAccountReportsRequest) Reset() {
 	*x = ListAccountReportsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[27]
+	mi := &file_sock_v1_operator_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1666,7 +1972,7 @@ func (x *ListAccountReportsRequest) String() string {
 func (*ListAccountReportsRequest) ProtoMessage() {}
 
 func (x *ListAccountReportsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[27]
+	mi := &file_sock_v1_operator_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1679,7 +1985,7 @@ func (x *ListAccountReportsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAccountReportsRequest.ProtoReflect.Descriptor instead.
 func (*ListAccountReportsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{27}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ListAccountReportsRequest) GetAccountId() string {
@@ -1717,7 +2023,7 @@ type ListAccountReportsResponse struct {
 
 func (x *ListAccountReportsResponse) Reset() {
 	*x = ListAccountReportsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[28]
+	mi := &file_sock_v1_operator_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1729,7 +2035,7 @@ func (x *ListAccountReportsResponse) String() string {
 func (*ListAccountReportsResponse) ProtoMessage() {}
 
 func (x *ListAccountReportsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[28]
+	mi := &file_sock_v1_operator_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1742,7 +2048,7 @@ func (x *ListAccountReportsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAccountReportsResponse.ProtoReflect.Descriptor instead.
 func (*ListAccountReportsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{28}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *ListAccountReportsResponse) GetReports() []*ReportSummary {
@@ -1780,7 +2086,7 @@ type ReportSummary struct {
 
 func (x *ReportSummary) Reset() {
 	*x = ReportSummary{}
-	mi := &file_sock_v1_operator_proto_msgTypes[29]
+	mi := &file_sock_v1_operator_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1792,7 +2098,7 @@ func (x *ReportSummary) String() string {
 func (*ReportSummary) ProtoMessage() {}
 
 func (x *ReportSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[29]
+	mi := &file_sock_v1_operator_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1805,7 +2111,7 @@ func (x *ReportSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportSummary.ProtoReflect.Descriptor instead.
 func (*ReportSummary) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{29}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *ReportSummary) GetId() string {
@@ -1873,7 +2179,7 @@ type EraseHumanRequest struct {
 
 func (x *EraseHumanRequest) Reset() {
 	*x = EraseHumanRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[30]
+	mi := &file_sock_v1_operator_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1885,7 +2191,7 @@ func (x *EraseHumanRequest) String() string {
 func (*EraseHumanRequest) ProtoMessage() {}
 
 func (x *EraseHumanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[30]
+	mi := &file_sock_v1_operator_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1898,7 +2204,7 @@ func (x *EraseHumanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EraseHumanRequest.ProtoReflect.Descriptor instead.
 func (*EraseHumanRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{30}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *EraseHumanRequest) GetAccountId() string {
@@ -1923,7 +2229,7 @@ type EraseHumanResponse struct {
 
 func (x *EraseHumanResponse) Reset() {
 	*x = EraseHumanResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[31]
+	mi := &file_sock_v1_operator_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1935,7 +2241,7 @@ func (x *EraseHumanResponse) String() string {
 func (*EraseHumanResponse) ProtoMessage() {}
 
 func (x *EraseHumanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[31]
+	mi := &file_sock_v1_operator_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1948,7 +2254,7 @@ func (x *EraseHumanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EraseHumanResponse.ProtoReflect.Descriptor instead.
 func (*EraseHumanResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{31}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{37}
 }
 
 type SignInOperatorWithAppleRequest struct {
@@ -1973,7 +2279,7 @@ type SignInOperatorWithAppleRequest struct {
 
 func (x *SignInOperatorWithAppleRequest) Reset() {
 	*x = SignInOperatorWithAppleRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[32]
+	mi := &file_sock_v1_operator_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1985,7 +2291,7 @@ func (x *SignInOperatorWithAppleRequest) String() string {
 func (*SignInOperatorWithAppleRequest) ProtoMessage() {}
 
 func (x *SignInOperatorWithAppleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[32]
+	mi := &file_sock_v1_operator_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1998,7 +2304,7 @@ func (x *SignInOperatorWithAppleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignInOperatorWithAppleRequest.ProtoReflect.Descriptor instead.
 func (*SignInOperatorWithAppleRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{32}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *SignInOperatorWithAppleRequest) GetIdentityToken() string {
@@ -2036,7 +2342,7 @@ type SignInOperatorWithAppleResponse struct {
 
 func (x *SignInOperatorWithAppleResponse) Reset() {
 	*x = SignInOperatorWithAppleResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[33]
+	mi := &file_sock_v1_operator_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2048,7 +2354,7 @@ func (x *SignInOperatorWithAppleResponse) String() string {
 func (*SignInOperatorWithAppleResponse) ProtoMessage() {}
 
 func (x *SignInOperatorWithAppleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[33]
+	mi := &file_sock_v1_operator_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2061,7 +2367,7 @@ func (x *SignInOperatorWithAppleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignInOperatorWithAppleResponse.ProtoReflect.Descriptor instead.
 func (*SignInOperatorWithAppleResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{33}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *SignInOperatorWithAppleResponse) GetToken() string {
@@ -2093,7 +2399,7 @@ type ListInviteRequestsRequest struct {
 
 func (x *ListInviteRequestsRequest) Reset() {
 	*x = ListInviteRequestsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[34]
+	mi := &file_sock_v1_operator_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2105,7 +2411,7 @@ func (x *ListInviteRequestsRequest) String() string {
 func (*ListInviteRequestsRequest) ProtoMessage() {}
 
 func (x *ListInviteRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[34]
+	mi := &file_sock_v1_operator_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2118,7 +2424,7 @@ func (x *ListInviteRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInviteRequestsRequest.ProtoReflect.Descriptor instead.
 func (*ListInviteRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{34}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *ListInviteRequestsRequest) GetLimit() int32 {
@@ -2153,7 +2459,7 @@ type ListInviteRequestsResponse struct {
 
 func (x *ListInviteRequestsResponse) Reset() {
 	*x = ListInviteRequestsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[35]
+	mi := &file_sock_v1_operator_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2165,7 +2471,7 @@ func (x *ListInviteRequestsResponse) String() string {
 func (*ListInviteRequestsResponse) ProtoMessage() {}
 
 func (x *ListInviteRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[35]
+	mi := &file_sock_v1_operator_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2178,7 +2484,7 @@ func (x *ListInviteRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInviteRequestsResponse.ProtoReflect.Descriptor instead.
 func (*ListInviteRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{35}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *ListInviteRequestsResponse) GetRequests() []*InviteRequest {
@@ -2198,7 +2504,7 @@ type ApproveInviteRequestsRequest struct {
 
 func (x *ApproveInviteRequestsRequest) Reset() {
 	*x = ApproveInviteRequestsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[36]
+	mi := &file_sock_v1_operator_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2210,7 +2516,7 @@ func (x *ApproveInviteRequestsRequest) String() string {
 func (*ApproveInviteRequestsRequest) ProtoMessage() {}
 
 func (x *ApproveInviteRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[36]
+	mi := &file_sock_v1_operator_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2223,7 +2529,7 @@ func (x *ApproveInviteRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveInviteRequestsRequest.ProtoReflect.Descriptor instead.
 func (*ApproveInviteRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{36}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *ApproveInviteRequestsRequest) GetRequestIds() []string {
@@ -2243,7 +2549,7 @@ type ApproveInviteRequestsResponse struct {
 
 func (x *ApproveInviteRequestsResponse) Reset() {
 	*x = ApproveInviteRequestsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[37]
+	mi := &file_sock_v1_operator_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2255,7 +2561,7 @@ func (x *ApproveInviteRequestsResponse) String() string {
 func (*ApproveInviteRequestsResponse) ProtoMessage() {}
 
 func (x *ApproveInviteRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[37]
+	mi := &file_sock_v1_operator_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2268,7 +2574,7 @@ func (x *ApproveInviteRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveInviteRequestsResponse.ProtoReflect.Descriptor instead.
 func (*ApproveInviteRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{37}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *ApproveInviteRequestsResponse) GetResults() []*ApproveInviteRequestResult {
@@ -2290,7 +2596,7 @@ type ApproveInviteRequestResult struct {
 
 func (x *ApproveInviteRequestResult) Reset() {
 	*x = ApproveInviteRequestResult{}
-	mi := &file_sock_v1_operator_proto_msgTypes[38]
+	mi := &file_sock_v1_operator_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2302,7 +2608,7 @@ func (x *ApproveInviteRequestResult) String() string {
 func (*ApproveInviteRequestResult) ProtoMessage() {}
 
 func (x *ApproveInviteRequestResult) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[38]
+	mi := &file_sock_v1_operator_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2315,7 +2621,7 @@ func (x *ApproveInviteRequestResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveInviteRequestResult.ProtoReflect.Descriptor instead.
 func (*ApproveInviteRequestResult) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{38}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *ApproveInviteRequestResult) GetRequestId() string {
@@ -2349,7 +2655,7 @@ type DeclineInviteRequestsRequest struct {
 
 func (x *DeclineInviteRequestsRequest) Reset() {
 	*x = DeclineInviteRequestsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[39]
+	mi := &file_sock_v1_operator_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2361,7 +2667,7 @@ func (x *DeclineInviteRequestsRequest) String() string {
 func (*DeclineInviteRequestsRequest) ProtoMessage() {}
 
 func (x *DeclineInviteRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[39]
+	mi := &file_sock_v1_operator_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2374,7 +2680,7 @@ func (x *DeclineInviteRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclineInviteRequestsRequest.ProtoReflect.Descriptor instead.
 func (*DeclineInviteRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{39}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *DeclineInviteRequestsRequest) GetRequestIds() []string {
@@ -2394,7 +2700,7 @@ type DeclineInviteRequestsResponse struct {
 
 func (x *DeclineInviteRequestsResponse) Reset() {
 	*x = DeclineInviteRequestsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[40]
+	mi := &file_sock_v1_operator_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2406,7 +2712,7 @@ func (x *DeclineInviteRequestsResponse) String() string {
 func (*DeclineInviteRequestsResponse) ProtoMessage() {}
 
 func (x *DeclineInviteRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[40]
+	mi := &file_sock_v1_operator_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2419,7 +2725,7 @@ func (x *DeclineInviteRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclineInviteRequestsResponse.ProtoReflect.Descriptor instead.
 func (*DeclineInviteRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{40}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *DeclineInviteRequestsResponse) GetResults() []*DeclineInviteRequestResult {
@@ -2439,7 +2745,7 @@ type DeclineInviteRequestResult struct {
 
 func (x *DeclineInviteRequestResult) Reset() {
 	*x = DeclineInviteRequestResult{}
-	mi := &file_sock_v1_operator_proto_msgTypes[41]
+	mi := &file_sock_v1_operator_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2451,7 +2757,7 @@ func (x *DeclineInviteRequestResult) String() string {
 func (*DeclineInviteRequestResult) ProtoMessage() {}
 
 func (x *DeclineInviteRequestResult) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[41]
+	mi := &file_sock_v1_operator_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2464,7 +2770,7 @@ func (x *DeclineInviteRequestResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclineInviteRequestResult.ProtoReflect.Descriptor instead.
 func (*DeclineInviteRequestResult) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{41}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *DeclineInviteRequestResult) GetRequestId() string {
@@ -2515,7 +2821,24 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"\x15SetMessageHoldRequest\x12\x12\n" +
 	"\x04days\x18\x01 \x01(\x05R\x04days\",\n" +
 	"\x16SetMessageHoldResponse\x12\x12\n" +
-	"\x04days\x18\x01 \x01(\x05R\x04days\"\x13\n" +
+	"\x04days\x18\x01 \x01(\x05R\x04days\"\x8f\x01\n" +
+	"\vFeatureFlag\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x18\n" +
+	"\aenabled\x18\x03 \x01(\bR\aenabled\x122\n" +
+	"\blast_set\x18\x04 \x01(\v2\x17.sock.v1.FeatureFlagSetR\alastSet\"\x9a\x01\n" +
+	"\x0eFeatureFlagSet\x12*\n" +
+	"\x02at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\x12*\n" +
+	"\x11operator_token_id\x18\x02 \x01(\tR\x0foperatorTokenId\x120\n" +
+	"\x14operator_token_label\x18\x03 \x01(\tR\x12operatorTokenLabel\"\x18\n" +
+	"\x16GetFeatureFlagsRequest\"E\n" +
+	"\x17GetFeatureFlagsResponse\x12*\n" +
+	"\x05flags\x18\x01 \x03(\v2\x14.sock.v1.FeatureFlagR\x05flags\"C\n" +
+	"\x15SetFeatureFlagRequest\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x18\n" +
+	"\aenabled\x18\x02 \x01(\bR\aenabled\"B\n" +
+	"\x16SetFeatureFlagResponse\x12(\n" +
+	"\x04flag\x18\x01 \x01(\v2\x14.sock.v1.FeatureFlagR\x04flag\"\x13\n" +
 	"\x11MintInviteRequest\"c\n" +
 	"\x12MintInviteResponse\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\tR\x04code\x129\n" +
@@ -2646,8 +2969,7 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"*DECLINE_INVITE_REQUEST_OUTCOME_UNSPECIFIED\x10\x00\x12+\n" +
 	"'DECLINE_INVITE_REQUEST_OUTCOME_DECLINED\x10\x01\x12+\n" +
 	"'DECLINE_INVITE_REQUEST_OUTCOME_APPROVED\x10\x02\x12,\n" +
-	"(DECLINE_INVITE_REQUEST_OUTCOME_NOT_FOUND\x10\x032\xe4\n" +
-	"\n" +
+	"(DECLINE_INVITE_REQUEST_OUTCOME_NOT_FOUND\x10\x032\x91\f\n" +
 	"\x0fOperatorService\x12G\n" +
 	"\n" +
 	"MintInvite\x12\x1a.sock.v1.MintInviteRequest\x1a\x1b.sock.v1.MintInviteResponse\"\x00\x12J\n" +
@@ -2665,7 +2987,9 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"\x15ApproveInviteRequests\x12%.sock.v1.ApproveInviteRequestsRequest\x1a&.sock.v1.ApproveInviteRequestsResponse\"\x00\x12h\n" +
 	"\x15DeclineInviteRequests\x12%.sock.v1.DeclineInviteRequestsRequest\x1a&.sock.v1.DeclineInviteRequestsResponse\"\x00\x12S\n" +
 	"\x0eGetMessageHold\x12\x1e.sock.v1.GetMessageHoldRequest\x1a\x1f.sock.v1.GetMessageHoldResponse\"\x00\x12S\n" +
-	"\x0eSetMessageHold\x12\x1e.sock.v1.SetMessageHoldRequest\x1a\x1f.sock.v1.SetMessageHoldResponse\"\x00\x12A\n" +
+	"\x0eSetMessageHold\x12\x1e.sock.v1.SetMessageHoldRequest\x1a\x1f.sock.v1.SetMessageHoldResponse\"\x00\x12V\n" +
+	"\x0fGetFeatureFlags\x12\x1f.sock.v1.GetFeatureFlagsRequest\x1a .sock.v1.GetFeatureFlagsResponse\"\x00\x12S\n" +
+	"\x0eSetFeatureFlag\x12\x1e.sock.v1.SetFeatureFlagRequest\x1a\x1f.sock.v1.SetFeatureFlagResponse\"\x00\x12A\n" +
 	"\bGrantPro\x12\x18.sock.v1.GrantProRequest\x1a\x19.sock.v1.GrantProResponse\"\x00\x12S\n" +
 	"\x0eRevokeProGrant\x12\x1e.sock.v1.RevokeProGrantRequest\x1a\x1f.sock.v1.RevokeProGrantResponse\"\x002\x87\x01\n" +
 	"\x15OperatorSignInService\x12n\n" +
@@ -2685,7 +3009,7 @@ func file_sock_v1_operator_proto_rawDescGZIP() []byte {
 }
 
 var file_sock_v1_operator_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_sock_v1_operator_proto_msgTypes = make([]protoimpl.MessageInfo, 42)
+var file_sock_v1_operator_proto_msgTypes = make([]protoimpl.MessageInfo, 48)
 var file_sock_v1_operator_proto_goTypes = []any{
 	(OperatorSignInClient)(0),               // 0: sock.v1.OperatorSignInClient
 	(InviteRequestState)(0),                 // 1: sock.v1.InviteRequestState
@@ -2702,129 +3026,143 @@ var file_sock_v1_operator_proto_goTypes = []any{
 	(*GetMessageHoldResponse)(nil),          // 12: sock.v1.GetMessageHoldResponse
 	(*SetMessageHoldRequest)(nil),           // 13: sock.v1.SetMessageHoldRequest
 	(*SetMessageHoldResponse)(nil),          // 14: sock.v1.SetMessageHoldResponse
-	(*MintInviteRequest)(nil),               // 15: sock.v1.MintInviteRequest
-	(*MintInviteResponse)(nil),              // 16: sock.v1.MintInviteResponse
-	(*ListReportsRequest)(nil),              // 17: sock.v1.ListReportsRequest
-	(*ListReportsResponse)(nil),             // 18: sock.v1.ListReportsResponse
-	(*ResolveReportRequest)(nil),            // 19: sock.v1.ResolveReportRequest
-	(*ResolveReportResponse)(nil),           // 20: sock.v1.ResolveReportResponse
-	(*ReinstateAccountRequest)(nil),         // 21: sock.v1.ReinstateAccountRequest
-	(*ReinstateAccountResponse)(nil),        // 22: sock.v1.ReinstateAccountResponse
-	(*RevokeOperatorTokenRequest)(nil),      // 23: sock.v1.RevokeOperatorTokenRequest
-	(*RevokeOperatorTokenResponse)(nil),     // 24: sock.v1.RevokeOperatorTokenResponse
-	(*ListHumansRequest)(nil),               // 25: sock.v1.ListHumansRequest
-	(*ListHumansResponse)(nil),              // 26: sock.v1.ListHumansResponse
-	(*HumanSummary)(nil),                    // 27: sock.v1.HumanSummary
-	(*GetHumanRequest)(nil),                 // 28: sock.v1.GetHumanRequest
-	(*GetHumanResponse)(nil),                // 29: sock.v1.GetHumanResponse
-	(*TermsAcceptance)(nil),                 // 30: sock.v1.TermsAcceptance
-	(*ListAccountReportsRequest)(nil),       // 31: sock.v1.ListAccountReportsRequest
-	(*ListAccountReportsResponse)(nil),      // 32: sock.v1.ListAccountReportsResponse
-	(*ReportSummary)(nil),                   // 33: sock.v1.ReportSummary
-	(*EraseHumanRequest)(nil),               // 34: sock.v1.EraseHumanRequest
-	(*EraseHumanResponse)(nil),              // 35: sock.v1.EraseHumanResponse
-	(*SignInOperatorWithAppleRequest)(nil),  // 36: sock.v1.SignInOperatorWithAppleRequest
-	(*SignInOperatorWithAppleResponse)(nil), // 37: sock.v1.SignInOperatorWithAppleResponse
-	(*ListInviteRequestsRequest)(nil),       // 38: sock.v1.ListInviteRequestsRequest
-	(*ListInviteRequestsResponse)(nil),      // 39: sock.v1.ListInviteRequestsResponse
-	(*ApproveInviteRequestsRequest)(nil),    // 40: sock.v1.ApproveInviteRequestsRequest
-	(*ApproveInviteRequestsResponse)(nil),   // 41: sock.v1.ApproveInviteRequestsResponse
-	(*ApproveInviteRequestResult)(nil),      // 42: sock.v1.ApproveInviteRequestResult
-	(*DeclineInviteRequestsRequest)(nil),    // 43: sock.v1.DeclineInviteRequestsRequest
-	(*DeclineInviteRequestsResponse)(nil),   // 44: sock.v1.DeclineInviteRequestsResponse
-	(*DeclineInviteRequestResult)(nil),      // 45: sock.v1.DeclineInviteRequestResult
-	(*timestamppb.Timestamp)(nil),           // 46: google.protobuf.Timestamp
-	(*Report)(nil),                          // 47: sock.v1.Report
-	(*Account)(nil),                         // 48: sock.v1.Account
-	(ResolutionOutcome)(0),                  // 49: sock.v1.ResolutionOutcome
-	(*Resolution)(nil),                      // 50: sock.v1.Resolution
-	(*Device)(nil),                          // 51: sock.v1.Device
-	(*PuppetWithDevices)(nil),               // 52: sock.v1.PuppetWithDevices
-	(*ProStatus)(nil),                       // 53: sock.v1.ProStatus
-	(ReportReason)(0),                       // 54: sock.v1.ReportReason
-	(*InviteRequest)(nil),                   // 55: sock.v1.InviteRequest
-	(*ApprovedInvite)(nil),                  // 56: sock.v1.ApprovedInvite
+	(*FeatureFlag)(nil),                     // 15: sock.v1.FeatureFlag
+	(*FeatureFlagSet)(nil),                  // 16: sock.v1.FeatureFlagSet
+	(*GetFeatureFlagsRequest)(nil),          // 17: sock.v1.GetFeatureFlagsRequest
+	(*GetFeatureFlagsResponse)(nil),         // 18: sock.v1.GetFeatureFlagsResponse
+	(*SetFeatureFlagRequest)(nil),           // 19: sock.v1.SetFeatureFlagRequest
+	(*SetFeatureFlagResponse)(nil),          // 20: sock.v1.SetFeatureFlagResponse
+	(*MintInviteRequest)(nil),               // 21: sock.v1.MintInviteRequest
+	(*MintInviteResponse)(nil),              // 22: sock.v1.MintInviteResponse
+	(*ListReportsRequest)(nil),              // 23: sock.v1.ListReportsRequest
+	(*ListReportsResponse)(nil),             // 24: sock.v1.ListReportsResponse
+	(*ResolveReportRequest)(nil),            // 25: sock.v1.ResolveReportRequest
+	(*ResolveReportResponse)(nil),           // 26: sock.v1.ResolveReportResponse
+	(*ReinstateAccountRequest)(nil),         // 27: sock.v1.ReinstateAccountRequest
+	(*ReinstateAccountResponse)(nil),        // 28: sock.v1.ReinstateAccountResponse
+	(*RevokeOperatorTokenRequest)(nil),      // 29: sock.v1.RevokeOperatorTokenRequest
+	(*RevokeOperatorTokenResponse)(nil),     // 30: sock.v1.RevokeOperatorTokenResponse
+	(*ListHumansRequest)(nil),               // 31: sock.v1.ListHumansRequest
+	(*ListHumansResponse)(nil),              // 32: sock.v1.ListHumansResponse
+	(*HumanSummary)(nil),                    // 33: sock.v1.HumanSummary
+	(*GetHumanRequest)(nil),                 // 34: sock.v1.GetHumanRequest
+	(*GetHumanResponse)(nil),                // 35: sock.v1.GetHumanResponse
+	(*TermsAcceptance)(nil),                 // 36: sock.v1.TermsAcceptance
+	(*ListAccountReportsRequest)(nil),       // 37: sock.v1.ListAccountReportsRequest
+	(*ListAccountReportsResponse)(nil),      // 38: sock.v1.ListAccountReportsResponse
+	(*ReportSummary)(nil),                   // 39: sock.v1.ReportSummary
+	(*EraseHumanRequest)(nil),               // 40: sock.v1.EraseHumanRequest
+	(*EraseHumanResponse)(nil),              // 41: sock.v1.EraseHumanResponse
+	(*SignInOperatorWithAppleRequest)(nil),  // 42: sock.v1.SignInOperatorWithAppleRequest
+	(*SignInOperatorWithAppleResponse)(nil), // 43: sock.v1.SignInOperatorWithAppleResponse
+	(*ListInviteRequestsRequest)(nil),       // 44: sock.v1.ListInviteRequestsRequest
+	(*ListInviteRequestsResponse)(nil),      // 45: sock.v1.ListInviteRequestsResponse
+	(*ApproveInviteRequestsRequest)(nil),    // 46: sock.v1.ApproveInviteRequestsRequest
+	(*ApproveInviteRequestsResponse)(nil),   // 47: sock.v1.ApproveInviteRequestsResponse
+	(*ApproveInviteRequestResult)(nil),      // 48: sock.v1.ApproveInviteRequestResult
+	(*DeclineInviteRequestsRequest)(nil),    // 49: sock.v1.DeclineInviteRequestsRequest
+	(*DeclineInviteRequestsResponse)(nil),   // 50: sock.v1.DeclineInviteRequestsResponse
+	(*DeclineInviteRequestResult)(nil),      // 51: sock.v1.DeclineInviteRequestResult
+	(*timestamppb.Timestamp)(nil),           // 52: google.protobuf.Timestamp
+	(*Report)(nil),                          // 53: sock.v1.Report
+	(*Account)(nil),                         // 54: sock.v1.Account
+	(ResolutionOutcome)(0),                  // 55: sock.v1.ResolutionOutcome
+	(*Resolution)(nil),                      // 56: sock.v1.Resolution
+	(*Device)(nil),                          // 57: sock.v1.Device
+	(*PuppetWithDevices)(nil),               // 58: sock.v1.PuppetWithDevices
+	(*ProStatus)(nil),                       // 59: sock.v1.ProStatus
+	(ReportReason)(0),                       // 60: sock.v1.ReportReason
+	(*InviteRequest)(nil),                   // 61: sock.v1.InviteRequest
+	(*ApprovedInvite)(nil),                  // 62: sock.v1.ApprovedInvite
 }
 var file_sock_v1_operator_proto_depIdxs = []int32{
-	46, // 0: sock.v1.GrantProRequest.ends_at:type_name -> google.protobuf.Timestamp
+	52, // 0: sock.v1.GrantProRequest.ends_at:type_name -> google.protobuf.Timestamp
 	8,  // 1: sock.v1.GrantProResponse.grant:type_name -> sock.v1.ProGrant
-	46, // 2: sock.v1.ProGrant.granted_at:type_name -> google.protobuf.Timestamp
-	46, // 3: sock.v1.ProGrant.ends_at:type_name -> google.protobuf.Timestamp
-	46, // 4: sock.v1.ProGrant.revoked_at:type_name -> google.protobuf.Timestamp
-	46, // 5: sock.v1.ProTrial.started_at:type_name -> google.protobuf.Timestamp
-	46, // 6: sock.v1.ProTrial.ends_at:type_name -> google.protobuf.Timestamp
-	46, // 7: sock.v1.ProSubscriptionSummary.active_until:type_name -> google.protobuf.Timestamp
-	46, // 8: sock.v1.MintInviteResponse.expires_at:type_name -> google.protobuf.Timestamp
-	47, // 9: sock.v1.ListReportsResponse.reports:type_name -> sock.v1.Report
-	48, // 10: sock.v1.ListReportsResponse.accounts:type_name -> sock.v1.Account
-	49, // 11: sock.v1.ResolveReportRequest.outcome:type_name -> sock.v1.ResolutionOutcome
-	50, // 12: sock.v1.ResolveReportResponse.resolution:type_name -> sock.v1.Resolution
-	27, // 13: sock.v1.ListHumansResponse.humans:type_name -> sock.v1.HumanSummary
-	48, // 14: sock.v1.HumanSummary.account:type_name -> sock.v1.Account
-	46, // 15: sock.v1.HumanSummary.joined_at:type_name -> google.protobuf.Timestamp
-	46, // 16: sock.v1.HumanSummary.suspended_at:type_name -> google.protobuf.Timestamp
-	27, // 17: sock.v1.GetHumanResponse.human:type_name -> sock.v1.HumanSummary
-	51, // 18: sock.v1.GetHumanResponse.devices:type_name -> sock.v1.Device
-	52, // 19: sock.v1.GetHumanResponse.puppets:type_name -> sock.v1.PuppetWithDevices
-	30, // 20: sock.v1.GetHumanResponse.terms_acceptances:type_name -> sock.v1.TermsAcceptance
-	53, // 21: sock.v1.GetHumanResponse.pro:type_name -> sock.v1.ProStatus
-	9,  // 22: sock.v1.GetHumanResponse.trial:type_name -> sock.v1.ProTrial
-	10, // 23: sock.v1.GetHumanResponse.subscriptions:type_name -> sock.v1.ProSubscriptionSummary
-	8,  // 24: sock.v1.GetHumanResponse.grants:type_name -> sock.v1.ProGrant
-	46, // 25: sock.v1.TermsAcceptance.accepted_at:type_name -> google.protobuf.Timestamp
-	33, // 26: sock.v1.ListAccountReportsResponse.reports:type_name -> sock.v1.ReportSummary
-	48, // 27: sock.v1.ListAccountReportsResponse.accounts:type_name -> sock.v1.Account
-	54, // 28: sock.v1.ReportSummary.reason:type_name -> sock.v1.ReportReason
-	46, // 29: sock.v1.ReportSummary.created_at:type_name -> google.protobuf.Timestamp
-	50, // 30: sock.v1.ReportSummary.resolution:type_name -> sock.v1.Resolution
-	0,  // 31: sock.v1.SignInOperatorWithAppleRequest.client:type_name -> sock.v1.OperatorSignInClient
-	46, // 32: sock.v1.SignInOperatorWithAppleResponse.expires_at:type_name -> google.protobuf.Timestamp
-	1,  // 33: sock.v1.ListInviteRequestsRequest.state:type_name -> sock.v1.InviteRequestState
-	55, // 34: sock.v1.ListInviteRequestsResponse.requests:type_name -> sock.v1.InviteRequest
-	42, // 35: sock.v1.ApproveInviteRequestsResponse.results:type_name -> sock.v1.ApproveInviteRequestResult
-	2,  // 36: sock.v1.ApproveInviteRequestResult.outcome:type_name -> sock.v1.ApproveInviteRequestOutcome
-	56, // 37: sock.v1.ApproveInviteRequestResult.invite:type_name -> sock.v1.ApprovedInvite
-	45, // 38: sock.v1.DeclineInviteRequestsResponse.results:type_name -> sock.v1.DeclineInviteRequestResult
-	3,  // 39: sock.v1.DeclineInviteRequestResult.outcome:type_name -> sock.v1.DeclineInviteRequestOutcome
-	15, // 40: sock.v1.OperatorService.MintInvite:input_type -> sock.v1.MintInviteRequest
-	17, // 41: sock.v1.OperatorService.ListReports:input_type -> sock.v1.ListReportsRequest
-	19, // 42: sock.v1.OperatorService.ResolveReport:input_type -> sock.v1.ResolveReportRequest
-	21, // 43: sock.v1.OperatorService.ReinstateAccount:input_type -> sock.v1.ReinstateAccountRequest
-	23, // 44: sock.v1.OperatorService.RevokeOperatorToken:input_type -> sock.v1.RevokeOperatorTokenRequest
-	25, // 45: sock.v1.OperatorService.ListHumans:input_type -> sock.v1.ListHumansRequest
-	28, // 46: sock.v1.OperatorService.GetHuman:input_type -> sock.v1.GetHumanRequest
-	31, // 47: sock.v1.OperatorService.ListAccountReports:input_type -> sock.v1.ListAccountReportsRequest
-	34, // 48: sock.v1.OperatorService.EraseHuman:input_type -> sock.v1.EraseHumanRequest
-	38, // 49: sock.v1.OperatorService.ListInviteRequests:input_type -> sock.v1.ListInviteRequestsRequest
-	40, // 50: sock.v1.OperatorService.ApproveInviteRequests:input_type -> sock.v1.ApproveInviteRequestsRequest
-	43, // 51: sock.v1.OperatorService.DeclineInviteRequests:input_type -> sock.v1.DeclineInviteRequestsRequest
-	11, // 52: sock.v1.OperatorService.GetMessageHold:input_type -> sock.v1.GetMessageHoldRequest
-	13, // 53: sock.v1.OperatorService.SetMessageHold:input_type -> sock.v1.SetMessageHoldRequest
-	4,  // 54: sock.v1.OperatorService.GrantPro:input_type -> sock.v1.GrantProRequest
-	6,  // 55: sock.v1.OperatorService.RevokeProGrant:input_type -> sock.v1.RevokeProGrantRequest
-	36, // 56: sock.v1.OperatorSignInService.SignInOperatorWithApple:input_type -> sock.v1.SignInOperatorWithAppleRequest
-	16, // 57: sock.v1.OperatorService.MintInvite:output_type -> sock.v1.MintInviteResponse
-	18, // 58: sock.v1.OperatorService.ListReports:output_type -> sock.v1.ListReportsResponse
-	20, // 59: sock.v1.OperatorService.ResolveReport:output_type -> sock.v1.ResolveReportResponse
-	22, // 60: sock.v1.OperatorService.ReinstateAccount:output_type -> sock.v1.ReinstateAccountResponse
-	24, // 61: sock.v1.OperatorService.RevokeOperatorToken:output_type -> sock.v1.RevokeOperatorTokenResponse
-	26, // 62: sock.v1.OperatorService.ListHumans:output_type -> sock.v1.ListHumansResponse
-	29, // 63: sock.v1.OperatorService.GetHuman:output_type -> sock.v1.GetHumanResponse
-	32, // 64: sock.v1.OperatorService.ListAccountReports:output_type -> sock.v1.ListAccountReportsResponse
-	35, // 65: sock.v1.OperatorService.EraseHuman:output_type -> sock.v1.EraseHumanResponse
-	39, // 66: sock.v1.OperatorService.ListInviteRequests:output_type -> sock.v1.ListInviteRequestsResponse
-	41, // 67: sock.v1.OperatorService.ApproveInviteRequests:output_type -> sock.v1.ApproveInviteRequestsResponse
-	44, // 68: sock.v1.OperatorService.DeclineInviteRequests:output_type -> sock.v1.DeclineInviteRequestsResponse
-	12, // 69: sock.v1.OperatorService.GetMessageHold:output_type -> sock.v1.GetMessageHoldResponse
-	14, // 70: sock.v1.OperatorService.SetMessageHold:output_type -> sock.v1.SetMessageHoldResponse
-	5,  // 71: sock.v1.OperatorService.GrantPro:output_type -> sock.v1.GrantProResponse
-	7,  // 72: sock.v1.OperatorService.RevokeProGrant:output_type -> sock.v1.RevokeProGrantResponse
-	37, // 73: sock.v1.OperatorSignInService.SignInOperatorWithApple:output_type -> sock.v1.SignInOperatorWithAppleResponse
-	57, // [57:74] is the sub-list for method output_type
-	40, // [40:57] is the sub-list for method input_type
-	40, // [40:40] is the sub-list for extension type_name
-	40, // [40:40] is the sub-list for extension extendee
-	0,  // [0:40] is the sub-list for field type_name
+	52, // 2: sock.v1.ProGrant.granted_at:type_name -> google.protobuf.Timestamp
+	52, // 3: sock.v1.ProGrant.ends_at:type_name -> google.protobuf.Timestamp
+	52, // 4: sock.v1.ProGrant.revoked_at:type_name -> google.protobuf.Timestamp
+	52, // 5: sock.v1.ProTrial.started_at:type_name -> google.protobuf.Timestamp
+	52, // 6: sock.v1.ProTrial.ends_at:type_name -> google.protobuf.Timestamp
+	52, // 7: sock.v1.ProSubscriptionSummary.active_until:type_name -> google.protobuf.Timestamp
+	16, // 8: sock.v1.FeatureFlag.last_set:type_name -> sock.v1.FeatureFlagSet
+	52, // 9: sock.v1.FeatureFlagSet.at:type_name -> google.protobuf.Timestamp
+	15, // 10: sock.v1.GetFeatureFlagsResponse.flags:type_name -> sock.v1.FeatureFlag
+	15, // 11: sock.v1.SetFeatureFlagResponse.flag:type_name -> sock.v1.FeatureFlag
+	52, // 12: sock.v1.MintInviteResponse.expires_at:type_name -> google.protobuf.Timestamp
+	53, // 13: sock.v1.ListReportsResponse.reports:type_name -> sock.v1.Report
+	54, // 14: sock.v1.ListReportsResponse.accounts:type_name -> sock.v1.Account
+	55, // 15: sock.v1.ResolveReportRequest.outcome:type_name -> sock.v1.ResolutionOutcome
+	56, // 16: sock.v1.ResolveReportResponse.resolution:type_name -> sock.v1.Resolution
+	33, // 17: sock.v1.ListHumansResponse.humans:type_name -> sock.v1.HumanSummary
+	54, // 18: sock.v1.HumanSummary.account:type_name -> sock.v1.Account
+	52, // 19: sock.v1.HumanSummary.joined_at:type_name -> google.protobuf.Timestamp
+	52, // 20: sock.v1.HumanSummary.suspended_at:type_name -> google.protobuf.Timestamp
+	33, // 21: sock.v1.GetHumanResponse.human:type_name -> sock.v1.HumanSummary
+	57, // 22: sock.v1.GetHumanResponse.devices:type_name -> sock.v1.Device
+	58, // 23: sock.v1.GetHumanResponse.puppets:type_name -> sock.v1.PuppetWithDevices
+	36, // 24: sock.v1.GetHumanResponse.terms_acceptances:type_name -> sock.v1.TermsAcceptance
+	59, // 25: sock.v1.GetHumanResponse.pro:type_name -> sock.v1.ProStatus
+	9,  // 26: sock.v1.GetHumanResponse.trial:type_name -> sock.v1.ProTrial
+	10, // 27: sock.v1.GetHumanResponse.subscriptions:type_name -> sock.v1.ProSubscriptionSummary
+	8,  // 28: sock.v1.GetHumanResponse.grants:type_name -> sock.v1.ProGrant
+	52, // 29: sock.v1.TermsAcceptance.accepted_at:type_name -> google.protobuf.Timestamp
+	39, // 30: sock.v1.ListAccountReportsResponse.reports:type_name -> sock.v1.ReportSummary
+	54, // 31: sock.v1.ListAccountReportsResponse.accounts:type_name -> sock.v1.Account
+	60, // 32: sock.v1.ReportSummary.reason:type_name -> sock.v1.ReportReason
+	52, // 33: sock.v1.ReportSummary.created_at:type_name -> google.protobuf.Timestamp
+	56, // 34: sock.v1.ReportSummary.resolution:type_name -> sock.v1.Resolution
+	0,  // 35: sock.v1.SignInOperatorWithAppleRequest.client:type_name -> sock.v1.OperatorSignInClient
+	52, // 36: sock.v1.SignInOperatorWithAppleResponse.expires_at:type_name -> google.protobuf.Timestamp
+	1,  // 37: sock.v1.ListInviteRequestsRequest.state:type_name -> sock.v1.InviteRequestState
+	61, // 38: sock.v1.ListInviteRequestsResponse.requests:type_name -> sock.v1.InviteRequest
+	48, // 39: sock.v1.ApproveInviteRequestsResponse.results:type_name -> sock.v1.ApproveInviteRequestResult
+	2,  // 40: sock.v1.ApproveInviteRequestResult.outcome:type_name -> sock.v1.ApproveInviteRequestOutcome
+	62, // 41: sock.v1.ApproveInviteRequestResult.invite:type_name -> sock.v1.ApprovedInvite
+	51, // 42: sock.v1.DeclineInviteRequestsResponse.results:type_name -> sock.v1.DeclineInviteRequestResult
+	3,  // 43: sock.v1.DeclineInviteRequestResult.outcome:type_name -> sock.v1.DeclineInviteRequestOutcome
+	21, // 44: sock.v1.OperatorService.MintInvite:input_type -> sock.v1.MintInviteRequest
+	23, // 45: sock.v1.OperatorService.ListReports:input_type -> sock.v1.ListReportsRequest
+	25, // 46: sock.v1.OperatorService.ResolveReport:input_type -> sock.v1.ResolveReportRequest
+	27, // 47: sock.v1.OperatorService.ReinstateAccount:input_type -> sock.v1.ReinstateAccountRequest
+	29, // 48: sock.v1.OperatorService.RevokeOperatorToken:input_type -> sock.v1.RevokeOperatorTokenRequest
+	31, // 49: sock.v1.OperatorService.ListHumans:input_type -> sock.v1.ListHumansRequest
+	34, // 50: sock.v1.OperatorService.GetHuman:input_type -> sock.v1.GetHumanRequest
+	37, // 51: sock.v1.OperatorService.ListAccountReports:input_type -> sock.v1.ListAccountReportsRequest
+	40, // 52: sock.v1.OperatorService.EraseHuman:input_type -> sock.v1.EraseHumanRequest
+	44, // 53: sock.v1.OperatorService.ListInviteRequests:input_type -> sock.v1.ListInviteRequestsRequest
+	46, // 54: sock.v1.OperatorService.ApproveInviteRequests:input_type -> sock.v1.ApproveInviteRequestsRequest
+	49, // 55: sock.v1.OperatorService.DeclineInviteRequests:input_type -> sock.v1.DeclineInviteRequestsRequest
+	11, // 56: sock.v1.OperatorService.GetMessageHold:input_type -> sock.v1.GetMessageHoldRequest
+	13, // 57: sock.v1.OperatorService.SetMessageHold:input_type -> sock.v1.SetMessageHoldRequest
+	17, // 58: sock.v1.OperatorService.GetFeatureFlags:input_type -> sock.v1.GetFeatureFlagsRequest
+	19, // 59: sock.v1.OperatorService.SetFeatureFlag:input_type -> sock.v1.SetFeatureFlagRequest
+	4,  // 60: sock.v1.OperatorService.GrantPro:input_type -> sock.v1.GrantProRequest
+	6,  // 61: sock.v1.OperatorService.RevokeProGrant:input_type -> sock.v1.RevokeProGrantRequest
+	42, // 62: sock.v1.OperatorSignInService.SignInOperatorWithApple:input_type -> sock.v1.SignInOperatorWithAppleRequest
+	22, // 63: sock.v1.OperatorService.MintInvite:output_type -> sock.v1.MintInviteResponse
+	24, // 64: sock.v1.OperatorService.ListReports:output_type -> sock.v1.ListReportsResponse
+	26, // 65: sock.v1.OperatorService.ResolveReport:output_type -> sock.v1.ResolveReportResponse
+	28, // 66: sock.v1.OperatorService.ReinstateAccount:output_type -> sock.v1.ReinstateAccountResponse
+	30, // 67: sock.v1.OperatorService.RevokeOperatorToken:output_type -> sock.v1.RevokeOperatorTokenResponse
+	32, // 68: sock.v1.OperatorService.ListHumans:output_type -> sock.v1.ListHumansResponse
+	35, // 69: sock.v1.OperatorService.GetHuman:output_type -> sock.v1.GetHumanResponse
+	38, // 70: sock.v1.OperatorService.ListAccountReports:output_type -> sock.v1.ListAccountReportsResponse
+	41, // 71: sock.v1.OperatorService.EraseHuman:output_type -> sock.v1.EraseHumanResponse
+	45, // 72: sock.v1.OperatorService.ListInviteRequests:output_type -> sock.v1.ListInviteRequestsResponse
+	47, // 73: sock.v1.OperatorService.ApproveInviteRequests:output_type -> sock.v1.ApproveInviteRequestsResponse
+	50, // 74: sock.v1.OperatorService.DeclineInviteRequests:output_type -> sock.v1.DeclineInviteRequestsResponse
+	12, // 75: sock.v1.OperatorService.GetMessageHold:output_type -> sock.v1.GetMessageHoldResponse
+	14, // 76: sock.v1.OperatorService.SetMessageHold:output_type -> sock.v1.SetMessageHoldResponse
+	18, // 77: sock.v1.OperatorService.GetFeatureFlags:output_type -> sock.v1.GetFeatureFlagsResponse
+	20, // 78: sock.v1.OperatorService.SetFeatureFlag:output_type -> sock.v1.SetFeatureFlagResponse
+	5,  // 79: sock.v1.OperatorService.GrantPro:output_type -> sock.v1.GrantProResponse
+	7,  // 80: sock.v1.OperatorService.RevokeProGrant:output_type -> sock.v1.RevokeProGrantResponse
+	43, // 81: sock.v1.OperatorSignInService.SignInOperatorWithApple:output_type -> sock.v1.SignInOperatorWithAppleResponse
+	63, // [63:82] is the sub-list for method output_type
+	44, // [44:63] is the sub-list for method input_type
+	44, // [44:44] is the sub-list for extension type_name
+	44, // [44:44] is the sub-list for extension extendee
+	0,  // [0:44] is the sub-list for field type_name
 }
 
 func init() { file_sock_v1_operator_proto_init() }
@@ -2842,7 +3180,7 @@ func file_sock_v1_operator_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sock_v1_operator_proto_rawDesc), len(file_sock_v1_operator_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   42,
+			NumMessages:   48,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

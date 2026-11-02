@@ -77,6 +77,12 @@ const (
 	// OperatorServiceSetMessageHoldProcedure is the fully-qualified name of the OperatorService's
 	// SetMessageHold RPC.
 	OperatorServiceSetMessageHoldProcedure = "/sock.v1.OperatorService/SetMessageHold"
+	// OperatorServiceGetFeatureFlagsProcedure is the fully-qualified name of the OperatorService's
+	// GetFeatureFlags RPC.
+	OperatorServiceGetFeatureFlagsProcedure = "/sock.v1.OperatorService/GetFeatureFlags"
+	// OperatorServiceSetFeatureFlagProcedure is the fully-qualified name of the OperatorService's
+	// SetFeatureFlag RPC.
+	OperatorServiceSetFeatureFlagProcedure = "/sock.v1.OperatorService/SetFeatureFlag"
 	// OperatorServiceGrantProProcedure is the fully-qualified name of the OperatorService's GrantPro
 	// RPC.
 	OperatorServiceGrantProProcedure = "/sock.v1.OperatorService/GrantPro"
@@ -110,6 +116,9 @@ type OperatorServiceClient interface {
 	// is full only and records an operator action.
 	GetMessageHold(context.Context, *connect.Request[v1.GetMessageHoldRequest]) (*connect.Response[v1.GetMessageHoldResponse], error)
 	SetMessageHold(context.Context, *connect.Request[v1.SetMessageHoldRequest]) (*connect.Response[v1.SetMessageHoldResponse], error)
+	// Platform flags (feature flags spec). read tokens reach GetFeatureFlags.
+	GetFeatureFlags(context.Context, *connect.Request[v1.GetFeatureFlagsRequest]) (*connect.Response[v1.GetFeatureFlagsResponse], error)
+	SetFeatureFlag(context.Context, *connect.Request[v1.SetFeatureFlagRequest]) (*connect.Response[v1.SetFeatureFlagResponse], error)
 	// Free Sock Pro for a human until a date, and its revocation. Full scope
 	// only; each records an operator action.
 	GrantPro(context.Context, *connect.Request[v1.GrantProRequest]) (*connect.Response[v1.GrantProResponse], error)
@@ -211,6 +220,18 @@ func NewOperatorServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(operatorServiceMethods.ByName("SetMessageHold")),
 			connect.WithClientOptions(opts...),
 		),
+		getFeatureFlags: connect.NewClient[v1.GetFeatureFlagsRequest, v1.GetFeatureFlagsResponse](
+			httpClient,
+			baseURL+OperatorServiceGetFeatureFlagsProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("GetFeatureFlags")),
+			connect.WithClientOptions(opts...),
+		),
+		setFeatureFlag: connect.NewClient[v1.SetFeatureFlagRequest, v1.SetFeatureFlagResponse](
+			httpClient,
+			baseURL+OperatorServiceSetFeatureFlagProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("SetFeatureFlag")),
+			connect.WithClientOptions(opts...),
+		),
 		grantPro: connect.NewClient[v1.GrantProRequest, v1.GrantProResponse](
 			httpClient,
 			baseURL+OperatorServiceGrantProProcedure,
@@ -242,6 +263,8 @@ type operatorServiceClient struct {
 	declineInviteRequests *connect.Client[v1.DeclineInviteRequestsRequest, v1.DeclineInviteRequestsResponse]
 	getMessageHold        *connect.Client[v1.GetMessageHoldRequest, v1.GetMessageHoldResponse]
 	setMessageHold        *connect.Client[v1.SetMessageHoldRequest, v1.SetMessageHoldResponse]
+	getFeatureFlags       *connect.Client[v1.GetFeatureFlagsRequest, v1.GetFeatureFlagsResponse]
+	setFeatureFlag        *connect.Client[v1.SetFeatureFlagRequest, v1.SetFeatureFlagResponse]
 	grantPro              *connect.Client[v1.GrantProRequest, v1.GrantProResponse]
 	revokeProGrant        *connect.Client[v1.RevokeProGrantRequest, v1.RevokeProGrantResponse]
 }
@@ -316,6 +339,16 @@ func (c *operatorServiceClient) SetMessageHold(ctx context.Context, req *connect
 	return c.setMessageHold.CallUnary(ctx, req)
 }
 
+// GetFeatureFlags calls sock.v1.OperatorService.GetFeatureFlags.
+func (c *operatorServiceClient) GetFeatureFlags(ctx context.Context, req *connect.Request[v1.GetFeatureFlagsRequest]) (*connect.Response[v1.GetFeatureFlagsResponse], error) {
+	return c.getFeatureFlags.CallUnary(ctx, req)
+}
+
+// SetFeatureFlag calls sock.v1.OperatorService.SetFeatureFlag.
+func (c *operatorServiceClient) SetFeatureFlag(ctx context.Context, req *connect.Request[v1.SetFeatureFlagRequest]) (*connect.Response[v1.SetFeatureFlagResponse], error) {
+	return c.setFeatureFlag.CallUnary(ctx, req)
+}
+
 // GrantPro calls sock.v1.OperatorService.GrantPro.
 func (c *operatorServiceClient) GrantPro(ctx context.Context, req *connect.Request[v1.GrantProRequest]) (*connect.Response[v1.GrantProResponse], error) {
 	return c.grantPro.CallUnary(ctx, req)
@@ -348,6 +381,9 @@ type OperatorServiceHandler interface {
 	// is full only and records an operator action.
 	GetMessageHold(context.Context, *connect.Request[v1.GetMessageHoldRequest]) (*connect.Response[v1.GetMessageHoldResponse], error)
 	SetMessageHold(context.Context, *connect.Request[v1.SetMessageHoldRequest]) (*connect.Response[v1.SetMessageHoldResponse], error)
+	// Platform flags (feature flags spec). read tokens reach GetFeatureFlags.
+	GetFeatureFlags(context.Context, *connect.Request[v1.GetFeatureFlagsRequest]) (*connect.Response[v1.GetFeatureFlagsResponse], error)
+	SetFeatureFlag(context.Context, *connect.Request[v1.SetFeatureFlagRequest]) (*connect.Response[v1.SetFeatureFlagResponse], error)
 	// Free Sock Pro for a human until a date, and its revocation. Full scope
 	// only; each records an operator action.
 	GrantPro(context.Context, *connect.Request[v1.GrantProRequest]) (*connect.Response[v1.GrantProResponse], error)
@@ -445,6 +481,18 @@ func NewOperatorServiceHandler(svc OperatorServiceHandler, opts ...connect.Handl
 		connect.WithSchema(operatorServiceMethods.ByName("SetMessageHold")),
 		connect.WithHandlerOptions(opts...),
 	)
+	operatorServiceGetFeatureFlagsHandler := connect.NewUnaryHandler(
+		OperatorServiceGetFeatureFlagsProcedure,
+		svc.GetFeatureFlags,
+		connect.WithSchema(operatorServiceMethods.ByName("GetFeatureFlags")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceSetFeatureFlagHandler := connect.NewUnaryHandler(
+		OperatorServiceSetFeatureFlagProcedure,
+		svc.SetFeatureFlag,
+		connect.WithSchema(operatorServiceMethods.ByName("SetFeatureFlag")),
+		connect.WithHandlerOptions(opts...),
+	)
 	operatorServiceGrantProHandler := connect.NewUnaryHandler(
 		OperatorServiceGrantProProcedure,
 		svc.GrantPro,
@@ -487,6 +535,10 @@ func NewOperatorServiceHandler(svc OperatorServiceHandler, opts ...connect.Handl
 			operatorServiceGetMessageHoldHandler.ServeHTTP(w, r)
 		case OperatorServiceSetMessageHoldProcedure:
 			operatorServiceSetMessageHoldHandler.ServeHTTP(w, r)
+		case OperatorServiceGetFeatureFlagsProcedure:
+			operatorServiceGetFeatureFlagsHandler.ServeHTTP(w, r)
+		case OperatorServiceSetFeatureFlagProcedure:
+			operatorServiceSetFeatureFlagHandler.ServeHTTP(w, r)
 		case OperatorServiceGrantProProcedure:
 			operatorServiceGrantProHandler.ServeHTTP(w, r)
 		case OperatorServiceRevokeProGrantProcedure:
@@ -554,6 +606,14 @@ func (UnimplementedOperatorServiceHandler) GetMessageHold(context.Context, *conn
 
 func (UnimplementedOperatorServiceHandler) SetMessageHold(context.Context, *connect.Request[v1.SetMessageHoldRequest]) (*connect.Response[v1.SetMessageHoldResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.SetMessageHold is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) GetFeatureFlags(context.Context, *connect.Request[v1.GetFeatureFlagsRequest]) (*connect.Response[v1.GetFeatureFlagsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.GetFeatureFlags is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) SetFeatureFlag(context.Context, *connect.Request[v1.SetFeatureFlagRequest]) (*connect.Response[v1.SetFeatureFlagResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.SetFeatureFlag is not implemented"))
 }
 
 func (UnimplementedOperatorServiceHandler) GrantPro(context.Context, *connect.Request[v1.GrantProRequest]) (*connect.Response[v1.GrantProResponse], error) {

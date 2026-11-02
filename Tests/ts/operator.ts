@@ -13,3 +13,5 @@ export const resolveJSON: string = toJsonString(
   ResolveReportRequestSchema,
   create(ResolveReportRequestSchema, { reportId: "r1", outcome: ResolutionOutcome.OWNER_SUSPENDED }),
 );
+
+export const flagsCall = (client: Client<typeof OperatorService>) => client.getFeatureFlags({});

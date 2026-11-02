@@ -80,6 +80,9 @@ const (
 	IdentityServiceSignInWithPasskeyProcedure = "/sock.v1.IdentityService/SignInWithPasskey"
 	// IdentityServiceSignOutProcedure is the fully-qualified name of the IdentityService's SignOut RPC.
 	IdentityServiceSignOutProcedure = "/sock.v1.IdentityService/SignOut"
+	// IdentityServiceGetRegistrationPolicyProcedure is the fully-qualified name of the
+	// IdentityService's GetRegistrationPolicy RPC.
+	IdentityServiceGetRegistrationPolicyProcedure = "/sock.v1.IdentityService/GetRegistrationPolicy"
 	// IdentityServiceGetMeProcedure is the fully-qualified name of the IdentityService's GetMe RPC.
 	IdentityServiceGetMeProcedure = "/sock.v1.IdentityService/GetMe"
 	// IdentityServiceAcceptTermsProcedure is the fully-qualified name of the IdentityService's
@@ -172,6 +175,8 @@ type IdentityServiceClient interface {
 	StartPasskeySignIn(context.Context, *connect.Request[v1.StartPasskeySignInRequest]) (*connect.Response[v1.StartPasskeySignInResponse], error)
 	SignInWithPasskey(context.Context, *connect.Request[v1.SignInWithPasskeyRequest]) (*connect.Response[v1.SignInWithPasskeyResponse], error)
 	SignOut(context.Context, *connect.Request[v1.SignOutRequest]) (*connect.Response[v1.SignOutResponse], error)
+	// Anonymous. Whether registering needs an invite (feature flags spec).
+	GetRegistrationPolicy(context.Context, *connect.Request[v1.GetRegistrationPolicyRequest]) (*connect.Response[v1.GetRegistrationPolicyResponse], error)
 	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
 	AcceptTerms(context.Context, *connect.Request[v1.AcceptTermsRequest]) (*connect.Response[v1.AcceptTermsResponse], error)
 	GetAccounts(context.Context, *connect.Request[v1.GetAccountsRequest]) (*connect.Response[v1.GetAccountsResponse], error)
@@ -304,6 +309,12 @@ func NewIdentityServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			httpClient,
 			baseURL+IdentityServiceSignOutProcedure,
 			connect.WithSchema(identityServiceMethods.ByName("SignOut")),
+			connect.WithClientOptions(opts...),
+		),
+		getRegistrationPolicy: connect.NewClient[v1.GetRegistrationPolicyRequest, v1.GetRegistrationPolicyResponse](
+			httpClient,
+			baseURL+IdentityServiceGetRegistrationPolicyProcedure,
+			connect.WithSchema(identityServiceMethods.ByName("GetRegistrationPolicy")),
 			connect.WithClientOptions(opts...),
 		),
 		getMe: connect.NewClient[v1.GetMeRequest, v1.GetMeResponse](
@@ -453,6 +464,7 @@ type identityServiceClient struct {
 	startPasskeySignIn        *connect.Client[v1.StartPasskeySignInRequest, v1.StartPasskeySignInResponse]
 	signInWithPasskey         *connect.Client[v1.SignInWithPasskeyRequest, v1.SignInWithPasskeyResponse]
 	signOut                   *connect.Client[v1.SignOutRequest, v1.SignOutResponse]
+	getRegistrationPolicy     *connect.Client[v1.GetRegistrationPolicyRequest, v1.GetRegistrationPolicyResponse]
 	getMe                     *connect.Client[v1.GetMeRequest, v1.GetMeResponse]
 	acceptTerms               *connect.Client[v1.AcceptTermsRequest, v1.AcceptTermsResponse]
 	getAccounts               *connect.Client[v1.GetAccountsRequest, v1.GetAccountsResponse]
@@ -554,6 +566,11 @@ func (c *identityServiceClient) SignInWithPasskey(ctx context.Context, req *conn
 // SignOut calls sock.v1.IdentityService.SignOut.
 func (c *identityServiceClient) SignOut(ctx context.Context, req *connect.Request[v1.SignOutRequest]) (*connect.Response[v1.SignOutResponse], error) {
 	return c.signOut.CallUnary(ctx, req)
+}
+
+// GetRegistrationPolicy calls sock.v1.IdentityService.GetRegistrationPolicy.
+func (c *identityServiceClient) GetRegistrationPolicy(ctx context.Context, req *connect.Request[v1.GetRegistrationPolicyRequest]) (*connect.Response[v1.GetRegistrationPolicyResponse], error) {
+	return c.getRegistrationPolicy.CallUnary(ctx, req)
 }
 
 // GetMe calls sock.v1.IdentityService.GetMe.
@@ -689,6 +706,8 @@ type IdentityServiceHandler interface {
 	StartPasskeySignIn(context.Context, *connect.Request[v1.StartPasskeySignInRequest]) (*connect.Response[v1.StartPasskeySignInResponse], error)
 	SignInWithPasskey(context.Context, *connect.Request[v1.SignInWithPasskeyRequest]) (*connect.Response[v1.SignInWithPasskeyResponse], error)
 	SignOut(context.Context, *connect.Request[v1.SignOutRequest]) (*connect.Response[v1.SignOutResponse], error)
+	// Anonymous. Whether registering needs an invite (feature flags spec).
+	GetRegistrationPolicy(context.Context, *connect.Request[v1.GetRegistrationPolicyRequest]) (*connect.Response[v1.GetRegistrationPolicyResponse], error)
 	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
 	AcceptTerms(context.Context, *connect.Request[v1.AcceptTermsRequest]) (*connect.Response[v1.AcceptTermsResponse], error)
 	GetAccounts(context.Context, *connect.Request[v1.GetAccountsRequest]) (*connect.Response[v1.GetAccountsResponse], error)
@@ -817,6 +836,12 @@ func NewIdentityServiceHandler(svc IdentityServiceHandler, opts ...connect.Handl
 		IdentityServiceSignOutProcedure,
 		svc.SignOut,
 		connect.WithSchema(identityServiceMethods.ByName("SignOut")),
+		connect.WithHandlerOptions(opts...),
+	)
+	identityServiceGetRegistrationPolicyHandler := connect.NewUnaryHandler(
+		IdentityServiceGetRegistrationPolicyProcedure,
+		svc.GetRegistrationPolicy,
+		connect.WithSchema(identityServiceMethods.ByName("GetRegistrationPolicy")),
 		connect.WithHandlerOptions(opts...),
 	)
 	identityServiceGetMeHandler := connect.NewUnaryHandler(
@@ -979,6 +1004,8 @@ func NewIdentityServiceHandler(svc IdentityServiceHandler, opts ...connect.Handl
 			identityServiceSignInWithPasskeyHandler.ServeHTTP(w, r)
 		case IdentityServiceSignOutProcedure:
 			identityServiceSignOutHandler.ServeHTTP(w, r)
+		case IdentityServiceGetRegistrationPolicyProcedure:
+			identityServiceGetRegistrationPolicyHandler.ServeHTTP(w, r)
 		case IdentityServiceGetMeProcedure:
 			identityServiceGetMeHandler.ServeHTTP(w, r)
 		case IdentityServiceAcceptTermsProcedure:
@@ -1092,6 +1119,10 @@ func (UnimplementedIdentityServiceHandler) SignInWithPasskey(context.Context, *c
 
 func (UnimplementedIdentityServiceHandler) SignOut(context.Context, *connect.Request[v1.SignOutRequest]) (*connect.Response[v1.SignOutResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.SignOut is not implemented"))
+}
+
+func (UnimplementedIdentityServiceHandler) GetRegistrationPolicy(context.Context, *connect.Request[v1.GetRegistrationPolicyRequest]) (*connect.Response[v1.GetRegistrationPolicyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.GetRegistrationPolicy is not implemented"))
 }
 
 func (UnimplementedIdentityServiceHandler) GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {

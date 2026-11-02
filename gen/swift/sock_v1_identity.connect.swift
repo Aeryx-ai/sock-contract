@@ -71,6 +71,10 @@ public protocol Sock_V1_IdentityServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `signOut`(request: Sock_V1_SignOutRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_SignOutResponse>
 
+    /// Anonymous. Whether registering needs an invite (feature flags spec).
+    @available(iOS 13, *)
+    func `getRegistrationPolicy`(request: Sock_V1_GetRegistrationPolicyRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_GetRegistrationPolicyResponse>
+
     @available(iOS 13, *)
     func `getMe`(request: Sock_V1_GetMeRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_GetMeResponse>
 
@@ -228,6 +232,11 @@ public final class Sock_V1_IdentityServiceClient: Sock_V1_IdentityServiceClientI
     }
 
     @available(iOS 13, *)
+    public func `getRegistrationPolicy`(request: Sock_V1_GetRegistrationPolicyRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_GetRegistrationPolicyResponse> {
+        return await self.client.unary(path: "/sock.v1.IdentityService/GetRegistrationPolicy", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
     public func `getMe`(request: Sock_V1_GetMeRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_GetMeResponse> {
         return await self.client.unary(path: "/sock.v1.IdentityService/GetMe", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -350,6 +359,7 @@ public final class Sock_V1_IdentityServiceClient: Sock_V1_IdentityServiceClientI
             public static let startPasskeySignIn = Connect.MethodSpec(name: "StartPasskeySignIn", service: "sock.v1.IdentityService", type: .unary)
             public static let signInWithPasskey = Connect.MethodSpec(name: "SignInWithPasskey", service: "sock.v1.IdentityService", type: .unary)
             public static let signOut = Connect.MethodSpec(name: "SignOut", service: "sock.v1.IdentityService", type: .unary)
+            public static let getRegistrationPolicy = Connect.MethodSpec(name: "GetRegistrationPolicy", service: "sock.v1.IdentityService", type: .unary)
             public static let getMe = Connect.MethodSpec(name: "GetMe", service: "sock.v1.IdentityService", type: .unary)
             public static let acceptTerms = Connect.MethodSpec(name: "AcceptTerms", service: "sock.v1.IdentityService", type: .unary)
             public static let getAccounts = Connect.MethodSpec(name: "GetAccounts", service: "sock.v1.IdentityService", type: .unary)

@@ -1,6 +1,6 @@
 # sock v1 domain model
 
-Pass 9: History Transfer. Pass 8. Language: [context map](context-map.md).
+Pass 10: feature flags. Pass 9: History Transfer. Pass 8. Language: [context map](context-map.md).
 
 ## Contexts
 
@@ -84,6 +84,7 @@ Erasure is not a field. An erased account is deleted outright (minimal retention
 - Erasing a human erases its puppets in the same transaction.
 - A suspended account authenticates nothing: no device survives `Suspend`, and sign-in is refused while the suspension exists.
 - A human registers only by accepting the current terms version.
+- A human registers by redeeming an invite, by the operator's waiver, or while registration is open ([feature flags](feature-flags.md)).
 - At most one trial per human, ever. Erasing the human erases it, and a new account is a new human.
 - At most one billing customer per human, and a billing customer belongs to one human.
 - A subscription belongs to the human whose billing customer Stripe names on it. The hub never reads an account id from Stripe metadata.
@@ -544,6 +545,39 @@ Value object, owned by `ConnectorGrant`, 0 or 1. The fact that the connector pup
 
 Entity, aggregate root. `sock-mcpd`'s own credential, `sock_ct_<id>_<secret>`, minted by `sockd connector token mint`, good only for `IssueConnectorPuppetToken` and `RevokeConnectorDevice`. Same shape and rules as `OperatorToken` (hash at rest, constant-time compare, fixed refusal) with `label`, `createdAt`, `expiresAt` (at most 365 days) and revocation by deletion.
 
+## FeatureFlag
+
+Entity, aggregate root. One per declared key, created by the migration that declares it, never deleted while any build reads it ([feature flags](feature-flags.md)).
+
+### Fields
+
+| Field | Type | Meaning |
+|---|---|---|
+| `key` | `FeatureFlagKey` | Identity. The closed set, today `open_registration` |
+| `enabled` | bool | The platform-wide value |
+
+`description` is not a field: it is the key's, declared in code beside it.
+
+### Behaviors
+
+- `Set(enabled)` (`SetFeatureFlag`): writes the value, records `OperatorAction(setFeatureFlag, FlagSet(key, enabled))` in the same transaction and notifies `feature_flags`. Setting the current value succeeds and is recorded.
+- `Enabled(accountId)`: the value, read from the hub's memory. `accountId` is zero for an anonymous caller. Today the answer ignores it.
+
+### Invariants
+
+- `key` is declared, and exactly one row exists per declared key. `SetFeatureFlag` for an undeclared key is `FIELD_INVALID`.
+- No state machine: a bool with no transition rules.
+
+### Relationships
+
+| With | Kind | Cardinality |
+|---|---|---|
+| `OperatorAction` (`setFeatureFlag`) | referenced by, through `FlagSet` | 1 to n |
+
+## FeatureFlagKey
+
+Enumeration, declared in the hub: `open_registration`. Adding a key is a code change and a migration, not an operator action.
+
 ## Invite
 
 Entity, aggregate root. One registration, once.
@@ -672,7 +706,7 @@ Entity, aggregate root, append-only. A record that the operator did something ov
 | `id` | int64 | Database-generated |
 | `operatorTokenId` | UUID | The verified token that made the call. Kept after the token is swept |
 | `action` | `OperatorActionKind` | What it did. `signInWithApple`: this token was minted by the console's Apple sign-in |
-| `target` | `OperatorActionTarget` | Sum by action: `ResolvedReport(reportId, subjectId)` for `resolveReport`, `ReinstatedAccount(accountId)` for `reinstateAccount`, `DecidedInviteRequest(requestId)` for `approveInviteRequest` and `declineInviteRequest` (the id outlives the request's retention delete, [invite-requests](invite-requests.md)), `ProGrantTarget(grantId)` for `grantPro` and `revokeProGrant`, none for `mintInvite` (the invite is gone once redeemed), `revokeOperatorToken` and `signInWithApple` (the token is the actor) and `eraseAccount` (the erased person leaves no trace) |
+| `target` | `OperatorActionTarget` | Sum by action: `ResolvedReport(reportId, subjectId)` for `resolveReport`, `ReinstatedAccount(accountId)` for `reinstateAccount`, `DecidedInviteRequest(requestId)` for `approveInviteRequest` and `declineInviteRequest` (the id outlives the request's retention delete, [invite-requests](invite-requests.md)), `ProGrantTarget(grantId)` for `grantPro` and `revokeProGrant`, `FlagSet(key, enabled)` for `setFeatureFlag`, none for `mintInvite` (the invite is gone once redeemed), `revokeOperatorToken` and `signInWithApple` (the token is the actor) and `eraseAccount` (the erased person leaves no trace) |
 | `at` | Timestamp | Database clock |
 
 ### Behaviors
@@ -1115,7 +1149,7 @@ Domain service. Reacts to `ReportFiled`: reads the reporter's and subject's hand
 
 `ConnectorGrantRevocationCause`: `owner`, `client`, `refreshReuse`, `codeReplay`, `erasure`, `unredeemed`.
 
-`OperatorActionKind`: `mintInvite`, `resolveReport`, `reinstateAccount`, `revokeOperatorToken`, `signInWithApple`, `eraseAccount`, `approveInviteRequest`, `declineInviteRequest` ([invite-requests](invite-requests.md)), `setMessageHold` ([email sign-in, pass 2](email-sign-in-pass-2.md)), `grantPro`, `revokeProGrant` ([Sock Pro billing](sock-pro-billing.md)).
+`OperatorActionKind`: `mintInvite`, `resolveReport`, `reinstateAccount`, `revokeOperatorToken`, `signInWithApple`, `eraseAccount`, `approveInviteRequest`, `declineInviteRequest` ([invite-requests](invite-requests.md)), `setMessageHold` ([email sign-in, pass 2](email-sign-in-pass-2.md)), `grantPro`, `revokeProGrant` ([Sock Pro billing](sock-pro-billing.md)), `setFeatureFlag` ([feature flags](feature-flags.md)).
 
 `ProPlan`: `monthly` ($14.99), `yearly` ($149.99), tax included.
 

@@ -42,8 +42,10 @@ Out of scope until the console has them: the Users RPCs (`ListHumans`, `GetHuman
 | `sock-admin requests list` | `ListInviteRequests` | `--state pending\|approved\|declined` (default every state), `--limit <1..100>`, `--after <request id>` | `<id>  <state>  <email>  requested <local time>` per request, newest first. `next: --after <id>` on stderr when the page is full. json: `InviteRequest` per line |
 | `sock-admin requests approve <request id>...` | `ApproveInviteRequests` | 1 to 100 distinct ids | `<id>  <outcome>` per id, in order (`approved`, `approved, no code`, `declined`, `not found`). Exit non-zero when any outcome is not `approved`. json: `ApproveInviteRequestResult` per line |
 | `sock-admin requests decline <request id>...` | `DeclineInviteRequests` | 1 to 100 distinct ids | As `approve`, with the decline outcomes |
+| `sock-admin flags list` | `GetFeatureFlags` | none | `<key>  on|off  <description>` per flag, then `  set by <label or id> at <local time>` when set; json: `FeatureFlag` per line |
+| `sock-admin flags set <key> on\|off` | `SetFeatureFlag` | key, value | `<key> on|off`; json: `FeatureFlag`. Asks for confirmation on a terminal; off one, `--yes` |
 
-`resolve` with `suspend` or `suspend-owner`, and `requests decline`, ask for confirmation on a terminal; off a terminal they need `--yes`.
+`resolve` with `suspend` or `suspend-owner`, `requests decline` and `flags set`, ask for confirmation on a terminal; off a terminal they need `--yes`.
 
 ## Contract changes
 

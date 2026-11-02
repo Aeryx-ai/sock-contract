@@ -79,6 +79,7 @@ Pass 1. Every human RPC in [api](api.md) has a `sock` command; this file is the 
 
 ## Not mapped
 
+- `GetRegistrationPolicy`: read by `sock login` once [CLI sign-in through AuthKit](cli-sign-in-through-authkit.md) lands; no command of its own.
 - `RegisterPush`: registers an APNs token; a CLI has none.
 - `OpenHistoryTransfer`: the apps' phone-to-desktop history transfer; a CLI holds no history to send or import.
 - `GetHistoryTransferKey`: the apps' phone-to-desktop history transfer; a CLI holds no history to send or import.

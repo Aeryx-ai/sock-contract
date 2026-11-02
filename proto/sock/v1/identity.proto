@@ -36,6 +36,8 @@ service IdentityService {
   rpc StartPasskeySignIn(StartPasskeySignInRequest) returns (StartPasskeySignInResponse) {}
   rpc SignInWithPasskey(SignInWithPasskeyRequest) returns (SignInWithPasskeyResponse) {}
   rpc SignOut(SignOutRequest) returns (SignOutResponse) {}
+  // Anonymous. Whether registering needs an invite (feature flags spec).
+  rpc GetRegistrationPolicy(GetRegistrationPolicyRequest) returns (GetRegistrationPolicyResponse) {}
 
   rpc GetMe(GetMeRequest) returns (GetMeResponse) {}
   rpc AcceptTerms(AcceptTermsRequest) returns (AcceptTermsResponse) {}
@@ -166,6 +168,11 @@ message RegisterWithEmailRequest {
 
 message RegisterWithEmailResponse {
   Session session = 1;
+}
+
+message GetRegistrationPolicyRequest {}
+message GetRegistrationPolicyResponse {
+  bool invite_required = 1;
 }
 
 message AddEmailSignInRequest {
