@@ -28,7 +28,11 @@ public let maxRecordBytes = 4 << 20
 /// Decodes an archive's records from bytes fed in any cut: a record split
 /// across feeds comes out of the feed that completes it.
 public struct ArchiveDecoder {
+    /// Bytes fed so far; those before `start` are already decoded. The decoded
+    /// part is dropped once it outgrows the rest, so a record fed in small
+    /// reads is not copied on every feed.
     private var pending = Data()
+    private var start = 0
 
     public init() {}
 
@@ -38,7 +42,7 @@ public struct ArchiveDecoder {
     public mutating func feed(_ bytes: Data) throws -> [Sock_V1_HistoryRecord] {
         pending.append(bytes)
         var records: [Sock_V1_HistoryRecord] = []
-        var at = pending.startIndex
+        var at = start
         while let (length, body) = try Self.prefix(pending, at), body + length <= pending.endIndex {
             do {
                 records.append(try Sock_V1_HistoryRecord(serializedBytes: pending[body..<body + length]))
@@ -47,29 +51,35 @@ public struct ArchiveDecoder {
             }
             at = body + length
         }
-        pending = Data(pending[at...])
+        start = at
+        if start - pending.startIndex > pending.endIndex - start {
+            pending = Data(pending[start...])
+            start = pending.startIndex
+        }
         return records
     }
 
     /// After the last bytes: throws when they end inside a record.
     public func finish() throws {
-        guard pending.isEmpty else { throw HistoryTransferError("read record: archive ends inside a record") }
+        guard start == pending.endIndex else { throw HistoryTransferError("read record: archive ends inside a record") }
     }
 
     /// The record length at `at` and where its bytes start, or nil while the
-    /// length itself is still cut short.
+    /// length itself is still cut short. Like Go's protowire, a varint is at
+    /// most 10 bytes and its 10th byte at most 1.
     private static func prefix(_ data: Data, _ at: Data.Index) throws -> (Int, Data.Index)? {
-        var length = 0
+        var length: UInt64 = 0
         var i = at
-        for shift in stride(from: 0, to: 64, by: 7) {
+        for shift in stride(from: UInt64(0), to: 64, by: 7) {
             guard i < data.endIndex else { return nil }
             let b = data[i]
             i += 1
-            length |= Int(b & 0x7F) << shift
-            guard length <= maxRecordBytes else {
+            if shift == 63 && b > 1 { throw HistoryTransferError("read record: length is not a varint") }
+            length |= UInt64(b & 0x7F) << shift
+            guard length <= UInt64(maxRecordBytes) else {
                 throw HistoryTransferError("read record: longer than \(maxRecordBytes) bytes")
             }
-            if b & 0x80 == 0 { return (length, i) }
+            if b & 0x80 == 0 { return (Int(length), i) }
         }
         throw HistoryTransferError("read record: length is not a varint")
     }

@@ -325,6 +325,16 @@ func varint(_ n: Int) -> Data {
     #expect(throws: HistoryTransferError.self) { try over.feed(varint(maxRecordBytes + 1)) }
     var huge = ArchiveDecoder()
     #expect(throws: HistoryTransferError.self) { try huge.feed(Data(repeating: 0xFF, count: 11)) }
+    // a 10 byte varint for 1 << 63 is Int.min as an Int: refused, not a trap
+    var wraps = ArchiveDecoder()
+    #expect(throws: HistoryTransferError.self) {
+        try wraps.feed(Data([0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x01]))
+    }
+    // a 10th byte above 1 overflows 64 bits, as Go's protowire refuses
+    var tenth = ArchiveDecoder()
+    #expect(throws: HistoryTransferError.self) {
+        try tenth.feed(Data([0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x02]))
+    }
     #expect(maxRecordBytes == 4 << 20)
 }
 
