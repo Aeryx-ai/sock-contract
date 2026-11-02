@@ -20,7 +20,91 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sock/v1/operator.proto.
  */
 export const file_sock_v1_operator: GenFile = /*@__PURE__*/
-  fileDesc("ChZzb2NrL3YxL29wZXJhdG9yLnByb3RvEgdzb2NrLnYxIlIKD0dyYW50UHJvUmVxdWVzdBISCgphY2NvdW50X2lkGAEgASgJEisKB2VuZHNfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIjQKEEdyYW50UHJvUmVzcG9uc2USIAoFZ3JhbnQYASABKAsyES5zb2NrLnYxLlByb0dyYW50IikKFVJldm9rZVByb0dyYW50UmVxdWVzdBIQCghncmFudF9pZBgBIAEoCSIYChZSZXZva2VQcm9HcmFudFJlc3BvbnNlIqMBCghQcm9HcmFudBIKCgJpZBgBIAEoCRIuCgpncmFudGVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIrCgdlbmRzX2F0GAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIuCgpyZXZva2VkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCJnCghQcm9UcmlhbBIuCgpzdGFydGVkX2F0GAEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIrCgdlbmRzX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCJjChZQcm9TdWJzY3JpcHRpb25TdW1tYXJ5EhcKD3N1YnNjcmlwdGlvbl9pZBgBIAEoCRIwCgxhY3RpdmVfdW50aWwYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIhcKFUdldE1lc3NhZ2VIb2xkUmVxdWVzdCImChZHZXRNZXNzYWdlSG9sZFJlc3BvbnNlEgwKBGRheXMYASABKAUiJQoVU2V0TWVzc2FnZUhvbGRSZXF1ZXN0EgwKBGRheXMYASABKAUiJgoWU2V0TWVzc2FnZUhvbGRSZXNwb25zZRIMCgRkYXlzGAEgASgFImsKC0ZlYXR1cmVGbGFnEgsKA2tleRgBIAEoCRITCgtkZXNjcmlwdGlvbhgCIAEoCRIPCgdlbmFibGVkGAMgASgIEikKCGxhc3Rfc2V0GAQgASgLMhcuc29jay52MS5GZWF0dXJlRmxhZ1NldCJxCg5GZWF0dXJlRmxhZ1NldBImCgJhdBgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASGQoRb3BlcmF0b3JfdG9rZW5faWQYAiABKAkSHAoUb3BlcmF0b3JfdG9rZW5fbGFiZWwYAyABKAkiGAoWR2V0RmVhdHVyZUZsYWdzUmVxdWVzdCI+ChdHZXRGZWF0dXJlRmxhZ3NSZXNwb25zZRIjCgVmbGFncxgBIAMoCzIULnNvY2sudjEuRmVhdHVyZUZsYWciNQoVU2V0RmVhdHVyZUZsYWdSZXF1ZXN0EgsKA2tleRgBIAEoCRIPCgdlbmFibGVkGAIgASgIIjwKFlNldEZlYXR1cmVGbGFnUmVzcG9uc2USIgoEZmxhZxgBIAEoCzIULnNvY2sudjEuRmVhdHVyZUZsYWciEwoRTWludEludml0ZVJlcXVlc3QiUgoSTWludEludml0ZVJlc3BvbnNlEgwKBGNvZGUYASABKAkSLgoKZXhwaXJlc19hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiPAoSTGlzdFJlcG9ydHNSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFEhcKD2FmdGVyX3JlcG9ydF9pZBgCIAEoCSJbChNMaXN0UmVwb3J0c1Jlc3BvbnNlEiAKB3JlcG9ydHMYASADKAsyDy5zb2NrLnYxLlJlcG9ydBIiCghhY2NvdW50cxgCIAMoCzIQLnNvY2sudjEuQWNjb3VudCJWChRSZXNvbHZlUmVwb3J0UmVxdWVzdBIRCglyZXBvcnRfaWQYASABKAkSKwoHb3V0Y29tZRgCIAEoDjIaLnNvY2sudjEuUmVzb2x1dGlvbk91dGNvbWUiQAoVUmVzb2x2ZVJlcG9ydFJlc3BvbnNlEicKCnJlc29sdXRpb24YASABKAsyEy5zb2NrLnYxLlJlc29sdXRpb24iLQoXUmVpbnN0YXRlQWNjb3VudFJlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCSIaChhSZWluc3RhdGVBY2NvdW50UmVzcG9uc2UiHAoaUmV2b2tlT3BlcmF0b3JUb2tlblJlcXVlc3QiHQobUmV2b2tlT3BlcmF0b3JUb2tlblJlc3BvbnNlIlMKEUxpc3RIdW1hbnNSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFEhgKEGFmdGVyX2FjY291bnRfaWQYAiABKAkSFQoNaGFuZGxlX3ByZWZpeBgDIAEoCSI7ChJMaXN0SHVtYW5zUmVzcG9uc2USJQoGaHVtYW5zGAEgAygLMhUuc29jay52MS5IdW1hblN1bW1hcnkiqAEKDEh1bWFuU3VtbWFyeRIhCgdhY2NvdW50GAEgASgLMhAuc29jay52MS5BY2NvdW50Ei0KCWpvaW5lZF9hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASMAoMc3VzcGVuZGVkX2F0GAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIUCgxwdXBwZXRfY291bnQYBCABKAUiJQoPR2V0SHVtYW5SZXF1ZXN0EhIKCmFjY291bnRfaWQYASABKAki8QIKEEdldEh1bWFuUmVzcG9uc2USJAoFaHVtYW4YASABKAsyFS5zb2NrLnYxLkh1bWFuU3VtbWFyeRIgCgdkZXZpY2VzGAIgAygLMg8uc29jay52MS5EZXZpY2USKwoHcHVwcGV0cxgDIAMoCzIaLnNvY2sudjEuUHVwcGV0V2l0aERldmljZXMSMwoRdGVybXNfYWNjZXB0YW5jZXMYBCADKAsyGC5zb2NrLnYxLlRlcm1zQWNjZXB0YW5jZRIVCg10ZXJtc19jdXJyZW50GAUgASgIEh8KA3BybxgGIAEoCzISLnNvY2sudjEuUHJvU3RhdHVzEiAKBXRyaWFsGAcgASgLMhEuc29jay52MS5Qcm9UcmlhbBI2Cg1zdWJzY3JpcHRpb25zGAggAygLMh8uc29jay52MS5Qcm9TdWJzY3JpcHRpb25TdW1tYXJ5EiEKBmdyYW50cxgJIAMoCzIRLnNvY2sudjEuUHJvR3JhbnQiUwoPVGVybXNBY2NlcHRhbmNlEg8KB3ZlcnNpb24YASABKAkSLwoLYWNjZXB0ZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIlcKGUxpc3RBY2NvdW50UmVwb3J0c1JlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCRINCgVsaW1pdBgCIAEoBRIXCg9hZnRlcl9yZXBvcnRfaWQYAyABKAkiaQoaTGlzdEFjY291bnRSZXBvcnRzUmVzcG9uc2USJwoHcmVwb3J0cxgBIAMoCzIWLnNvY2sudjEuUmVwb3J0U3VtbWFyeRIiCghhY2NvdW50cxgCIAMoCzIQLnNvY2sudjEuQWNjb3VudCLcAQoNUmVwb3J0U3VtbWFyeRIKCgJpZBgBIAEoCRITCgtyZXBvcnRlcl9pZBgCIAEoCRISCgpzdWJqZWN0X2lkGAMgASgJEiUKBnJlYXNvbhgEIAEoDjIVLnNvY2sudjEuUmVwb3J0UmVhc29uEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhYKDmV2aWRlbmNlX2NvdW50GAYgASgFEicKCnJlc29sdXRpb24YByABKAsyEy5zb2NrLnYxLlJlc29sdXRpb24iPwoRRXJhc2VIdW1hblJlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCRIWCg5jb25maXJtX2hhbmRsZRgCIAEoCSIUChJFcmFzZUh1bWFuUmVzcG9uc2UidgoeU2lnbkluT3BlcmF0b3JXaXRoQXBwbGVSZXF1ZXN0EhYKDmlkZW50aXR5X3Rva2VuGAEgASgJEg0KBW5vbmNlGAIgASgJEi0KBmNsaWVudBgDIAEoDjIdLnNvY2sudjEuT3BlcmF0b3JTaWduSW5DbGllbnQiYAofU2lnbkluT3BlcmF0b3JXaXRoQXBwbGVSZXNwb25zZRINCgV0b2tlbhgBIAEoCRIuCgpleHBpcmVzX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCJwChlMaXN0SW52aXRlUmVxdWVzdHNSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFEhgKEGFmdGVyX3JlcXVlc3RfaWQYAiABKAkSKgoFc3RhdGUYAyABKA4yGy5zb2NrLnYxLkludml0ZVJlcXVlc3RTdGF0ZSJGChpMaXN0SW52aXRlUmVxdWVzdHNSZXNwb25zZRIoCghyZXF1ZXN0cxgBIAMoCzIWLnNvY2sudjEuSW52aXRlUmVxdWVzdCIzChxBcHByb3ZlSW52aXRlUmVxdWVzdHNSZXF1ZXN0EhMKC3JlcXVlc3RfaWRzGAEgAygJIlUKHUFwcHJvdmVJbnZpdGVSZXF1ZXN0c1Jlc3BvbnNlEjQKB3Jlc3VsdHMYASADKAsyIy5zb2NrLnYxLkFwcHJvdmVJbnZpdGVSZXF1ZXN0UmVzdWx0IpABChpBcHByb3ZlSW52aXRlUmVxdWVzdFJlc3VsdBISCgpyZXF1ZXN0X2lkGAEgASgJEjUKB291dGNvbWUYAiABKA4yJC5zb2NrLnYxLkFwcHJvdmVJbnZpdGVSZXF1ZXN0T3V0Y29tZRInCgZpbnZpdGUYAyABKAsyFy5zb2NrLnYxLkFwcHJvdmVkSW52aXRlIjMKHERlY2xpbmVJbnZpdGVSZXF1ZXN0c1JlcXVlc3QSEwoLcmVxdWVzdF9pZHMYASADKAkiVQodRGVjbGluZUludml0ZVJlcXVlc3RzUmVzcG9uc2USNAoHcmVzdWx0cxgBIAMoCzIjLnNvY2sudjEuRGVjbGluZUludml0ZVJlcXVlc3RSZXN1bHQiZwoaRGVjbGluZUludml0ZVJlcXVlc3RSZXN1bHQSEgoKcmVxdWVzdF9pZBgBIAEoCRI1CgdvdXRjb21lGAIgASgOMiQuc29jay52MS5EZWNsaW5lSW52aXRlUmVxdWVzdE91dGNvbWUqhQEKFE9wZXJhdG9yU2lnbkluQ2xpZW50EicKI09QRVJBVE9SX1NJR05fSU5fQ0xJRU5UX1VOU1BFQ0lGSUVEEAASIwofT1BFUkFUT1JfU0lHTl9JTl9DTElFTlRfQ09OU09MRRABEh8KG09QRVJBVE9SX1NJR05fSU5fQ0xJRU5UX0NMSRACKqIBChJJbnZpdGVSZXF1ZXN0U3RhdGUSJAogSU5WSVRFX1JFUVVFU1RfU1RBVEVfVU5TUEVDSUZJRUQQABIgChxJTlZJVEVfUkVRVUVTVF9TVEFURV9QRU5ESU5HEAESIQodSU5WSVRFX1JFUVVFU1RfU1RBVEVfQVBQUk9WRUQQAhIhCh1JTlZJVEVfUkVRVUVTVF9TVEFURV9ERUNMSU5FRBADKooCChtBcHByb3ZlSW52aXRlUmVxdWVzdE91dGNvbWUSLgoqQVBQUk9WRV9JTlZJVEVfUkVRVUVTVF9PVVRDT01FX1VOU1BFQ0lGSUVEEAASKwonQVBQUk9WRV9JTlZJVEVfUkVRVUVTVF9PVVRDT01FX0FQUFJPVkVEEAESMwovQVBQUk9WRV9JTlZJVEVfUkVRVUVTVF9PVVRDT01FX0FQUFJPVkVEX05PX0NPREUQAhIrCidBUFBST1ZFX0lOVklURV9SRVFVRVNUX09VVENPTUVfREVDTElORUQQAxIsCihBUFBST1ZFX0lOVklURV9SRVFVRVNUX09VVENPTUVfTk9UX0ZPVU5EEAQq1QEKG0RlY2xpbmVJbnZpdGVSZXF1ZXN0T3V0Y29tZRIuCipERUNMSU5FX0lOVklURV9SRVFVRVNUX09VVENPTUVfVU5TUEVDSUZJRUQQABIrCidERUNMSU5FX0lOVklURV9SRVFVRVNUX09VVENPTUVfREVDTElORUQQARIrCidERUNMSU5FX0lOVklURV9SRVFVRVNUX09VVENPTUVfQVBQUk9WRUQQAhIsCihERUNMSU5FX0lOVklURV9SRVFVRVNUX09VVENPTUVfTk9UX0ZPVU5EEAMykQwKD09wZXJhdG9yU2VydmljZRJHCgpNaW50SW52aXRlEhouc29jay52MS5NaW50SW52aXRlUmVxdWVzdBobLnNvY2sudjEuTWludEludml0ZVJlc3BvbnNlIgASSgoLTGlzdFJlcG9ydHMSGy5zb2NrLnYxLkxpc3RSZXBvcnRzUmVxdWVzdBocLnNvY2sudjEuTGlzdFJlcG9ydHNSZXNwb25zZSIAElAKDVJlc29sdmVSZXBvcnQSHS5zb2NrLnYxLlJlc29sdmVSZXBvcnRSZXF1ZXN0Gh4uc29jay52MS5SZXNvbHZlUmVwb3J0UmVzcG9uc2UiABJZChBSZWluc3RhdGVBY2NvdW50EiAuc29jay52MS5SZWluc3RhdGVBY2NvdW50UmVxdWVzdBohLnNvY2sudjEuUmVpbnN0YXRlQWNjb3VudFJlc3BvbnNlIgASYgoTUmV2b2tlT3BlcmF0b3JUb2tlbhIjLnNvY2sudjEuUmV2b2tlT3BlcmF0b3JUb2tlblJlcXVlc3QaJC5zb2NrLnYxLlJldm9rZU9wZXJhdG9yVG9rZW5SZXNwb25zZSIAEkcKCkxpc3RIdW1hbnMSGi5zb2NrLnYxLkxpc3RIdW1hbnNSZXF1ZXN0Ghsuc29jay52MS5MaXN0SHVtYW5zUmVzcG9uc2UiABJBCghHZXRIdW1hbhIYLnNvY2sudjEuR2V0SHVtYW5SZXF1ZXN0Ghkuc29jay52MS5HZXRIdW1hblJlc3BvbnNlIgASXwoSTGlzdEFjY291bnRSZXBvcnRzEiIuc29jay52MS5MaXN0QWNjb3VudFJlcG9ydHNSZXF1ZXN0GiMuc29jay52MS5MaXN0QWNjb3VudFJlcG9ydHNSZXNwb25zZSIAEkcKCkVyYXNlSHVtYW4SGi5zb2NrLnYxLkVyYXNlSHVtYW5SZXF1ZXN0Ghsuc29jay52MS5FcmFzZUh1bWFuUmVzcG9uc2UiABJfChJMaXN0SW52aXRlUmVxdWVzdHMSIi5zb2NrLnYxLkxpc3RJbnZpdGVSZXF1ZXN0c1JlcXVlc3QaIy5zb2NrLnYxLkxpc3RJbnZpdGVSZXF1ZXN0c1Jlc3BvbnNlIgASaAoVQXBwcm92ZUludml0ZVJlcXVlc3RzEiUuc29jay52MS5BcHByb3ZlSW52aXRlUmVxdWVzdHNSZXF1ZXN0GiYuc29jay52MS5BcHByb3ZlSW52aXRlUmVxdWVzdHNSZXNwb25zZSIAEmgKFURlY2xpbmVJbnZpdGVSZXF1ZXN0cxIlLnNvY2sudjEuRGVjbGluZUludml0ZVJlcXVlc3RzUmVxdWVzdBomLnNvY2sudjEuRGVjbGluZUludml0ZVJlcXVlc3RzUmVzcG9uc2UiABJTCg5HZXRNZXNzYWdlSG9sZBIeLnNvY2sudjEuR2V0TWVzc2FnZUhvbGRSZXF1ZXN0Gh8uc29jay52MS5HZXRNZXNzYWdlSG9sZFJlc3BvbnNlIgASUwoOU2V0TWVzc2FnZUhvbGQSHi5zb2NrLnYxLlNldE1lc3NhZ2VIb2xkUmVxdWVzdBofLnNvY2sudjEuU2V0TWVzc2FnZUhvbGRSZXNwb25zZSIAElYKD0dldEZlYXR1cmVGbGFncxIfLnNvY2sudjEuR2V0RmVhdHVyZUZsYWdzUmVxdWVzdBogLnNvY2sudjEuR2V0RmVhdHVyZUZsYWdzUmVzcG9uc2UiABJTCg5TZXRGZWF0dXJlRmxhZxIeLnNvY2sudjEuU2V0RmVhdHVyZUZsYWdSZXF1ZXN0Gh8uc29jay52MS5TZXRGZWF0dXJlRmxhZ1Jlc3BvbnNlIgASQQoIR3JhbnRQcm8SGC5zb2NrLnYxLkdyYW50UHJvUmVxdWVzdBoZLnNvY2sudjEuR3JhbnRQcm9SZXNwb25zZSIAElMKDlJldm9rZVByb0dyYW50Eh4uc29jay52MS5SZXZva2VQcm9HcmFudFJlcXVlc3QaHy5zb2NrLnYxLlJldm9rZVByb0dyYW50UmVzcG9uc2UiADKHAQoVT3BlcmF0b3JTaWduSW5TZXJ2aWNlEm4KF1NpZ25Jbk9wZXJhdG9yV2l0aEFwcGxlEicuc29jay52MS5TaWduSW5PcGVyYXRvcldpdGhBcHBsZVJlcXVlc3QaKC5zb2NrLnYxLlNpZ25Jbk9wZXJhdG9yV2l0aEFwcGxlUmVzcG9uc2UiAEI5WjdnaXRodWIuY29tL2Flcnl4LWFpL3NvY2stY29udHJhY3QvZ2VuL2dvL3NvY2svdjE7c29ja3YxYgZwcm90bzM", [file_google_protobuf_timestamp, file_sock_v1_identity, file_sock_v1_invite_request, file_sock_v1_moderation, file_sock_v1_types]);
+  fileDesc("ChZzb2NrL3YxL29wZXJhdG9yLnByb3RvEgdzb2NrLnYxIhgKFk1pbnRUcmlhZ2VUb2tlblJlcXVlc3QiWAoXTWludFRyaWFnZVRva2VuUmVzcG9uc2USDQoFdG9rZW4YASABKAkSLgoKZXhwaXJlc19hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiGgoYVmVyaWZ5VHJpYWdlVG9rZW5SZXF1ZXN0Il0KGVZlcmlmeVRyaWFnZVRva2VuUmVzcG9uc2USEAoIdG9rZW5faWQYASABKAkSLgoKZXhwaXJlc19hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiUgoPR3JhbnRQcm9SZXF1ZXN0EhIKCmFjY291bnRfaWQYASABKAkSKwoHZW5kc19hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiNAoQR3JhbnRQcm9SZXNwb25zZRIgCgVncmFudBgBIAEoCzIRLnNvY2sudjEuUHJvR3JhbnQiKQoVUmV2b2tlUHJvR3JhbnRSZXF1ZXN0EhAKCGdyYW50X2lkGAEgASgJIhgKFlJldm9rZVByb0dyYW50UmVzcG9uc2UiowEKCFByb0dyYW50EgoKAmlkGAEgASgJEi4KCmdyYW50ZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEisKB2VuZHNfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnJldm9rZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wImcKCFByb1RyaWFsEi4KCnN0YXJ0ZWRfYXQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEisKB2VuZHNfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wImMKFlByb1N1YnNjcmlwdGlvblN1bW1hcnkSFwoPc3Vic2NyaXB0aW9uX2lkGAEgASgJEjAKDGFjdGl2ZV91bnRpbBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiFwoVR2V0TWVzc2FnZUhvbGRSZXF1ZXN0IiYKFkdldE1lc3NhZ2VIb2xkUmVzcG9uc2USDAoEZGF5cxgBIAEoBSIlChVTZXRNZXNzYWdlSG9sZFJlcXVlc3QSDAoEZGF5cxgBIAEoBSImChZTZXRNZXNzYWdlSG9sZFJlc3BvbnNlEgwKBGRheXMYASABKAUiawoLRmVhdHVyZUZsYWcSCwoDa2V5GAEgASgJEhMKC2Rlc2NyaXB0aW9uGAIgASgJEg8KB2VuYWJsZWQYAyABKAgSKQoIbGFzdF9zZXQYBCABKAsyFy5zb2NrLnYxLkZlYXR1cmVGbGFnU2V0InEKDkZlYXR1cmVGbGFnU2V0EiYKAmF0GAEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIZChFvcGVyYXRvcl90b2tlbl9pZBgCIAEoCRIcChRvcGVyYXRvcl90b2tlbl9sYWJlbBgDIAEoCSIYChZHZXRGZWF0dXJlRmxhZ3NSZXF1ZXN0Ij4KF0dldEZlYXR1cmVGbGFnc1Jlc3BvbnNlEiMKBWZsYWdzGAEgAygLMhQuc29jay52MS5GZWF0dXJlRmxhZyI1ChVTZXRGZWF0dXJlRmxhZ1JlcXVlc3QSCwoDa2V5GAEgASgJEg8KB2VuYWJsZWQYAiABKAgiPAoWU2V0RmVhdHVyZUZsYWdSZXNwb25zZRIiCgRmbGFnGAEgASgLMhQuc29jay52MS5GZWF0dXJlRmxhZyITChFNaW50SW52aXRlUmVxdWVzdCJSChJNaW50SW52aXRlUmVzcG9uc2USDAoEY29kZRgBIAEoCRIuCgpleHBpcmVzX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCI8ChJMaXN0UmVwb3J0c1JlcXVlc3QSDQoFbGltaXQYASABKAUSFwoPYWZ0ZXJfcmVwb3J0X2lkGAIgASgJIlsKE0xpc3RSZXBvcnRzUmVzcG9uc2USIAoHcmVwb3J0cxgBIAMoCzIPLnNvY2sudjEuUmVwb3J0EiIKCGFjY291bnRzGAIgAygLMhAuc29jay52MS5BY2NvdW50IlYKFFJlc29sdmVSZXBvcnRSZXF1ZXN0EhEKCXJlcG9ydF9pZBgBIAEoCRIrCgdvdXRjb21lGAIgASgOMhouc29jay52MS5SZXNvbHV0aW9uT3V0Y29tZSJAChVSZXNvbHZlUmVwb3J0UmVzcG9uc2USJwoKcmVzb2x1dGlvbhgBIAEoCzITLnNvY2sudjEuUmVzb2x1dGlvbiItChdSZWluc3RhdGVBY2NvdW50UmVxdWVzdBISCgphY2NvdW50X2lkGAEgASgJIhoKGFJlaW5zdGF0ZUFjY291bnRSZXNwb25zZSIcChpSZXZva2VPcGVyYXRvclRva2VuUmVxdWVzdCIdChtSZXZva2VPcGVyYXRvclRva2VuUmVzcG9uc2UiUwoRTGlzdEh1bWFuc1JlcXVlc3QSDQoFbGltaXQYASABKAUSGAoQYWZ0ZXJfYWNjb3VudF9pZBgCIAEoCRIVCg1oYW5kbGVfcHJlZml4GAMgASgJIjsKEkxpc3RIdW1hbnNSZXNwb25zZRIlCgZodW1hbnMYASADKAsyFS5zb2NrLnYxLkh1bWFuU3VtbWFyeSKoAQoMSHVtYW5TdW1tYXJ5EiEKB2FjY291bnQYASABKAsyEC5zb2NrLnYxLkFjY291bnQSLQoJam9pbmVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxzdXNwZW5kZWRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhQKDHB1cHBldF9jb3VudBgEIAEoBSIlCg9HZXRIdW1hblJlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCSLxAgoQR2V0SHVtYW5SZXNwb25zZRIkCgVodW1hbhgBIAEoCzIVLnNvY2sudjEuSHVtYW5TdW1tYXJ5EiAKB2RldmljZXMYAiADKAsyDy5zb2NrLnYxLkRldmljZRIrCgdwdXBwZXRzGAMgAygLMhouc29jay52MS5QdXBwZXRXaXRoRGV2aWNlcxIzChF0ZXJtc19hY2NlcHRhbmNlcxgEIAMoCzIYLnNvY2sudjEuVGVybXNBY2NlcHRhbmNlEhUKDXRlcm1zX2N1cnJlbnQYBSABKAgSHwoDcHJvGAYgASgLMhIuc29jay52MS5Qcm9TdGF0dXMSIAoFdHJpYWwYByABKAsyES5zb2NrLnYxLlByb1RyaWFsEjYKDXN1YnNjcmlwdGlvbnMYCCADKAsyHy5zb2NrLnYxLlByb1N1YnNjcmlwdGlvblN1bW1hcnkSIQoGZ3JhbnRzGAkgAygLMhEuc29jay52MS5Qcm9HcmFudCJTCg9UZXJtc0FjY2VwdGFuY2USDwoHdmVyc2lvbhgBIAEoCRIvCgthY2NlcHRlZF9hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiVwoZTGlzdEFjY291bnRSZXBvcnRzUmVxdWVzdBISCgphY2NvdW50X2lkGAEgASgJEg0KBWxpbWl0GAIgASgFEhcKD2FmdGVyX3JlcG9ydF9pZBgDIAEoCSJpChpMaXN0QWNjb3VudFJlcG9ydHNSZXNwb25zZRInCgdyZXBvcnRzGAEgAygLMhYuc29jay52MS5SZXBvcnRTdW1tYXJ5EiIKCGFjY291bnRzGAIgAygLMhAuc29jay52MS5BY2NvdW50ItwBCg1SZXBvcnRTdW1tYXJ5EgoKAmlkGAEgASgJEhMKC3JlcG9ydGVyX2lkGAIgASgJEhIKCnN1YmplY3RfaWQYAyABKAkSJQoGcmVhc29uGAQgASgOMhUuc29jay52MS5SZXBvcnRSZWFzb24SLgoKY3JlYXRlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASFgoOZXZpZGVuY2VfY291bnQYBiABKAUSJwoKcmVzb2x1dGlvbhgHIAEoCzITLnNvY2sudjEuUmVzb2x1dGlvbiI/ChFFcmFzZUh1bWFuUmVxdWVzdBISCgphY2NvdW50X2lkGAEgASgJEhYKDmNvbmZpcm1faGFuZGxlGAIgASgJIhQKEkVyYXNlSHVtYW5SZXNwb25zZSJ2Ch5TaWduSW5PcGVyYXRvcldpdGhBcHBsZVJlcXVlc3QSFgoOaWRlbnRpdHlfdG9rZW4YASABKAkSDQoFbm9uY2UYAiABKAkSLQoGY2xpZW50GAMgASgOMh0uc29jay52MS5PcGVyYXRvclNpZ25JbkNsaWVudCJgCh9TaWduSW5PcGVyYXRvcldpdGhBcHBsZVJlc3BvbnNlEg0KBXRva2VuGAEgASgJEi4KCmV4cGlyZXNfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wInAKGUxpc3RJbnZpdGVSZXF1ZXN0c1JlcXVlc3QSDQoFbGltaXQYASABKAUSGAoQYWZ0ZXJfcmVxdWVzdF9pZBgCIAEoCRIqCgVzdGF0ZRgDIAEoDjIbLnNvY2sudjEuSW52aXRlUmVxdWVzdFN0YXRlIkYKGkxpc3RJbnZpdGVSZXF1ZXN0c1Jlc3BvbnNlEigKCHJlcXVlc3RzGAEgAygLMhYuc29jay52MS5JbnZpdGVSZXF1ZXN0IjMKHEFwcHJvdmVJbnZpdGVSZXF1ZXN0c1JlcXVlc3QSEwoLcmVxdWVzdF9pZHMYASADKAkiVQodQXBwcm92ZUludml0ZVJlcXVlc3RzUmVzcG9uc2USNAoHcmVzdWx0cxgBIAMoCzIjLnNvY2sudjEuQXBwcm92ZUludml0ZVJlcXVlc3RSZXN1bHQikAEKGkFwcHJvdmVJbnZpdGVSZXF1ZXN0UmVzdWx0EhIKCnJlcXVlc3RfaWQYASABKAkSNQoHb3V0Y29tZRgCIAEoDjIkLnNvY2sudjEuQXBwcm92ZUludml0ZVJlcXVlc3RPdXRjb21lEicKBmludml0ZRgDIAEoCzIXLnNvY2sudjEuQXBwcm92ZWRJbnZpdGUiMwocRGVjbGluZUludml0ZVJlcXVlc3RzUmVxdWVzdBITCgtyZXF1ZXN0X2lkcxgBIAMoCSJVCh1EZWNsaW5lSW52aXRlUmVxdWVzdHNSZXNwb25zZRI0CgdyZXN1bHRzGAEgAygLMiMuc29jay52MS5EZWNsaW5lSW52aXRlUmVxdWVzdFJlc3VsdCJnChpEZWNsaW5lSW52aXRlUmVxdWVzdFJlc3VsdBISCgpyZXF1ZXN0X2lkGAEgASgJEjUKB291dGNvbWUYAiABKA4yJC5zb2NrLnYxLkRlY2xpbmVJbnZpdGVSZXF1ZXN0T3V0Y29tZSqFAQoUT3BlcmF0b3JTaWduSW5DbGllbnQSJwojT1BFUkFUT1JfU0lHTl9JTl9DTElFTlRfVU5TUEVDSUZJRUQQABIjCh9PUEVSQVRPUl9TSUdOX0lOX0NMSUVOVF9DT05TT0xFEAESHwobT1BFUkFUT1JfU0lHTl9JTl9DTElFTlRfQ0xJEAIqogEKEkludml0ZVJlcXVlc3RTdGF0ZRIkCiBJTlZJVEVfUkVRVUVTVF9TVEFURV9VTlNQRUNJRklFRBAAEiAKHElOVklURV9SRVFVRVNUX1NUQVRFX1BFTkRJTkcQARIhCh1JTlZJVEVfUkVRVUVTVF9TVEFURV9BUFBST1ZFRBACEiEKHUlOVklURV9SRVFVRVNUX1NUQVRFX0RFQ0xJTkVEEAMqigIKG0FwcHJvdmVJbnZpdGVSZXF1ZXN0T3V0Y29tZRIuCipBUFBST1ZFX0lOVklURV9SRVFVRVNUX09VVENPTUVfVU5TUEVDSUZJRUQQABIrCidBUFBST1ZFX0lOVklURV9SRVFVRVNUX09VVENPTUVfQVBQUk9WRUQQARIzCi9BUFBST1ZFX0lOVklURV9SRVFVRVNUX09VVENPTUVfQVBQUk9WRURfTk9fQ09ERRACEisKJ0FQUFJPVkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9ERUNMSU5FRBADEiwKKEFQUFJPVkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9OT1RfRk9VTkQQBCrVAQobRGVjbGluZUludml0ZVJlcXVlc3RPdXRjb21lEi4KKkRFQ0xJTkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9VTlNQRUNJRklFRBAAEisKJ0RFQ0xJTkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9ERUNMSU5FRBABEisKJ0RFQ0xJTkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9BUFBST1ZFRBACEiwKKERFQ0xJTkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9OT1RfRk9VTkQQAzLHDQoPT3BlcmF0b3JTZXJ2aWNlEkcKCk1pbnRJbnZpdGUSGi5zb2NrLnYxLk1pbnRJbnZpdGVSZXF1ZXN0Ghsuc29jay52MS5NaW50SW52aXRlUmVzcG9uc2UiABJKCgtMaXN0UmVwb3J0cxIbLnNvY2sudjEuTGlzdFJlcG9ydHNSZXF1ZXN0Ghwuc29jay52MS5MaXN0UmVwb3J0c1Jlc3BvbnNlIgASUAoNUmVzb2x2ZVJlcG9ydBIdLnNvY2sudjEuUmVzb2x2ZVJlcG9ydFJlcXVlc3QaHi5zb2NrLnYxLlJlc29sdmVSZXBvcnRSZXNwb25zZSIAElkKEFJlaW5zdGF0ZUFjY291bnQSIC5zb2NrLnYxLlJlaW5zdGF0ZUFjY291bnRSZXF1ZXN0GiEuc29jay52MS5SZWluc3RhdGVBY2NvdW50UmVzcG9uc2UiABJiChNSZXZva2VPcGVyYXRvclRva2VuEiMuc29jay52MS5SZXZva2VPcGVyYXRvclRva2VuUmVxdWVzdBokLnNvY2sudjEuUmV2b2tlT3BlcmF0b3JUb2tlblJlc3BvbnNlIgASRwoKTGlzdEh1bWFucxIaLnNvY2sudjEuTGlzdEh1bWFuc1JlcXVlc3QaGy5zb2NrLnYxLkxpc3RIdW1hbnNSZXNwb25zZSIAEkEKCEdldEh1bWFuEhguc29jay52MS5HZXRIdW1hblJlcXVlc3QaGS5zb2NrLnYxLkdldEh1bWFuUmVzcG9uc2UiABJfChJMaXN0QWNjb3VudFJlcG9ydHMSIi5zb2NrLnYxLkxpc3RBY2NvdW50UmVwb3J0c1JlcXVlc3QaIy5zb2NrLnYxLkxpc3RBY2NvdW50UmVwb3J0c1Jlc3BvbnNlIgASRwoKRXJhc2VIdW1hbhIaLnNvY2sudjEuRXJhc2VIdW1hblJlcXVlc3QaGy5zb2NrLnYxLkVyYXNlSHVtYW5SZXNwb25zZSIAEl8KEkxpc3RJbnZpdGVSZXF1ZXN0cxIiLnNvY2sudjEuTGlzdEludml0ZVJlcXVlc3RzUmVxdWVzdBojLnNvY2sudjEuTGlzdEludml0ZVJlcXVlc3RzUmVzcG9uc2UiABJoChVBcHByb3ZlSW52aXRlUmVxdWVzdHMSJS5zb2NrLnYxLkFwcHJvdmVJbnZpdGVSZXF1ZXN0c1JlcXVlc3QaJi5zb2NrLnYxLkFwcHJvdmVJbnZpdGVSZXF1ZXN0c1Jlc3BvbnNlIgASaAoVRGVjbGluZUludml0ZVJlcXVlc3RzEiUuc29jay52MS5EZWNsaW5lSW52aXRlUmVxdWVzdHNSZXF1ZXN0GiYuc29jay52MS5EZWNsaW5lSW52aXRlUmVxdWVzdHNSZXNwb25zZSIAElMKDkdldE1lc3NhZ2VIb2xkEh4uc29jay52MS5HZXRNZXNzYWdlSG9sZFJlcXVlc3QaHy5zb2NrLnYxLkdldE1lc3NhZ2VIb2xkUmVzcG9uc2UiABJTCg5TZXRNZXNzYWdlSG9sZBIeLnNvY2sudjEuU2V0TWVzc2FnZUhvbGRSZXF1ZXN0Gh8uc29jay52MS5TZXRNZXNzYWdlSG9sZFJlc3BvbnNlIgASVgoPR2V0RmVhdHVyZUZsYWdzEh8uc29jay52MS5HZXRGZWF0dXJlRmxhZ3NSZXF1ZXN0GiAuc29jay52MS5HZXRGZWF0dXJlRmxhZ3NSZXNwb25zZSIAElMKDlNldEZlYXR1cmVGbGFnEh4uc29jay52MS5TZXRGZWF0dXJlRmxhZ1JlcXVlc3QaHy5zb2NrLnYxLlNldEZlYXR1cmVGbGFnUmVzcG9uc2UiABJBCghHcmFudFBybxIYLnNvY2sudjEuR3JhbnRQcm9SZXF1ZXN0Ghkuc29jay52MS5HcmFudFByb1Jlc3BvbnNlIgASUwoOUmV2b2tlUHJvR3JhbnQSHi5zb2NrLnYxLlJldm9rZVByb0dyYW50UmVxdWVzdBofLnNvY2sudjEuUmV2b2tlUHJvR3JhbnRSZXNwb25zZSIAElYKD01pbnRUcmlhZ2VUb2tlbhIfLnNvY2sudjEuTWludFRyaWFnZVRva2VuUmVxdWVzdBogLnNvY2sudjEuTWludFRyaWFnZVRva2VuUmVzcG9uc2UiABJcChFWZXJpZnlUcmlhZ2VUb2tlbhIhLnNvY2sudjEuVmVyaWZ5VHJpYWdlVG9rZW5SZXF1ZXN0GiIuc29jay52MS5WZXJpZnlUcmlhZ2VUb2tlblJlc3BvbnNlIgAyhwEKFU9wZXJhdG9yU2lnbkluU2VydmljZRJuChdTaWduSW5PcGVyYXRvcldpdGhBcHBsZRInLnNvY2sudjEuU2lnbkluT3BlcmF0b3JXaXRoQXBwbGVSZXF1ZXN0Giguc29jay52MS5TaWduSW5PcGVyYXRvcldpdGhBcHBsZVJlc3BvbnNlIgBCOVo3Z2l0aHViLmNvbS9hZXJ5eC1haS9zb2NrLWNvbnRyYWN0L2dlbi9nby9zb2NrL3YxO3NvY2t2MWIGcHJvdG8z", [file_google_protobuf_timestamp, file_sock_v1_identity, file_sock_v1_invite_request, file_sock_v1_moderation, file_sock_v1_types]);
+
+/**
+ * Not idempotent: each call mints a new token. The console calls it once
+ * per sign-in.
+ *
+ * @generated from message sock.v1.MintTriageTokenRequest
+ */
+export type MintTriageTokenRequest = Message<"sock.v1.MintTriageTokenRequest"> & {
+};
+
+/**
+ * Describes the message sock.v1.MintTriageTokenRequest.
+ * Use `create(MintTriageTokenRequestSchema)` to create a new message.
+ */
+export const MintTriageTokenRequestSchema: GenMessage<MintTriageTokenRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_operator, 0);
+
+/**
+ * @generated from message sock.v1.MintTriageTokenResponse
+ */
+export type MintTriageTokenResponse = Message<"sock.v1.MintTriageTokenResponse"> & {
+  /**
+   * sock_ot_<token id>_<secret>, scope triage. Returned once; the server
+   * keeps only its hash. Revoking the full token that minted it revokes it.
+   *
+   * @generated from field: string token = 1;
+   */
+  token: string;
+
+  /**
+   * The earlier of the presenting token's expiry and 12 hours after mint.
+   *
+   * @generated from field: google.protobuf.Timestamp expires_at = 2;
+   */
+  expiresAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message sock.v1.MintTriageTokenResponse.
+ * Use `create(MintTriageTokenResponseSchema)` to create a new message.
+ */
+export const MintTriageTokenResponseSchema: GenMessage<MintTriageTokenResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_operator, 1);
+
+/**
+ * Checks the presenting triage token and nothing else. A token that is
+ * unknown, expired or revoked is CALLER_NOT_ALLOWED, as on every
+ * OperatorService RPC.
+ *
+ * @generated from message sock.v1.VerifyTriageTokenRequest
+ */
+export type VerifyTriageTokenRequest = Message<"sock.v1.VerifyTriageTokenRequest"> & {
+};
+
+/**
+ * Describes the message sock.v1.VerifyTriageTokenRequest.
+ * Use `create(VerifyTriageTokenRequestSchema)` to create a new message.
+ */
+export const VerifyTriageTokenRequestSchema: GenMessage<VerifyTriageTokenRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_operator, 2);
+
+/**
+ * @generated from message sock.v1.VerifyTriageTokenResponse
+ */
+export type VerifyTriageTokenResponse = Message<"sock.v1.VerifyTriageTokenResponse"> & {
+  /**
+   * The presenting token's id.
+   *
+   * @generated from field: string token_id = 1;
+   */
+  tokenId: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp expires_at = 2;
+   */
+  expiresAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message sock.v1.VerifyTriageTokenResponse.
+ * Use `create(VerifyTriageTokenResponseSchema)` to create a new message.
+ */
+export const VerifyTriageTokenResponseSchema: GenMessage<VerifyTriageTokenResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_operator, 3);
 
 /**
  * Not idempotent: each call adds a grant. GetHuman lists them, so a retry
@@ -49,7 +133,7 @@ export type GrantProRequest = Message<"sock.v1.GrantProRequest"> & {
  * Use `create(GrantProRequestSchema)` to create a new message.
  */
 export const GrantProRequestSchema: GenMessage<GrantProRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 0);
+  messageDesc(file_sock_v1_operator, 4);
 
 /**
  * @generated from message sock.v1.GrantProResponse
@@ -66,7 +150,7 @@ export type GrantProResponse = Message<"sock.v1.GrantProResponse"> & {
  * Use `create(GrantProResponseSchema)` to create a new message.
  */
 export const GrantProResponseSchema: GenMessage<GrantProResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 1);
+  messageDesc(file_sock_v1_operator, 5);
 
 /**
  * Idempotent: revoking a revoked grant succeeds and records another action.
@@ -85,7 +169,7 @@ export type RevokeProGrantRequest = Message<"sock.v1.RevokeProGrantRequest"> & {
  * Use `create(RevokeProGrantRequestSchema)` to create a new message.
  */
 export const RevokeProGrantRequestSchema: GenMessage<RevokeProGrantRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 2);
+  messageDesc(file_sock_v1_operator, 6);
 
 /**
  * @generated from message sock.v1.RevokeProGrantResponse
@@ -98,7 +182,7 @@ export type RevokeProGrantResponse = Message<"sock.v1.RevokeProGrantResponse"> &
  * Use `create(RevokeProGrantResponseSchema)` to create a new message.
  */
 export const RevokeProGrantResponseSchema: GenMessage<RevokeProGrantResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 3);
+  messageDesc(file_sock_v1_operator, 7);
 
 /**
  * ProGrant is free Sock Pro the operator gave a human.
@@ -136,7 +220,7 @@ export type ProGrant = Message<"sock.v1.ProGrant"> & {
  * Use `create(ProGrantSchema)` to create a new message.
  */
 export const ProGrantSchema: GenMessage<ProGrant> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 4);
+  messageDesc(file_sock_v1_operator, 8);
 
 /**
  * ProTrial is a human's one trial.
@@ -162,7 +246,7 @@ export type ProTrial = Message<"sock.v1.ProTrial"> & {
  * Use `create(ProTrialSchema)` to create a new message.
  */
 export const ProTrialSchema: GenMessage<ProTrial> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 5);
+  messageDesc(file_sock_v1_operator, 9);
 
 /**
  * ProSubscriptionSummary is a Stripe subscription as the hub last fetched it.
@@ -190,7 +274,7 @@ export type ProSubscriptionSummary = Message<"sock.v1.ProSubscriptionSummary"> &
  * Use `create(ProSubscriptionSummarySchema)` to create a new message.
  */
 export const ProSubscriptionSummarySchema: GenMessage<ProSubscriptionSummary> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 6);
+  messageDesc(file_sock_v1_operator, 10);
 
 /**
  * @generated from message sock.v1.GetMessageHoldRequest
@@ -203,7 +287,7 @@ export type GetMessageHoldRequest = Message<"sock.v1.GetMessageHoldRequest"> & {
  * Use `create(GetMessageHoldRequestSchema)` to create a new message.
  */
 export const GetMessageHoldRequestSchema: GenMessage<GetMessageHoldRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 7);
+  messageDesc(file_sock_v1_operator, 11);
 
 /**
  * @generated from message sock.v1.GetMessageHoldResponse
@@ -220,7 +304,7 @@ export type GetMessageHoldResponse = Message<"sock.v1.GetMessageHoldResponse"> &
  * Use `create(GetMessageHoldResponseSchema)` to create a new message.
  */
 export const GetMessageHoldResponseSchema: GenMessage<GetMessageHoldResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 8);
+  messageDesc(file_sock_v1_operator, 12);
 
 /**
  * @generated from message sock.v1.SetMessageHoldRequest
@@ -240,7 +324,7 @@ export type SetMessageHoldRequest = Message<"sock.v1.SetMessageHoldRequest"> & {
  * Use `create(SetMessageHoldRequestSchema)` to create a new message.
  */
 export const SetMessageHoldRequestSchema: GenMessage<SetMessageHoldRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 9);
+  messageDesc(file_sock_v1_operator, 13);
 
 /**
  * @generated from message sock.v1.SetMessageHoldResponse
@@ -259,7 +343,7 @@ export type SetMessageHoldResponse = Message<"sock.v1.SetMessageHoldResponse"> &
  * Use `create(SetMessageHoldResponseSchema)` to create a new message.
  */
 export const SetMessageHoldResponseSchema: GenMessage<SetMessageHoldResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 10);
+  messageDesc(file_sock_v1_operator, 14);
 
 /**
  * @generated from message sock.v1.FeatureFlag
@@ -293,7 +377,7 @@ export type FeatureFlag = Message<"sock.v1.FeatureFlag"> & {
  * Use `create(FeatureFlagSchema)` to create a new message.
  */
 export const FeatureFlagSchema: GenMessage<FeatureFlag> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 11);
+  messageDesc(file_sock_v1_operator, 15);
 
 /**
  * @generated from message sock.v1.FeatureFlagSet
@@ -322,7 +406,7 @@ export type FeatureFlagSet = Message<"sock.v1.FeatureFlagSet"> & {
  * Use `create(FeatureFlagSetSchema)` to create a new message.
  */
 export const FeatureFlagSetSchema: GenMessage<FeatureFlagSet> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 12);
+  messageDesc(file_sock_v1_operator, 16);
 
 /**
  * @generated from message sock.v1.GetFeatureFlagsRequest
@@ -335,7 +419,7 @@ export type GetFeatureFlagsRequest = Message<"sock.v1.GetFeatureFlagsRequest"> &
  * Use `create(GetFeatureFlagsRequestSchema)` to create a new message.
  */
 export const GetFeatureFlagsRequestSchema: GenMessage<GetFeatureFlagsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 13);
+  messageDesc(file_sock_v1_operator, 17);
 
 /**
  * @generated from message sock.v1.GetFeatureFlagsResponse
@@ -352,7 +436,7 @@ export type GetFeatureFlagsResponse = Message<"sock.v1.GetFeatureFlagsResponse">
  * Use `create(GetFeatureFlagsResponseSchema)` to create a new message.
  */
 export const GetFeatureFlagsResponseSchema: GenMessage<GetFeatureFlagsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 14);
+  messageDesc(file_sock_v1_operator, 18);
 
 /**
  * @generated from message sock.v1.SetFeatureFlagRequest
@@ -374,7 +458,7 @@ export type SetFeatureFlagRequest = Message<"sock.v1.SetFeatureFlagRequest"> & {
  * Use `create(SetFeatureFlagRequestSchema)` to create a new message.
  */
 export const SetFeatureFlagRequestSchema: GenMessage<SetFeatureFlagRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 15);
+  messageDesc(file_sock_v1_operator, 19);
 
 /**
  * @generated from message sock.v1.SetFeatureFlagResponse
@@ -391,7 +475,7 @@ export type SetFeatureFlagResponse = Message<"sock.v1.SetFeatureFlagResponse"> &
  * Use `create(SetFeatureFlagResponseSchema)` to create a new message.
  */
 export const SetFeatureFlagResponseSchema: GenMessage<SetFeatureFlagResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 16);
+  messageDesc(file_sock_v1_operator, 20);
 
 /**
  * @generated from message sock.v1.MintInviteRequest
@@ -404,7 +488,7 @@ export type MintInviteRequest = Message<"sock.v1.MintInviteRequest"> & {
  * Use `create(MintInviteRequestSchema)` to create a new message.
  */
 export const MintInviteRequestSchema: GenMessage<MintInviteRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 17);
+  messageDesc(file_sock_v1_operator, 21);
 
 /**
  * @generated from message sock.v1.MintInviteResponse
@@ -433,7 +517,7 @@ export type MintInviteResponse = Message<"sock.v1.MintInviteResponse"> & {
  * Use `create(MintInviteResponseSchema)` to create a new message.
  */
 export const MintInviteResponseSchema: GenMessage<MintInviteResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 18);
+  messageDesc(file_sock_v1_operator, 22);
 
 /**
  * @generated from message sock.v1.ListReportsRequest
@@ -460,7 +544,7 @@ export type ListReportsRequest = Message<"sock.v1.ListReportsRequest"> & {
  * Use `create(ListReportsRequestSchema)` to create a new message.
  */
 export const ListReportsRequestSchema: GenMessage<ListReportsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 19);
+  messageDesc(file_sock_v1_operator, 23);
 
 /**
  * @generated from message sock.v1.ListReportsResponse
@@ -489,7 +573,7 @@ export type ListReportsResponse = Message<"sock.v1.ListReportsResponse"> & {
  * Use `create(ListReportsResponseSchema)` to create a new message.
  */
 export const ListReportsResponseSchema: GenMessage<ListReportsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 20);
+  messageDesc(file_sock_v1_operator, 24);
 
 /**
  * @generated from message sock.v1.ResolveReportRequest
@@ -513,7 +597,7 @@ export type ResolveReportRequest = Message<"sock.v1.ResolveReportRequest"> & {
  * Use `create(ResolveReportRequestSchema)` to create a new message.
  */
 export const ResolveReportRequestSchema: GenMessage<ResolveReportRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 21);
+  messageDesc(file_sock_v1_operator, 25);
 
 /**
  * @generated from message sock.v1.ResolveReportResponse
@@ -533,7 +617,7 @@ export type ResolveReportResponse = Message<"sock.v1.ResolveReportResponse"> & {
  * Use `create(ResolveReportResponseSchema)` to create a new message.
  */
 export const ResolveReportResponseSchema: GenMessage<ResolveReportResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 22);
+  messageDesc(file_sock_v1_operator, 26);
 
 /**
  * @generated from message sock.v1.ReinstateAccountRequest
@@ -553,7 +637,7 @@ export type ReinstateAccountRequest = Message<"sock.v1.ReinstateAccountRequest">
  * Use `create(ReinstateAccountRequestSchema)` to create a new message.
  */
 export const ReinstateAccountRequestSchema: GenMessage<ReinstateAccountRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 23);
+  messageDesc(file_sock_v1_operator, 27);
 
 /**
  * @generated from message sock.v1.ReinstateAccountResponse
@@ -566,13 +650,14 @@ export type ReinstateAccountResponse = Message<"sock.v1.ReinstateAccountResponse
  * Use `create(ReinstateAccountResponseSchema)` to create a new message.
  */
 export const ReinstateAccountResponseSchema: GenMessage<ReinstateAccountResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 24);
+  messageDesc(file_sock_v1_operator, 28);
 
 /**
- * Revokes the operator token the request presents. For a CLI-minted token it
- * also deletes the invites it minted that are still unredeemed; a console
- * sign-in token's invites survive. Other tokens are revoked with the
- * bootstrap CLI.
+ * Revokes the operator token the request presents, and every triage token
+ * derived from it. For a CLI-minted token it also deletes the invites it
+ * minted that are still unredeemed; a console sign-in token's invites
+ * survive. Any scope may call it, triage included. Other tokens are revoked
+ * with the bootstrap CLI.
  *
  * @generated from message sock.v1.RevokeOperatorTokenRequest
  */
@@ -584,7 +669,7 @@ export type RevokeOperatorTokenRequest = Message<"sock.v1.RevokeOperatorTokenReq
  * Use `create(RevokeOperatorTokenRequestSchema)` to create a new message.
  */
 export const RevokeOperatorTokenRequestSchema: GenMessage<RevokeOperatorTokenRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 25);
+  messageDesc(file_sock_v1_operator, 29);
 
 /**
  * @generated from message sock.v1.RevokeOperatorTokenResponse
@@ -597,7 +682,7 @@ export type RevokeOperatorTokenResponse = Message<"sock.v1.RevokeOperatorTokenRe
  * Use `create(RevokeOperatorTokenResponseSchema)` to create a new message.
  */
 export const RevokeOperatorTokenResponseSchema: GenMessage<RevokeOperatorTokenResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 26);
+  messageDesc(file_sock_v1_operator, 30);
 
 /**
  * @generated from message sock.v1.ListHumansRequest
@@ -633,7 +718,7 @@ export type ListHumansRequest = Message<"sock.v1.ListHumansRequest"> & {
  * Use `create(ListHumansRequestSchema)` to create a new message.
  */
 export const ListHumansRequestSchema: GenMessage<ListHumansRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 27);
+  messageDesc(file_sock_v1_operator, 31);
 
 /**
  * @generated from message sock.v1.ListHumansResponse
@@ -653,7 +738,7 @@ export type ListHumansResponse = Message<"sock.v1.ListHumansResponse"> & {
  * Use `create(ListHumansResponseSchema)` to create a new message.
  */
 export const ListHumansResponseSchema: GenMessage<ListHumansResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 28);
+  messageDesc(file_sock_v1_operator, 32);
 
 /**
  * HumanSummary is one human as the operator's Users page lists it.
@@ -695,7 +780,7 @@ export type HumanSummary = Message<"sock.v1.HumanSummary"> & {
  * Use `create(HumanSummarySchema)` to create a new message.
  */
 export const HumanSummarySchema: GenMessage<HumanSummary> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 29);
+  messageDesc(file_sock_v1_operator, 33);
 
 /**
  * @generated from message sock.v1.GetHumanRequest
@@ -714,7 +799,7 @@ export type GetHumanRequest = Message<"sock.v1.GetHumanRequest"> & {
  * Use `create(GetHumanRequestSchema)` to create a new message.
  */
 export const GetHumanRequestSchema: GenMessage<GetHumanRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 30);
+  messageDesc(file_sock_v1_operator, 34);
 
 /**
  * @generated from message sock.v1.GetHumanResponse
@@ -788,7 +873,7 @@ export type GetHumanResponse = Message<"sock.v1.GetHumanResponse"> & {
  * Use `create(GetHumanResponseSchema)` to create a new message.
  */
 export const GetHumanResponseSchema: GenMessage<GetHumanResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 31);
+  messageDesc(file_sock_v1_operator, 35);
 
 /**
  * TermsAcceptance is a human's agreement to one terms version.
@@ -814,7 +899,7 @@ export type TermsAcceptance = Message<"sock.v1.TermsAcceptance"> & {
  * Use `create(TermsAcceptanceSchema)` to create a new message.
  */
 export const TermsAcceptanceSchema: GenMessage<TermsAcceptance> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 32);
+  messageDesc(file_sock_v1_operator, 36);
 
 /**
  * @generated from message sock.v1.ListAccountReportsRequest
@@ -849,7 +934,7 @@ export type ListAccountReportsRequest = Message<"sock.v1.ListAccountReportsReque
  * Use `create(ListAccountReportsRequestSchema)` to create a new message.
  */
 export const ListAccountReportsRequestSchema: GenMessage<ListAccountReportsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 33);
+  messageDesc(file_sock_v1_operator, 37);
 
 /**
  * @generated from message sock.v1.ListAccountReportsResponse
@@ -877,7 +962,7 @@ export type ListAccountReportsResponse = Message<"sock.v1.ListAccountReportsResp
  * Use `create(ListAccountReportsResponseSchema)` to create a new message.
  */
 export const ListAccountReportsResponseSchema: GenMessage<ListAccountReportsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 34);
+  messageDesc(file_sock_v1_operator, 38);
 
 /**
  * ReportSummary is a report without its content: no note and no evidence
@@ -935,7 +1020,7 @@ export type ReportSummary = Message<"sock.v1.ReportSummary"> & {
  * Use `create(ReportSummarySchema)` to create a new message.
  */
 export const ReportSummarySchema: GenMessage<ReportSummary> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 35);
+  messageDesc(file_sock_v1_operator, 39);
 
 /**
  * Erases a human, its puppets and all their devices: Account.Erase, as
@@ -966,7 +1051,7 @@ export type EraseHumanRequest = Message<"sock.v1.EraseHumanRequest"> & {
  * Use `create(EraseHumanRequestSchema)` to create a new message.
  */
 export const EraseHumanRequestSchema: GenMessage<EraseHumanRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 36);
+  messageDesc(file_sock_v1_operator, 40);
 
 /**
  * @generated from message sock.v1.EraseHumanResponse
@@ -979,7 +1064,7 @@ export type EraseHumanResponse = Message<"sock.v1.EraseHumanResponse"> & {
  * Use `create(EraseHumanResponseSchema)` to create a new message.
  */
 export const EraseHumanResponseSchema: GenMessage<EraseHumanResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 37);
+  messageDesc(file_sock_v1_operator, 41);
 
 /**
  * @generated from message sock.v1.SignInOperatorWithAppleRequest
@@ -1020,7 +1105,7 @@ export type SignInOperatorWithAppleRequest = Message<"sock.v1.SignInOperatorWith
  * Use `create(SignInOperatorWithAppleRequestSchema)` to create a new message.
  */
 export const SignInOperatorWithAppleRequestSchema: GenMessage<SignInOperatorWithAppleRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 38);
+  messageDesc(file_sock_v1_operator, 42);
 
 /**
  * @generated from message sock.v1.SignInOperatorWithAppleResponse
@@ -1048,7 +1133,7 @@ export type SignInOperatorWithAppleResponse = Message<"sock.v1.SignInOperatorWit
  * Use `create(SignInOperatorWithAppleResponseSchema)` to create a new message.
  */
 export const SignInOperatorWithAppleResponseSchema: GenMessage<SignInOperatorWithAppleResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 39);
+  messageDesc(file_sock_v1_operator, 43);
 
 /**
  * @generated from message sock.v1.ListInviteRequestsRequest
@@ -1082,7 +1167,7 @@ export type ListInviteRequestsRequest = Message<"sock.v1.ListInviteRequestsReque
  * Use `create(ListInviteRequestsRequestSchema)` to create a new message.
  */
 export const ListInviteRequestsRequestSchema: GenMessage<ListInviteRequestsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 40);
+  messageDesc(file_sock_v1_operator, 44);
 
 /**
  * @generated from message sock.v1.ListInviteRequestsResponse
@@ -1102,7 +1187,7 @@ export type ListInviteRequestsResponse = Message<"sock.v1.ListInviteRequestsResp
  * Use `create(ListInviteRequestsResponseSchema)` to create a new message.
  */
 export const ListInviteRequestsResponseSchema: GenMessage<ListInviteRequestsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 41);
+  messageDesc(file_sock_v1_operator, 45);
 
 /**
  * @generated from message sock.v1.ApproveInviteRequestsRequest
@@ -1121,7 +1206,7 @@ export type ApproveInviteRequestsRequest = Message<"sock.v1.ApproveInviteRequest
  * Use `create(ApproveInviteRequestsRequestSchema)` to create a new message.
  */
 export const ApproveInviteRequestsRequestSchema: GenMessage<ApproveInviteRequestsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 42);
+  messageDesc(file_sock_v1_operator, 46);
 
 /**
  * @generated from message sock.v1.ApproveInviteRequestsResponse
@@ -1140,7 +1225,7 @@ export type ApproveInviteRequestsResponse = Message<"sock.v1.ApproveInviteReques
  * Use `create(ApproveInviteRequestsResponseSchema)` to create a new message.
  */
 export const ApproveInviteRequestsResponseSchema: GenMessage<ApproveInviteRequestsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 43);
+  messageDesc(file_sock_v1_operator, 47);
 
 /**
  * @generated from message sock.v1.ApproveInviteRequestResult
@@ -1169,7 +1254,7 @@ export type ApproveInviteRequestResult = Message<"sock.v1.ApproveInviteRequestRe
  * Use `create(ApproveInviteRequestResultSchema)` to create a new message.
  */
 export const ApproveInviteRequestResultSchema: GenMessage<ApproveInviteRequestResult> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 44);
+  messageDesc(file_sock_v1_operator, 48);
 
 /**
  * @generated from message sock.v1.DeclineInviteRequestsRequest
@@ -1188,7 +1273,7 @@ export type DeclineInviteRequestsRequest = Message<"sock.v1.DeclineInviteRequest
  * Use `create(DeclineInviteRequestsRequestSchema)` to create a new message.
  */
 export const DeclineInviteRequestsRequestSchema: GenMessage<DeclineInviteRequestsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 45);
+  messageDesc(file_sock_v1_operator, 49);
 
 /**
  * @generated from message sock.v1.DeclineInviteRequestsResponse
@@ -1207,7 +1292,7 @@ export type DeclineInviteRequestsResponse = Message<"sock.v1.DeclineInviteReques
  * Use `create(DeclineInviteRequestsResponseSchema)` to create a new message.
  */
 export const DeclineInviteRequestsResponseSchema: GenMessage<DeclineInviteRequestsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 46);
+  messageDesc(file_sock_v1_operator, 50);
 
 /**
  * @generated from message sock.v1.DeclineInviteRequestResult
@@ -1229,7 +1314,7 @@ export type DeclineInviteRequestResult = Message<"sock.v1.DeclineInviteRequestRe
  * Use `create(DeclineInviteRequestResultSchema)` to create a new message.
  */
 export const DeclineInviteRequestResultSchema: GenMessage<DeclineInviteRequestResult> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 47);
+  messageDesc(file_sock_v1_operator, 51);
 
 /**
  * @generated from enum sock.v1.OperatorSignInClient
@@ -1545,6 +1630,31 @@ export const OperatorService: GenService<{
     methodKind: "unary";
     input: typeof RevokeProGrantRequestSchema;
     output: typeof RevokeProGrantResponseSchema;
+  },
+  /**
+   * Triage tokens (docs/specs/triage-tokens.md). MintTriageToken: the
+   * console, full scope only; each call mints a triage token derived from
+   * the presenting token and records an operator action. VerifyTriageToken:
+   * sock-triage presenting the console's triage token, triage scope only (a
+   * full or read token is CALLER_NOT_ALLOWED); a read, no action. A triage
+   * token reaches VerifyTriageToken and RevokeOperatorToken and nothing
+   * else. Every refusal is the operator path's one CALLER_NOT_ALLOWED,
+   * RATE_LIMITED once the network's bucket is empty.
+   *
+   * @generated from rpc sock.v1.OperatorService.MintTriageToken
+   */
+  mintTriageToken: {
+    methodKind: "unary";
+    input: typeof MintTriageTokenRequestSchema;
+    output: typeof MintTriageTokenResponseSchema;
+  },
+  /**
+   * @generated from rpc sock.v1.OperatorService.VerifyTriageToken
+   */
+  verifyTriageToken: {
+    methodKind: "unary";
+    input: typeof VerifyTriageTokenRequestSchema;
+    output: typeof VerifyTriageTokenResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_sock_v1_operator, 0);

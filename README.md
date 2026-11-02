@@ -21,7 +21,7 @@ Transport is Connect over HTTPS, JSON or protobuf. Every RPC is `POST /sock.v1.<
 | `ModerationService` | Filing a report to the operator |
 | `HistoryTransferService` | Moving a phone's local history to a newly signed-in desktop of the same person, sealed to a key only the desktop holds |
 | `InviteRequestService` | Asking for an invite from joinsock.com; anonymous |
-| `OperatorService` | The operator's actions: invites, reports, reinstatement, the user directory, Sock Pro grants |
+| `OperatorService` | The operator's actions: invites, reports, reinstatement, the user directory, Sock Pro grants, triage tokens for sock-triage |
 | `OperatorSignInService` | The operator console's Sign in with Apple; the one anonymous way to get an operator token |
 
 Messages shared across services live in [`types.proto`](proto/sock/v1/types.proto). [`errors.proto`](proto/sock/v1/errors.proto) holds the closed `ErrorReason` taxonomy: every non-internal error carries an `ErrorInfo` detail, and each reason is sent with exactly one Connect code. Branch on the reason, never on message text.

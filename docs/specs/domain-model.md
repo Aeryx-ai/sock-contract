@@ -648,19 +648,23 @@ Entity, aggregate root. The operator's credential. The operator is not an accoun
 | `createdAt` | Timestamp | Database clock at mint |
 | `expiresAt` | Timestamp | `createdAt` plus the TTL: 1 to 90 days given at a CLI mint (default 30), exactly 12 hours from `SignIn` |
 | `revocation` | `OperatorTokenRevocation` | Owned, 0 or 1. Absent means not revoked |
-| `signIn` | `OperatorTokenSignIn` | Owned, 0 or 1. Present means minted by `SignIn`; absent means minted by the CLI |
+| `signIn` | `OperatorTokenSignIn` | Owned, 0 or 1. Present means minted by `SignIn`; absent means minted by the CLI or `MintTriage` |
+| `scope` | `full`, `read` or `triage` | Fixed at mint. `triage` only from `MintTriage` ([triage tokens](triage-tokens.md)) |
+| `derivation` | `TokenDerivation` | Owned, 0 or 1. Present exactly for a `triage` token: the `full` token that minted it |
 
 ### Behaviors
 
 - `Mint(label, ttl)` (factory, bootstrap CLI only: `sockd operator token mint`): returns the token and its `Token`, once. No RPC an operator token can call mints one
 - `SignIn(appleIdentity, operatorSubject)` (factory, `SignInOperatorWithApple`): takes a verified Apple identity token (Services ID audience, nonce bound to `client`, the console or `sock-admin`); refuses unless `operatorSubject` (`SOCK_OPERATOR_APPLE_SUB`) is configured and equals the identity's `sub`; label `console sign-in` or `sock-admin sign-in` by `client`, expires 12 hours after mint, records its `OperatorTokenSignIn`; returns the token and its `Token`, once. The caller records `OperatorAction(signInWithApple)` in the same transaction
+- `MintTriage(parent)` (factory, `MintTriageToken`): under a live `full` parent, a `triage` token expiring at the earlier of the parent's `expiresAt` and 12 hours after mint, with its `TokenDerivation`; the caller records `OperatorAction(mintTriageToken)` naming the parent, with the child as its target, in the same transaction
 - `Verify(secret, now)`: true only when no revocation exists, `now` is before `expiresAt` and the secret matches `tokenHash` in constant time. An unknown id is compared against a fixed hash, so the time taken does not say which check failed
-- `Revoke()`: records the `OperatorTokenRevocation` and, for a CLI-minted token, deletes every unredeemed `Invite` whose `InviteMint` names this token, in one transaction (a deliberate two-aggregate write: a revoked CLI token's invites must never redeem). A sign-in token's invites survive it. `RevokeOperatorToken` revokes the presenting token; `sockd operator token revoke <id>` any token
+- `Revoke()`: records the `OperatorTokenRevocation` and, for a CLI-minted token, deletes every unredeemed `Invite` whose `InviteMint` names this token, in one transaction (a deliberate two-aggregate write: a revoked CLI token's invites must never redeem). A sign-in token's invites survive it. Every triage token derived from it is revoked in the same transaction; revoking a triage token leaves its parent alone. `RevokeOperatorToken` revokes the presenting token; `sockd operator token revoke <id>` any token
 
 ### Invariants
 
 - A token is shown exactly once, at mint.
-- `createdAt < expiresAt ≤ createdAt + 90 days`; a CLI mint is 1 to 90 days, a `SignIn` exactly 12 hours.
+- `createdAt < expiresAt ≤ createdAt + 90 days`; a CLI mint is 1 to 90 days, a `SignIn` exactly 12 hours, a `MintTriage` at most 12 hours and never past its parent's `expiresAt`.
+- A `triage` token has exactly one parent, a `full` token, and is revoked with it.
 - Only the configured Apple subject signs in; an unset subject matches no one.
 - A revoked or expired token authenticates nothing.
 - Revoked at most once.
@@ -688,12 +692,17 @@ Anything not drawn is refused: a revoked token is never revoked again or restore
 |---|---|---|
 | `OperatorTokenRevocation` | has-a | 1 to 0..1 |
 | `OperatorTokenSignIn` | has-a | 1 to 0..1 |
+| `TokenDerivation` | has-a (as child); referenced by (as parent) | 1 to 0..1; 1 to n, n ≥ 0 |
 | `InviteMint` | referenced by | 1 to n, n ≥ 0 |
 | `OperatorAction` | referenced by (id only, outlives the token) | 1 to n, n ≥ 0 |
 
 ## OperatorTokenSignIn
 
 Value object, owned by `OperatorToken`, no fields. A fact: this token was minted by Apple sign-in, from the console or `sock-admin`. Its existence selects the invite rules (flat 7 days, survives revocation); created in `SignIn`, deleted with the token.
+
+## TokenDerivation
+
+Value object, owned by the `triage` `OperatorToken` it derives. A fact: this token was minted by `MintTriage` under that `full` token (`parentId`). It exists so the parent's revocation can cascade; deleted with either token.
 
 ## OperatorTokenRevocation
 

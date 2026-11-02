@@ -15,6 +15,7 @@ Pass 11: feature flags and open registration. Pass 10: History Transfer. Pass 9:
 | Token | The bearer secret a caller presents: `sock_st_` (session) or `sock_pt_` (puppet) prefix and device id, or `sock_ot_` prefix and operator token id, then the secret. Shown once, stored as a hash | Identity |
 | Operator | Whoever holds a live operator token. Not an account | Identity, Moderation |
 | Operator token | The operator's credential: minted by the bootstrap CLI or by console sign-in, expiring, revocable | Identity |
+| Triage token | An operator token of scope `triage`, minted by a `full` token for sock-triage to verify, revoked with it. Reaches no hub RPC that reads or acts | Identity |
 | Console sign-in | Minting a 12-hour operator token for the configured operator Apple subject, from a verified Apple identity token whose nonce is bound to console sign-in on this hub | Identity |
 | CLI sign-in | Console sign-in's twin for `sock-admin`: the same mint, with the nonce bound to the CLI and the id_token relayed to a loopback listener | Identity |
 | Operator Apple subject | The Apple `sub` configured as the operator's (`SOCK_OPERATOR_APPLE_SUB`). Not an account | Identity |
@@ -113,6 +114,7 @@ Apple (Sign in with Apple, APNs) and Stripe (Checkout with Managed Payments, the
 | Identity | Connector | Open Host Service, Published Language | OAuth 2.1 (RFC 8414 metadata, authorization code with PKCE, CIMD and DCR, refresh rotation) and `IssueConnectorPuppetToken`. Connector holds grant ids and puppet tokens, never a human identity |
 | Messaging | Connector | Conformist | `sock-mcpd` is an ordinary puppet caller per grant: `Subscribe`, `Ack`, `NotifyOwner`, `Send`, `ListConversations` |
 | Moderation | Triage | Open Host Service, Published Language; Triage conformist | `ListReports`, polled, and `ResolveReport` with an operator token. Triage holds report and account ids and its own copy of feedback text, never the hub's database |
+| Identity | Triage | Open Host Service, Published Language; Triage conformist | `VerifyTriageToken`, presenting the console's triage token. Triage holds the token id and expiry, never the hub's database |
 | Messaging | Triage | Conformist | Feedback arrives as deliveries to the support puppet over `Subscribe`, acked once the case entry commits; replies are `Send` as the support puppet |
 | Connector | ChatGPT, dots, claude.ai, Claude Code | Open Host Service, Published Language | MCP over Streamable HTTP at `mcp.joinsock.com`, protected by the hub's tokens; `owner.reply` events by webhook to platforms that subscribe. Model and spec in `sock-integrations` (`docs/specs/connector.md`) |
 

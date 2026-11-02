@@ -42,6 +42,37 @@ service OperatorService {
   // only; each records an operator action.
   rpc GrantPro(GrantProRequest) returns (GrantProResponse) {}
   rpc RevokeProGrant(RevokeProGrantRequest) returns (RevokeProGrantResponse) {}
+  // Triage tokens (docs/specs/triage-tokens.md). MintTriageToken: the
+  // console, full scope only; each call mints a triage token derived from
+  // the presenting token and records an operator action. VerifyTriageToken:
+  // sock-triage presenting the console's triage token, triage scope only (a
+  // full or read token is CALLER_NOT_ALLOWED); a read, no action. A triage
+  // token reaches VerifyTriageToken and RevokeOperatorToken and nothing
+  // else. Every refusal is the operator path's one CALLER_NOT_ALLOWED,
+  // RATE_LIMITED once the network's bucket is empty.
+  rpc MintTriageToken(MintTriageTokenRequest) returns (MintTriageTokenResponse) {}
+  rpc VerifyTriageToken(VerifyTriageTokenRequest) returns (VerifyTriageTokenResponse) {}
+}
+
+// Not idempotent: each call mints a new token. The console calls it once
+// per sign-in.
+message MintTriageTokenRequest {}
+message MintTriageTokenResponse {
+  // sock_ot_<token id>_<secret>, scope triage. Returned once; the server
+  // keeps only its hash. Revoking the full token that minted it revokes it.
+  string token = 1;
+  // The earlier of the presenting token's expiry and 12 hours after mint.
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+// Checks the presenting triage token and nothing else. A token that is
+// unknown, expired or revoked is CALLER_NOT_ALLOWED, as on every
+// OperatorService RPC.
+message VerifyTriageTokenRequest {}
+message VerifyTriageTokenResponse {
+  // The presenting token's id.
+  string token_id = 1;
+  google.protobuf.Timestamp expires_at = 2;
 }
 
 // Not idempotent: each call adds a grant. GetHuman lists them, so a retry
@@ -173,10 +204,11 @@ message ReinstateAccountRequest {
 }
 message ReinstateAccountResponse {}
 
-// Revokes the operator token the request presents. For a CLI-minted token it
-// also deletes the invites it minted that are still unredeemed; a console
-// sign-in token's invites survive. Other tokens are revoked with the
-// bootstrap CLI.
+// Revokes the operator token the request presents, and every triage token
+// derived from it. For a CLI-minted token it also deletes the invites it
+// minted that are still unredeemed; a console sign-in token's invites
+// survive. Any scope may call it, triage included. Other tokens are revoked
+// with the bootstrap CLI.
 message RevokeOperatorTokenRequest {}
 message RevokeOperatorTokenResponse {}
 

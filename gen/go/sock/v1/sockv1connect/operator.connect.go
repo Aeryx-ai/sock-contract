@@ -89,6 +89,12 @@ const (
 	// OperatorServiceRevokeProGrantProcedure is the fully-qualified name of the OperatorService's
 	// RevokeProGrant RPC.
 	OperatorServiceRevokeProGrantProcedure = "/sock.v1.OperatorService/RevokeProGrant"
+	// OperatorServiceMintTriageTokenProcedure is the fully-qualified name of the OperatorService's
+	// MintTriageToken RPC.
+	OperatorServiceMintTriageTokenProcedure = "/sock.v1.OperatorService/MintTriageToken"
+	// OperatorServiceVerifyTriageTokenProcedure is the fully-qualified name of the OperatorService's
+	// VerifyTriageToken RPC.
+	OperatorServiceVerifyTriageTokenProcedure = "/sock.v1.OperatorService/VerifyTriageToken"
 	// OperatorSignInServiceSignInOperatorWithAppleProcedure is the fully-qualified name of the
 	// OperatorSignInService's SignInOperatorWithApple RPC.
 	OperatorSignInServiceSignInOperatorWithAppleProcedure = "/sock.v1.OperatorSignInService/SignInOperatorWithApple"
@@ -123,6 +129,16 @@ type OperatorServiceClient interface {
 	// only; each records an operator action.
 	GrantPro(context.Context, *connect.Request[v1.GrantProRequest]) (*connect.Response[v1.GrantProResponse], error)
 	RevokeProGrant(context.Context, *connect.Request[v1.RevokeProGrantRequest]) (*connect.Response[v1.RevokeProGrantResponse], error)
+	// Triage tokens (docs/specs/triage-tokens.md). MintTriageToken: the
+	// console, full scope only; each call mints a triage token derived from
+	// the presenting token and records an operator action. VerifyTriageToken:
+	// sock-triage presenting the console's triage token, triage scope only (a
+	// full or read token is CALLER_NOT_ALLOWED); a read, no action. A triage
+	// token reaches VerifyTriageToken and RevokeOperatorToken and nothing
+	// else. Every refusal is the operator path's one CALLER_NOT_ALLOWED,
+	// RATE_LIMITED once the network's bucket is empty.
+	MintTriageToken(context.Context, *connect.Request[v1.MintTriageTokenRequest]) (*connect.Response[v1.MintTriageTokenResponse], error)
+	VerifyTriageToken(context.Context, *connect.Request[v1.VerifyTriageTokenRequest]) (*connect.Response[v1.VerifyTriageTokenResponse], error)
 }
 
 // NewOperatorServiceClient constructs a client for the sock.v1.OperatorService service. By default,
@@ -244,6 +260,18 @@ func NewOperatorServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(operatorServiceMethods.ByName("RevokeProGrant")),
 			connect.WithClientOptions(opts...),
 		),
+		mintTriageToken: connect.NewClient[v1.MintTriageTokenRequest, v1.MintTriageTokenResponse](
+			httpClient,
+			baseURL+OperatorServiceMintTriageTokenProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("MintTriageToken")),
+			connect.WithClientOptions(opts...),
+		),
+		verifyTriageToken: connect.NewClient[v1.VerifyTriageTokenRequest, v1.VerifyTriageTokenResponse](
+			httpClient,
+			baseURL+OperatorServiceVerifyTriageTokenProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("VerifyTriageToken")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -267,6 +295,8 @@ type operatorServiceClient struct {
 	setFeatureFlag        *connect.Client[v1.SetFeatureFlagRequest, v1.SetFeatureFlagResponse]
 	grantPro              *connect.Client[v1.GrantProRequest, v1.GrantProResponse]
 	revokeProGrant        *connect.Client[v1.RevokeProGrantRequest, v1.RevokeProGrantResponse]
+	mintTriageToken       *connect.Client[v1.MintTriageTokenRequest, v1.MintTriageTokenResponse]
+	verifyTriageToken     *connect.Client[v1.VerifyTriageTokenRequest, v1.VerifyTriageTokenResponse]
 }
 
 // MintInvite calls sock.v1.OperatorService.MintInvite.
@@ -359,6 +389,16 @@ func (c *operatorServiceClient) RevokeProGrant(ctx context.Context, req *connect
 	return c.revokeProGrant.CallUnary(ctx, req)
 }
 
+// MintTriageToken calls sock.v1.OperatorService.MintTriageToken.
+func (c *operatorServiceClient) MintTriageToken(ctx context.Context, req *connect.Request[v1.MintTriageTokenRequest]) (*connect.Response[v1.MintTriageTokenResponse], error) {
+	return c.mintTriageToken.CallUnary(ctx, req)
+}
+
+// VerifyTriageToken calls sock.v1.OperatorService.VerifyTriageToken.
+func (c *operatorServiceClient) VerifyTriageToken(ctx context.Context, req *connect.Request[v1.VerifyTriageTokenRequest]) (*connect.Response[v1.VerifyTriageTokenResponse], error) {
+	return c.verifyTriageToken.CallUnary(ctx, req)
+}
+
 // OperatorServiceHandler is an implementation of the sock.v1.OperatorService service.
 type OperatorServiceHandler interface {
 	MintInvite(context.Context, *connect.Request[v1.MintInviteRequest]) (*connect.Response[v1.MintInviteResponse], error)
@@ -388,6 +428,16 @@ type OperatorServiceHandler interface {
 	// only; each records an operator action.
 	GrantPro(context.Context, *connect.Request[v1.GrantProRequest]) (*connect.Response[v1.GrantProResponse], error)
 	RevokeProGrant(context.Context, *connect.Request[v1.RevokeProGrantRequest]) (*connect.Response[v1.RevokeProGrantResponse], error)
+	// Triage tokens (docs/specs/triage-tokens.md). MintTriageToken: the
+	// console, full scope only; each call mints a triage token derived from
+	// the presenting token and records an operator action. VerifyTriageToken:
+	// sock-triage presenting the console's triage token, triage scope only (a
+	// full or read token is CALLER_NOT_ALLOWED); a read, no action. A triage
+	// token reaches VerifyTriageToken and RevokeOperatorToken and nothing
+	// else. Every refusal is the operator path's one CALLER_NOT_ALLOWED,
+	// RATE_LIMITED once the network's bucket is empty.
+	MintTriageToken(context.Context, *connect.Request[v1.MintTriageTokenRequest]) (*connect.Response[v1.MintTriageTokenResponse], error)
+	VerifyTriageToken(context.Context, *connect.Request[v1.VerifyTriageTokenRequest]) (*connect.Response[v1.VerifyTriageTokenResponse], error)
 }
 
 // NewOperatorServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -505,6 +555,18 @@ func NewOperatorServiceHandler(svc OperatorServiceHandler, opts ...connect.Handl
 		connect.WithSchema(operatorServiceMethods.ByName("RevokeProGrant")),
 		connect.WithHandlerOptions(opts...),
 	)
+	operatorServiceMintTriageTokenHandler := connect.NewUnaryHandler(
+		OperatorServiceMintTriageTokenProcedure,
+		svc.MintTriageToken,
+		connect.WithSchema(operatorServiceMethods.ByName("MintTriageToken")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceVerifyTriageTokenHandler := connect.NewUnaryHandler(
+		OperatorServiceVerifyTriageTokenProcedure,
+		svc.VerifyTriageToken,
+		connect.WithSchema(operatorServiceMethods.ByName("VerifyTriageToken")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/sock.v1.OperatorService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case OperatorServiceMintInviteProcedure:
@@ -543,6 +605,10 @@ func NewOperatorServiceHandler(svc OperatorServiceHandler, opts ...connect.Handl
 			operatorServiceGrantProHandler.ServeHTTP(w, r)
 		case OperatorServiceRevokeProGrantProcedure:
 			operatorServiceRevokeProGrantHandler.ServeHTTP(w, r)
+		case OperatorServiceMintTriageTokenProcedure:
+			operatorServiceMintTriageTokenHandler.ServeHTTP(w, r)
+		case OperatorServiceVerifyTriageTokenProcedure:
+			operatorServiceVerifyTriageTokenHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -622,6 +688,14 @@ func (UnimplementedOperatorServiceHandler) GrantPro(context.Context, *connect.Re
 
 func (UnimplementedOperatorServiceHandler) RevokeProGrant(context.Context, *connect.Request[v1.RevokeProGrantRequest]) (*connect.Response[v1.RevokeProGrantResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.RevokeProGrant is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) MintTriageToken(context.Context, *connect.Request[v1.MintTriageTokenRequest]) (*connect.Response[v1.MintTriageTokenResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.MintTriageToken is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) VerifyTriageToken(context.Context, *connect.Request[v1.VerifyTriageTokenRequest]) (*connect.Response[v1.VerifyTriageTokenResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.VerifyTriageToken is not implemented"))
 }
 
 // OperatorSignInServiceClient is a client for the sock.v1.OperatorSignInService service.
