@@ -77,7 +77,7 @@ New and changed rows of [api](api.md), `OperatorService`. Caller class: operator
 | `CreateHuman` | Operator | Any valid `full` operator token; the operator create bucket (Rate limits below) | `email`, `handle` (`Handle` rules, 3 to 20 of `[a-z0-9_]`, lowercased), `display_name` (1 to 64) | `account` (the new human), `initial_password` (shown once; sock stores nothing of it) | `FIELD_INVALID` (email rejected by WorkOS, handle or display name outside its rule), `HANDLE_TAKEN` (nothing created at WorkOS), `EMAIL_ALREADY_ADDED` (WorkOS has the address: nothing created in sock), `RATE_LIMITED`, `unavailable` (WorkOS unreachable: nothing created) | Not idempotent. A retry after a lost response fails `HANDLE_TAKEN` or `EMAIL_ALREADY_ADDED`, and the first call's password is gone; the operator archives and erases that human, or resets the password at WorkOS | `Account.CreateEmailHuman`, with `OperatorAction(createHuman, account)` in the same transaction. Emits `HumanRegistered`. CLI: `sockd humans create` (unchanged) |
 | `ArchiveHuman` | Operator | Any valid `full` operator token. A human owning no system puppet | `account_id` | none | `FIELD_INVALID` (malformed id), `NOT_FOUND` (no such account or a puppet), `SYSTEM_PUPPET` | Idempotent: an archived human succeeds unchanged and records no action | `Account.ArchiveHuman` with `OperatorAction(archiveHuman, account)` in the same transaction (only when it wrote the archive). Emits `AccountSuspensionChanged` when the effective value changes, `DeviceRemoved` per session |
 | `UnarchiveHuman` | Operator | Any valid `full` operator token. A human | `account_id` | none | `FIELD_INVALID`, `NOT_FOUND` | Idempotent: a human not archived succeeds unchanged and records no action | `Account.UnarchiveHuman` with `OperatorAction(unarchiveHuman, account)` in the same transaction (only when it deleted the archive) |
-| `ListHumans` (changed) | Operator | As today | As today, plus `archived` (`HUMAN_ARCHIVE_FILTER_LIVE` default, `ARCHIVED`, `ALL`) | As today; each `HumanSummary` gains `archived_at` (unset: not archived) | As today | A read | none (read) |
+| `ListHumans` (changed) | Operator | As today | As today, plus `archive_filter` (unspecified or `LIVE` default, `ARCHIVED`, `ALL`) | As today; each `HumanSummary` gains `archived_at` (unset: not archived) | As today | A read | none (read) |
 | `GetHuman` (changed) | Operator | As today | As today | `human` carries `archived_at` as above | As today | A read | none (read) |
 | `EraseHuman` | Operator | Unchanged | Unchanged | Unchanged | Unchanged | Unchanged | Unchanged. An archived human is erasable; so is a live one, unless the open question below is decided otherwise |
 
@@ -110,9 +110,10 @@ message UnarchiveHumanRequest { string account_id = 1; }
 message UnarchiveHumanResponse {}
 
 enum HumanArchiveFilter {
-  HUMAN_ARCHIVE_FILTER_LIVE = 0;
-  HUMAN_ARCHIVE_FILTER_ARCHIVED = 1;
-  HUMAN_ARCHIVE_FILTER_ALL = 2;
+  HUMAN_ARCHIVE_FILTER_UNSPECIFIED = 0;  // same as LIVE
+  HUMAN_ARCHIVE_FILTER_LIVE = 1;
+  HUMAN_ARCHIVE_FILTER_ARCHIVED = 2;
+  HUMAN_ARCHIVE_FILTER_ALL = 3;
 }
 // ListHumansRequest gains: HumanArchiveFilter archive_filter = 4;
 // HumanSummary gains: google.protobuf.Timestamp archived_at = 5;

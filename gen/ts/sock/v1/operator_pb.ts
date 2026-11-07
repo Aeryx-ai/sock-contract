@@ -20,7 +20,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sock/v1/operator.proto.
  */
 export const file_sock_v1_operator: GenFile = /*@__PURE__*/
-  fileDesc("ChZzb2NrL3YxL29wZXJhdG9yLnByb3RvEgdzb2NrLnYxIhgKFk1pbnRUcmlhZ2VUb2tlblJlcXVlc3QiWAoXTWludFRyaWFnZVRva2VuUmVzcG9uc2USDQoFdG9rZW4YASABKAkSLgoKZXhwaXJlc19hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiGgoYVmVyaWZ5VHJpYWdlVG9rZW5SZXF1ZXN0Il0KGVZlcmlmeVRyaWFnZVRva2VuUmVzcG9uc2USEAoIdG9rZW5faWQYASABKAkSLgoKZXhwaXJlc19hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiUgoPR3JhbnRQcm9SZXF1ZXN0EhIKCmFjY291bnRfaWQYASABKAkSKwoHZW5kc19hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiNAoQR3JhbnRQcm9SZXNwb25zZRIgCgVncmFudBgBIAEoCzIRLnNvY2sudjEuUHJvR3JhbnQiKQoVUmV2b2tlUHJvR3JhbnRSZXF1ZXN0EhAKCGdyYW50X2lkGAEgASgJIhgKFlJldm9rZVByb0dyYW50UmVzcG9uc2UiowEKCFByb0dyYW50EgoKAmlkGAEgASgJEi4KCmdyYW50ZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEisKB2VuZHNfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnJldm9rZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wImcKCFByb1RyaWFsEi4KCnN0YXJ0ZWRfYXQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEisKB2VuZHNfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wImMKFlByb1N1YnNjcmlwdGlvblN1bW1hcnkSFwoPc3Vic2NyaXB0aW9uX2lkGAEgASgJEjAKDGFjdGl2ZV91bnRpbBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiFwoVR2V0TWVzc2FnZUhvbGRSZXF1ZXN0IiYKFkdldE1lc3NhZ2VIb2xkUmVzcG9uc2USDAoEZGF5cxgBIAEoBSIlChVTZXRNZXNzYWdlSG9sZFJlcXVlc3QSDAoEZGF5cxgBIAEoBSImChZTZXRNZXNzYWdlSG9sZFJlc3BvbnNlEgwKBGRheXMYASABKAUiawoLRmVhdHVyZUZsYWcSCwoDa2V5GAEgASgJEhMKC2Rlc2NyaXB0aW9uGAIgASgJEg8KB2VuYWJsZWQYAyABKAgSKQoIbGFzdF9zZXQYBCABKAsyFy5zb2NrLnYxLkZlYXR1cmVGbGFnU2V0InEKDkZlYXR1cmVGbGFnU2V0EiYKAmF0GAEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIZChFvcGVyYXRvcl90b2tlbl9pZBgCIAEoCRIcChRvcGVyYXRvcl90b2tlbl9sYWJlbBgDIAEoCSIYChZHZXRGZWF0dXJlRmxhZ3NSZXF1ZXN0Ij4KF0dldEZlYXR1cmVGbGFnc1Jlc3BvbnNlEiMKBWZsYWdzGAEgAygLMhQuc29jay52MS5GZWF0dXJlRmxhZyI1ChVTZXRGZWF0dXJlRmxhZ1JlcXVlc3QSCwoDa2V5GAEgASgJEg8KB2VuYWJsZWQYAiABKAgiPAoWU2V0RmVhdHVyZUZsYWdSZXNwb25zZRIiCgRmbGFnGAEgASgLMhQuc29jay52MS5GZWF0dXJlRmxhZyITChFNaW50SW52aXRlUmVxdWVzdCJSChJNaW50SW52aXRlUmVzcG9uc2USDAoEY29kZRgBIAEoCRIuCgpleHBpcmVzX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCI8ChJMaXN0UmVwb3J0c1JlcXVlc3QSDQoFbGltaXQYASABKAUSFwoPYWZ0ZXJfcmVwb3J0X2lkGAIgASgJIlsKE0xpc3RSZXBvcnRzUmVzcG9uc2USIAoHcmVwb3J0cxgBIAMoCzIPLnNvY2sudjEuUmVwb3J0EiIKCGFjY291bnRzGAIgAygLMhAuc29jay52MS5BY2NvdW50IlYKFFJlc29sdmVSZXBvcnRSZXF1ZXN0EhEKCXJlcG9ydF9pZBgBIAEoCRIrCgdvdXRjb21lGAIgASgOMhouc29jay52MS5SZXNvbHV0aW9uT3V0Y29tZSJAChVSZXNvbHZlUmVwb3J0UmVzcG9uc2USJwoKcmVzb2x1dGlvbhgBIAEoCzITLnNvY2sudjEuUmVzb2x1dGlvbiItChdSZWluc3RhdGVBY2NvdW50UmVxdWVzdBISCgphY2NvdW50X2lkGAEgASgJIhoKGFJlaW5zdGF0ZUFjY291bnRSZXNwb25zZSIcChpSZXZva2VPcGVyYXRvclRva2VuUmVxdWVzdCIdChtSZXZva2VPcGVyYXRvclRva2VuUmVzcG9uc2UiUwoRTGlzdEh1bWFuc1JlcXVlc3QSDQoFbGltaXQYASABKAUSGAoQYWZ0ZXJfYWNjb3VudF9pZBgCIAEoCRIVCg1oYW5kbGVfcHJlZml4GAMgASgJIjsKEkxpc3RIdW1hbnNSZXNwb25zZRIlCgZodW1hbnMYASADKAsyFS5zb2NrLnYxLkh1bWFuU3VtbWFyeSKoAQoMSHVtYW5TdW1tYXJ5EiEKB2FjY291bnQYASABKAsyEC5zb2NrLnYxLkFjY291bnQSLQoJam9pbmVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxzdXNwZW5kZWRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhQKDHB1cHBldF9jb3VudBgEIAEoBSIlCg9HZXRIdW1hblJlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCSLxAgoQR2V0SHVtYW5SZXNwb25zZRIkCgVodW1hbhgBIAEoCzIVLnNvY2sudjEuSHVtYW5TdW1tYXJ5EiAKB2RldmljZXMYAiADKAsyDy5zb2NrLnYxLkRldmljZRIrCgdwdXBwZXRzGAMgAygLMhouc29jay52MS5QdXBwZXRXaXRoRGV2aWNlcxIzChF0ZXJtc19hY2NlcHRhbmNlcxgEIAMoCzIYLnNvY2sudjEuVGVybXNBY2NlcHRhbmNlEhUKDXRlcm1zX2N1cnJlbnQYBSABKAgSHwoDcHJvGAYgASgLMhIuc29jay52MS5Qcm9TdGF0dXMSIAoFdHJpYWwYByABKAsyES5zb2NrLnYxLlByb1RyaWFsEjYKDXN1YnNjcmlwdGlvbnMYCCADKAsyHy5zb2NrLnYxLlByb1N1YnNjcmlwdGlvblN1bW1hcnkSIQoGZ3JhbnRzGAkgAygLMhEuc29jay52MS5Qcm9HcmFudCJTCg9UZXJtc0FjY2VwdGFuY2USDwoHdmVyc2lvbhgBIAEoCRIvCgthY2NlcHRlZF9hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiVwoZTGlzdEFjY291bnRSZXBvcnRzUmVxdWVzdBISCgphY2NvdW50X2lkGAEgASgJEg0KBWxpbWl0GAIgASgFEhcKD2FmdGVyX3JlcG9ydF9pZBgDIAEoCSJpChpMaXN0QWNjb3VudFJlcG9ydHNSZXNwb25zZRInCgdyZXBvcnRzGAEgAygLMhYuc29jay52MS5SZXBvcnRTdW1tYXJ5EiIKCGFjY291bnRzGAIgAygLMhAuc29jay52MS5BY2NvdW50ItwBCg1SZXBvcnRTdW1tYXJ5EgoKAmlkGAEgASgJEhMKC3JlcG9ydGVyX2lkGAIgASgJEhIKCnN1YmplY3RfaWQYAyABKAkSJQoGcmVhc29uGAQgASgOMhUuc29jay52MS5SZXBvcnRSZWFzb24SLgoKY3JlYXRlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASFgoOZXZpZGVuY2VfY291bnQYBiABKAUSJwoKcmVzb2x1dGlvbhgHIAEoCzITLnNvY2sudjEuUmVzb2x1dGlvbiI/ChFFcmFzZUh1bWFuUmVxdWVzdBISCgphY2NvdW50X2lkGAEgASgJEhYKDmNvbmZpcm1faGFuZGxlGAIgASgJIhQKEkVyYXNlSHVtYW5SZXNwb25zZSJ2Ch5TaWduSW5PcGVyYXRvcldpdGhBcHBsZVJlcXVlc3QSFgoOaWRlbnRpdHlfdG9rZW4YASABKAkSDQoFbm9uY2UYAiABKAkSLQoGY2xpZW50GAMgASgOMh0uc29jay52MS5PcGVyYXRvclNpZ25JbkNsaWVudCJgCh9TaWduSW5PcGVyYXRvcldpdGhBcHBsZVJlc3BvbnNlEg0KBXRva2VuGAEgASgJEi4KCmV4cGlyZXNfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wInAKGUxpc3RJbnZpdGVSZXF1ZXN0c1JlcXVlc3QSDQoFbGltaXQYASABKAUSGAoQYWZ0ZXJfcmVxdWVzdF9pZBgCIAEoCRIqCgVzdGF0ZRgDIAEoDjIbLnNvY2sudjEuSW52aXRlUmVxdWVzdFN0YXRlIkYKGkxpc3RJbnZpdGVSZXF1ZXN0c1Jlc3BvbnNlEigKCHJlcXVlc3RzGAEgAygLMhYuc29jay52MS5JbnZpdGVSZXF1ZXN0IjMKHEFwcHJvdmVJbnZpdGVSZXF1ZXN0c1JlcXVlc3QSEwoLcmVxdWVzdF9pZHMYASADKAkiVQodQXBwcm92ZUludml0ZVJlcXVlc3RzUmVzcG9uc2USNAoHcmVzdWx0cxgBIAMoCzIjLnNvY2sudjEuQXBwcm92ZUludml0ZVJlcXVlc3RSZXN1bHQikAEKGkFwcHJvdmVJbnZpdGVSZXF1ZXN0UmVzdWx0EhIKCnJlcXVlc3RfaWQYASABKAkSNQoHb3V0Y29tZRgCIAEoDjIkLnNvY2sudjEuQXBwcm92ZUludml0ZVJlcXVlc3RPdXRjb21lEicKBmludml0ZRgDIAEoCzIXLnNvY2sudjEuQXBwcm92ZWRJbnZpdGUiMwocRGVjbGluZUludml0ZVJlcXVlc3RzUmVxdWVzdBITCgtyZXF1ZXN0X2lkcxgBIAMoCSJVCh1EZWNsaW5lSW52aXRlUmVxdWVzdHNSZXNwb25zZRI0CgdyZXN1bHRzGAEgAygLMiMuc29jay52MS5EZWNsaW5lSW52aXRlUmVxdWVzdFJlc3VsdCJnChpEZWNsaW5lSW52aXRlUmVxdWVzdFJlc3VsdBISCgpyZXF1ZXN0X2lkGAEgASgJEjUKB291dGNvbWUYAiABKA4yJC5zb2NrLnYxLkRlY2xpbmVJbnZpdGVSZXF1ZXN0T3V0Y29tZSqFAQoUT3BlcmF0b3JTaWduSW5DbGllbnQSJwojT1BFUkFUT1JfU0lHTl9JTl9DTElFTlRfVU5TUEVDSUZJRUQQABIjCh9PUEVSQVRPUl9TSUdOX0lOX0NMSUVOVF9DT05TT0xFEAESHwobT1BFUkFUT1JfU0lHTl9JTl9DTElFTlRfQ0xJEAIqogEKEkludml0ZVJlcXVlc3RTdGF0ZRIkCiBJTlZJVEVfUkVRVUVTVF9TVEFURV9VTlNQRUNJRklFRBAAEiAKHElOVklURV9SRVFVRVNUX1NUQVRFX1BFTkRJTkcQARIhCh1JTlZJVEVfUkVRVUVTVF9TVEFURV9BUFBST1ZFRBACEiEKHUlOVklURV9SRVFVRVNUX1NUQVRFX0RFQ0xJTkVEEAMqigIKG0FwcHJvdmVJbnZpdGVSZXF1ZXN0T3V0Y29tZRIuCipBUFBST1ZFX0lOVklURV9SRVFVRVNUX09VVENPTUVfVU5TUEVDSUZJRUQQABIrCidBUFBST1ZFX0lOVklURV9SRVFVRVNUX09VVENPTUVfQVBQUk9WRUQQARIzCi9BUFBST1ZFX0lOVklURV9SRVFVRVNUX09VVENPTUVfQVBQUk9WRURfTk9fQ09ERRACEisKJ0FQUFJPVkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9ERUNMSU5FRBADEiwKKEFQUFJPVkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9OT1RfRk9VTkQQBCrVAQobRGVjbGluZUludml0ZVJlcXVlc3RPdXRjb21lEi4KKkRFQ0xJTkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9VTlNQRUNJRklFRBAAEisKJ0RFQ0xJTkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9ERUNMSU5FRBABEisKJ0RFQ0xJTkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9BUFBST1ZFRBACEiwKKERFQ0xJTkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9OT1RfRk9VTkQQAzLHDQoPT3BlcmF0b3JTZXJ2aWNlEkcKCk1pbnRJbnZpdGUSGi5zb2NrLnYxLk1pbnRJbnZpdGVSZXF1ZXN0Ghsuc29jay52MS5NaW50SW52aXRlUmVzcG9uc2UiABJKCgtMaXN0UmVwb3J0cxIbLnNvY2sudjEuTGlzdFJlcG9ydHNSZXF1ZXN0Ghwuc29jay52MS5MaXN0UmVwb3J0c1Jlc3BvbnNlIgASUAoNUmVzb2x2ZVJlcG9ydBIdLnNvY2sudjEuUmVzb2x2ZVJlcG9ydFJlcXVlc3QaHi5zb2NrLnYxLlJlc29sdmVSZXBvcnRSZXNwb25zZSIAElkKEFJlaW5zdGF0ZUFjY291bnQSIC5zb2NrLnYxLlJlaW5zdGF0ZUFjY291bnRSZXF1ZXN0GiEuc29jay52MS5SZWluc3RhdGVBY2NvdW50UmVzcG9uc2UiABJiChNSZXZva2VPcGVyYXRvclRva2VuEiMuc29jay52MS5SZXZva2VPcGVyYXRvclRva2VuUmVxdWVzdBokLnNvY2sudjEuUmV2b2tlT3BlcmF0b3JUb2tlblJlc3BvbnNlIgASRwoKTGlzdEh1bWFucxIaLnNvY2sudjEuTGlzdEh1bWFuc1JlcXVlc3QaGy5zb2NrLnYxLkxpc3RIdW1hbnNSZXNwb25zZSIAEkEKCEdldEh1bWFuEhguc29jay52MS5HZXRIdW1hblJlcXVlc3QaGS5zb2NrLnYxLkdldEh1bWFuUmVzcG9uc2UiABJfChJMaXN0QWNjb3VudFJlcG9ydHMSIi5zb2NrLnYxLkxpc3RBY2NvdW50UmVwb3J0c1JlcXVlc3QaIy5zb2NrLnYxLkxpc3RBY2NvdW50UmVwb3J0c1Jlc3BvbnNlIgASRwoKRXJhc2VIdW1hbhIaLnNvY2sudjEuRXJhc2VIdW1hblJlcXVlc3QaGy5zb2NrLnYxLkVyYXNlSHVtYW5SZXNwb25zZSIAEl8KEkxpc3RJbnZpdGVSZXF1ZXN0cxIiLnNvY2sudjEuTGlzdEludml0ZVJlcXVlc3RzUmVxdWVzdBojLnNvY2sudjEuTGlzdEludml0ZVJlcXVlc3RzUmVzcG9uc2UiABJoChVBcHByb3ZlSW52aXRlUmVxdWVzdHMSJS5zb2NrLnYxLkFwcHJvdmVJbnZpdGVSZXF1ZXN0c1JlcXVlc3QaJi5zb2NrLnYxLkFwcHJvdmVJbnZpdGVSZXF1ZXN0c1Jlc3BvbnNlIgASaAoVRGVjbGluZUludml0ZVJlcXVlc3RzEiUuc29jay52MS5EZWNsaW5lSW52aXRlUmVxdWVzdHNSZXF1ZXN0GiYuc29jay52MS5EZWNsaW5lSW52aXRlUmVxdWVzdHNSZXNwb25zZSIAElMKDkdldE1lc3NhZ2VIb2xkEh4uc29jay52MS5HZXRNZXNzYWdlSG9sZFJlcXVlc3QaHy5zb2NrLnYxLkdldE1lc3NhZ2VIb2xkUmVzcG9uc2UiABJTCg5TZXRNZXNzYWdlSG9sZBIeLnNvY2sudjEuU2V0TWVzc2FnZUhvbGRSZXF1ZXN0Gh8uc29jay52MS5TZXRNZXNzYWdlSG9sZFJlc3BvbnNlIgASVgoPR2V0RmVhdHVyZUZsYWdzEh8uc29jay52MS5HZXRGZWF0dXJlRmxhZ3NSZXF1ZXN0GiAuc29jay52MS5HZXRGZWF0dXJlRmxhZ3NSZXNwb25zZSIAElMKDlNldEZlYXR1cmVGbGFnEh4uc29jay52MS5TZXRGZWF0dXJlRmxhZ1JlcXVlc3QaHy5zb2NrLnYxLlNldEZlYXR1cmVGbGFnUmVzcG9uc2UiABJBCghHcmFudFBybxIYLnNvY2sudjEuR3JhbnRQcm9SZXF1ZXN0Ghkuc29jay52MS5HcmFudFByb1Jlc3BvbnNlIgASUwoOUmV2b2tlUHJvR3JhbnQSHi5zb2NrLnYxLlJldm9rZVByb0dyYW50UmVxdWVzdBofLnNvY2sudjEuUmV2b2tlUHJvR3JhbnRSZXNwb25zZSIAElYKD01pbnRUcmlhZ2VUb2tlbhIfLnNvY2sudjEuTWludFRyaWFnZVRva2VuUmVxdWVzdBogLnNvY2sudjEuTWludFRyaWFnZVRva2VuUmVzcG9uc2UiABJcChFWZXJpZnlUcmlhZ2VUb2tlbhIhLnNvY2sudjEuVmVyaWZ5VHJpYWdlVG9rZW5SZXF1ZXN0GiIuc29jay52MS5WZXJpZnlUcmlhZ2VUb2tlblJlc3BvbnNlIgAyhwEKFU9wZXJhdG9yU2lnbkluU2VydmljZRJuChdTaWduSW5PcGVyYXRvcldpdGhBcHBsZRInLnNvY2sudjEuU2lnbkluT3BlcmF0b3JXaXRoQXBwbGVSZXF1ZXN0Giguc29jay52MS5TaWduSW5PcGVyYXRvcldpdGhBcHBsZVJlc3BvbnNlIgBCOVo3Z2l0aHViLmNvbS9hZXJ5eC1haS9zb2NrLWNvbnRyYWN0L2dlbi9nby9zb2NrL3YxO3NvY2t2MWIGcHJvdG8z", [file_google_protobuf_timestamp, file_sock_v1_identity, file_sock_v1_invite_request, file_sock_v1_moderation, file_sock_v1_types]);
+  fileDesc("ChZzb2NrL3YxL29wZXJhdG9yLnByb3RvEgdzb2NrLnYxIhgKFk1pbnRUcmlhZ2VUb2tlblJlcXVlc3QiWAoXTWludFRyaWFnZVRva2VuUmVzcG9uc2USDQoFdG9rZW4YASABKAkSLgoKZXhwaXJlc19hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiGgoYVmVyaWZ5VHJpYWdlVG9rZW5SZXF1ZXN0Il0KGVZlcmlmeVRyaWFnZVRva2VuUmVzcG9uc2USEAoIdG9rZW5faWQYASABKAkSLgoKZXhwaXJlc19hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiUgoPR3JhbnRQcm9SZXF1ZXN0EhIKCmFjY291bnRfaWQYASABKAkSKwoHZW5kc19hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiNAoQR3JhbnRQcm9SZXNwb25zZRIgCgVncmFudBgBIAEoCzIRLnNvY2sudjEuUHJvR3JhbnQiKQoVUmV2b2tlUHJvR3JhbnRSZXF1ZXN0EhAKCGdyYW50X2lkGAEgASgJIhgKFlJldm9rZVByb0dyYW50UmVzcG9uc2UiowEKCFByb0dyYW50EgoKAmlkGAEgASgJEi4KCmdyYW50ZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEisKB2VuZHNfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnJldm9rZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wImcKCFByb1RyaWFsEi4KCnN0YXJ0ZWRfYXQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEisKB2VuZHNfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wImMKFlByb1N1YnNjcmlwdGlvblN1bW1hcnkSFwoPc3Vic2NyaXB0aW9uX2lkGAEgASgJEjAKDGFjdGl2ZV91bnRpbBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiFwoVR2V0TWVzc2FnZUhvbGRSZXF1ZXN0IiYKFkdldE1lc3NhZ2VIb2xkUmVzcG9uc2USDAoEZGF5cxgBIAEoBSIlChVTZXRNZXNzYWdlSG9sZFJlcXVlc3QSDAoEZGF5cxgBIAEoBSImChZTZXRNZXNzYWdlSG9sZFJlc3BvbnNlEgwKBGRheXMYASABKAUiawoLRmVhdHVyZUZsYWcSCwoDa2V5GAEgASgJEhMKC2Rlc2NyaXB0aW9uGAIgASgJEg8KB2VuYWJsZWQYAyABKAgSKQoIbGFzdF9zZXQYBCABKAsyFy5zb2NrLnYxLkZlYXR1cmVGbGFnU2V0InEKDkZlYXR1cmVGbGFnU2V0EiYKAmF0GAEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIZChFvcGVyYXRvcl90b2tlbl9pZBgCIAEoCRIcChRvcGVyYXRvcl90b2tlbl9sYWJlbBgDIAEoCSIYChZHZXRGZWF0dXJlRmxhZ3NSZXF1ZXN0Ij4KF0dldEZlYXR1cmVGbGFnc1Jlc3BvbnNlEiMKBWZsYWdzGAEgAygLMhQuc29jay52MS5GZWF0dXJlRmxhZyI1ChVTZXRGZWF0dXJlRmxhZ1JlcXVlc3QSCwoDa2V5GAEgASgJEg8KB2VuYWJsZWQYAiABKAgiPAoWU2V0RmVhdHVyZUZsYWdSZXNwb25zZRIiCgRmbGFnGAEgASgLMhQuc29jay52MS5GZWF0dXJlRmxhZyITChFNaW50SW52aXRlUmVxdWVzdCJSChJNaW50SW52aXRlUmVzcG9uc2USDAoEY29kZRgBIAEoCRIuCgpleHBpcmVzX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCI8ChJMaXN0UmVwb3J0c1JlcXVlc3QSDQoFbGltaXQYASABKAUSFwoPYWZ0ZXJfcmVwb3J0X2lkGAIgASgJIlsKE0xpc3RSZXBvcnRzUmVzcG9uc2USIAoHcmVwb3J0cxgBIAMoCzIPLnNvY2sudjEuUmVwb3J0EiIKCGFjY291bnRzGAIgAygLMhAuc29jay52MS5BY2NvdW50IlYKFFJlc29sdmVSZXBvcnRSZXF1ZXN0EhEKCXJlcG9ydF9pZBgBIAEoCRIrCgdvdXRjb21lGAIgASgOMhouc29jay52MS5SZXNvbHV0aW9uT3V0Y29tZSJAChVSZXNvbHZlUmVwb3J0UmVzcG9uc2USJwoKcmVzb2x1dGlvbhgBIAEoCzITLnNvY2sudjEuUmVzb2x1dGlvbiItChdSZWluc3RhdGVBY2NvdW50UmVxdWVzdBISCgphY2NvdW50X2lkGAEgASgJIhoKGFJlaW5zdGF0ZUFjY291bnRSZXNwb25zZSIcChpSZXZva2VPcGVyYXRvclRva2VuUmVxdWVzdCIdChtSZXZva2VPcGVyYXRvclRva2VuUmVzcG9uc2UiiAEKEUxpc3RIdW1hbnNSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFEhgKEGFmdGVyX2FjY291bnRfaWQYAiABKAkSFQoNaGFuZGxlX3ByZWZpeBgDIAEoCRIzCg5hcmNoaXZlX2ZpbHRlchgEIAEoDjIbLnNvY2sudjEuSHVtYW5BcmNoaXZlRmlsdGVyIjsKEkxpc3RIdW1hbnNSZXNwb25zZRIlCgZodW1hbnMYASADKAsyFS5zb2NrLnYxLkh1bWFuU3VtbWFyeSLZAQoMSHVtYW5TdW1tYXJ5EiEKB2FjY291bnQYASABKAsyEC5zb2NrLnYxLkFjY291bnQSLQoJam9pbmVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxzdXNwZW5kZWRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhQKDHB1cHBldF9jb3VudBgEIAEoBRIvCgthcmNoaXZlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiJQoPR2V0SHVtYW5SZXF1ZXN0EhIKCmFjY291bnRfaWQYASABKAki8QIKEEdldEh1bWFuUmVzcG9uc2USJAoFaHVtYW4YASABKAsyFS5zb2NrLnYxLkh1bWFuU3VtbWFyeRIgCgdkZXZpY2VzGAIgAygLMg8uc29jay52MS5EZXZpY2USKwoHcHVwcGV0cxgDIAMoCzIaLnNvY2sudjEuUHVwcGV0V2l0aERldmljZXMSMwoRdGVybXNfYWNjZXB0YW5jZXMYBCADKAsyGC5zb2NrLnYxLlRlcm1zQWNjZXB0YW5jZRIVCg10ZXJtc19jdXJyZW50GAUgASgIEh8KA3BybxgGIAEoCzISLnNvY2sudjEuUHJvU3RhdHVzEiAKBXRyaWFsGAcgASgLMhEuc29jay52MS5Qcm9UcmlhbBI2Cg1zdWJzY3JpcHRpb25zGAggAygLMh8uc29jay52MS5Qcm9TdWJzY3JpcHRpb25TdW1tYXJ5EiEKBmdyYW50cxgJIAMoCzIRLnNvY2sudjEuUHJvR3JhbnQiUwoPVGVybXNBY2NlcHRhbmNlEg8KB3ZlcnNpb24YASABKAkSLwoLYWNjZXB0ZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIlcKGUxpc3RBY2NvdW50UmVwb3J0c1JlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCRINCgVsaW1pdBgCIAEoBRIXCg9hZnRlcl9yZXBvcnRfaWQYAyABKAkiaQoaTGlzdEFjY291bnRSZXBvcnRzUmVzcG9uc2USJwoHcmVwb3J0cxgBIAMoCzIWLnNvY2sudjEuUmVwb3J0U3VtbWFyeRIiCghhY2NvdW50cxgCIAMoCzIQLnNvY2sudjEuQWNjb3VudCLcAQoNUmVwb3J0U3VtbWFyeRIKCgJpZBgBIAEoCRITCgtyZXBvcnRlcl9pZBgCIAEoCRISCgpzdWJqZWN0X2lkGAMgASgJEiUKBnJlYXNvbhgEIAEoDjIVLnNvY2sudjEuUmVwb3J0UmVhc29uEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhYKDmV2aWRlbmNlX2NvdW50GAYgASgFEicKCnJlc29sdXRpb24YByABKAsyEy5zb2NrLnYxLlJlc29sdXRpb24iPwoRRXJhc2VIdW1hblJlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCRIWCg5jb25maXJtX2hhbmRsZRgCIAEoCSIUChJFcmFzZUh1bWFuUmVzcG9uc2UiSQoSQ3JlYXRlSHVtYW5SZXF1ZXN0Eg0KBWVtYWlsGAEgASgJEg4KBmhhbmRsZRgCIAEoCRIUCgxkaXNwbGF5X25hbWUYAyABKAkiUgoTQ3JlYXRlSHVtYW5SZXNwb25zZRIhCgdhY2NvdW50GAEgASgLMhAuc29jay52MS5BY2NvdW50EhgKEGluaXRpYWxfcGFzc3dvcmQYAiABKAkiKQoTQXJjaGl2ZUh1bWFuUmVxdWVzdBISCgphY2NvdW50X2lkGAEgASgJIhYKFEFyY2hpdmVIdW1hblJlc3BvbnNlIisKFVVuYXJjaGl2ZUh1bWFuUmVxdWVzdBISCgphY2NvdW50X2lkGAEgASgJIhgKFlVuYXJjaGl2ZUh1bWFuUmVzcG9uc2UidgoeU2lnbkluT3BlcmF0b3JXaXRoQXBwbGVSZXF1ZXN0EhYKDmlkZW50aXR5X3Rva2VuGAEgASgJEg0KBW5vbmNlGAIgASgJEi0KBmNsaWVudBgDIAEoDjIdLnNvY2sudjEuT3BlcmF0b3JTaWduSW5DbGllbnQiYAofU2lnbkluT3BlcmF0b3JXaXRoQXBwbGVSZXNwb25zZRINCgV0b2tlbhgBIAEoCRIuCgpleHBpcmVzX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCJwChlMaXN0SW52aXRlUmVxdWVzdHNSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFEhgKEGFmdGVyX3JlcXVlc3RfaWQYAiABKAkSKgoFc3RhdGUYAyABKA4yGy5zb2NrLnYxLkludml0ZVJlcXVlc3RTdGF0ZSJGChpMaXN0SW52aXRlUmVxdWVzdHNSZXNwb25zZRIoCghyZXF1ZXN0cxgBIAMoCzIWLnNvY2sudjEuSW52aXRlUmVxdWVzdCIzChxBcHByb3ZlSW52aXRlUmVxdWVzdHNSZXF1ZXN0EhMKC3JlcXVlc3RfaWRzGAEgAygJIlUKHUFwcHJvdmVJbnZpdGVSZXF1ZXN0c1Jlc3BvbnNlEjQKB3Jlc3VsdHMYASADKAsyIy5zb2NrLnYxLkFwcHJvdmVJbnZpdGVSZXF1ZXN0UmVzdWx0IpABChpBcHByb3ZlSW52aXRlUmVxdWVzdFJlc3VsdBISCgpyZXF1ZXN0X2lkGAEgASgJEjUKB291dGNvbWUYAiABKA4yJC5zb2NrLnYxLkFwcHJvdmVJbnZpdGVSZXF1ZXN0T3V0Y29tZRInCgZpbnZpdGUYAyABKAsyFy5zb2NrLnYxLkFwcHJvdmVkSW52aXRlIjMKHERlY2xpbmVJbnZpdGVSZXF1ZXN0c1JlcXVlc3QSEwoLcmVxdWVzdF9pZHMYASADKAkiVQodRGVjbGluZUludml0ZVJlcXVlc3RzUmVzcG9uc2USNAoHcmVzdWx0cxgBIAMoCzIjLnNvY2sudjEuRGVjbGluZUludml0ZVJlcXVlc3RSZXN1bHQiZwoaRGVjbGluZUludml0ZVJlcXVlc3RSZXN1bHQSEgoKcmVxdWVzdF9pZBgBIAEoCRI1CgdvdXRjb21lGAIgASgOMiQuc29jay52MS5EZWNsaW5lSW52aXRlUmVxdWVzdE91dGNvbWUqmgEKEkh1bWFuQXJjaGl2ZUZpbHRlchIkCiBIVU1BTl9BUkNISVZFX0ZJTFRFUl9VTlNQRUNJRklFRBAAEh0KGUhVTUFOX0FSQ0hJVkVfRklMVEVSX0xJVkUQARIhCh1IVU1BTl9BUkNISVZFX0ZJTFRFUl9BUkNISVZFRBACEhwKGEhVTUFOX0FSQ0hJVkVfRklMVEVSX0FMTBADKoUBChRPcGVyYXRvclNpZ25JbkNsaWVudBInCiNPUEVSQVRPUl9TSUdOX0lOX0NMSUVOVF9VTlNQRUNJRklFRBAAEiMKH09QRVJBVE9SX1NJR05fSU5fQ0xJRU5UX0NPTlNPTEUQARIfChtPUEVSQVRPUl9TSUdOX0lOX0NMSUVOVF9DTEkQAiqiAQoSSW52aXRlUmVxdWVzdFN0YXRlEiQKIElOVklURV9SRVFVRVNUX1NUQVRFX1VOU1BFQ0lGSUVEEAASIAocSU5WSVRFX1JFUVVFU1RfU1RBVEVfUEVORElORxABEiEKHUlOVklURV9SRVFVRVNUX1NUQVRFX0FQUFJPVkVEEAISIQodSU5WSVRFX1JFUVVFU1RfU1RBVEVfREVDTElORUQQAyqKAgobQXBwcm92ZUludml0ZVJlcXVlc3RPdXRjb21lEi4KKkFQUFJPVkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9VTlNQRUNJRklFRBAAEisKJ0FQUFJPVkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9BUFBST1ZFRBABEjMKL0FQUFJPVkVfSU5WSVRFX1JFUVVFU1RfT1VUQ09NRV9BUFBST1ZFRF9OT19DT0RFEAISKwonQVBQUk9WRV9JTlZJVEVfUkVRVUVTVF9PVVRDT01FX0RFQ0xJTkVEEAMSLAooQVBQUk9WRV9JTlZJVEVfUkVRVUVTVF9PVVRDT01FX05PVF9GT1VORBAEKtUBChtEZWNsaW5lSW52aXRlUmVxdWVzdE91dGNvbWUSLgoqREVDTElORV9JTlZJVEVfUkVRVUVTVF9PVVRDT01FX1VOU1BFQ0lGSUVEEAASKwonREVDTElORV9JTlZJVEVfUkVRVUVTVF9PVVRDT01FX0RFQ0xJTkVEEAESKwonREVDTElORV9JTlZJVEVfUkVRVUVTVF9PVVRDT01FX0FQUFJPVkVEEAISLAooREVDTElORV9JTlZJVEVfUkVRVUVTVF9PVVRDT01FX05PVF9GT1VORBADMrcPCg9PcGVyYXRvclNlcnZpY2USRwoKTWludEludml0ZRIaLnNvY2sudjEuTWludEludml0ZVJlcXVlc3QaGy5zb2NrLnYxLk1pbnRJbnZpdGVSZXNwb25zZSIAEkoKC0xpc3RSZXBvcnRzEhsuc29jay52MS5MaXN0UmVwb3J0c1JlcXVlc3QaHC5zb2NrLnYxLkxpc3RSZXBvcnRzUmVzcG9uc2UiABJQCg1SZXNvbHZlUmVwb3J0Eh0uc29jay52MS5SZXNvbHZlUmVwb3J0UmVxdWVzdBoeLnNvY2sudjEuUmVzb2x2ZVJlcG9ydFJlc3BvbnNlIgASWQoQUmVpbnN0YXRlQWNjb3VudBIgLnNvY2sudjEuUmVpbnN0YXRlQWNjb3VudFJlcXVlc3QaIS5zb2NrLnYxLlJlaW5zdGF0ZUFjY291bnRSZXNwb25zZSIAEmIKE1Jldm9rZU9wZXJhdG9yVG9rZW4SIy5zb2NrLnYxLlJldm9rZU9wZXJhdG9yVG9rZW5SZXF1ZXN0GiQuc29jay52MS5SZXZva2VPcGVyYXRvclRva2VuUmVzcG9uc2UiABJHCgpMaXN0SHVtYW5zEhouc29jay52MS5MaXN0SHVtYW5zUmVxdWVzdBobLnNvY2sudjEuTGlzdEh1bWFuc1Jlc3BvbnNlIgASQQoIR2V0SHVtYW4SGC5zb2NrLnYxLkdldEh1bWFuUmVxdWVzdBoZLnNvY2sudjEuR2V0SHVtYW5SZXNwb25zZSIAEl8KEkxpc3RBY2NvdW50UmVwb3J0cxIiLnNvY2sudjEuTGlzdEFjY291bnRSZXBvcnRzUmVxdWVzdBojLnNvY2sudjEuTGlzdEFjY291bnRSZXBvcnRzUmVzcG9uc2UiABJHCgpFcmFzZUh1bWFuEhouc29jay52MS5FcmFzZUh1bWFuUmVxdWVzdBobLnNvY2sudjEuRXJhc2VIdW1hblJlc3BvbnNlIgASSgoLQ3JlYXRlSHVtYW4SGy5zb2NrLnYxLkNyZWF0ZUh1bWFuUmVxdWVzdBocLnNvY2sudjEuQ3JlYXRlSHVtYW5SZXNwb25zZSIAEk0KDEFyY2hpdmVIdW1hbhIcLnNvY2sudjEuQXJjaGl2ZUh1bWFuUmVxdWVzdBodLnNvY2sudjEuQXJjaGl2ZUh1bWFuUmVzcG9uc2UiABJTCg5VbmFyY2hpdmVIdW1hbhIeLnNvY2sudjEuVW5hcmNoaXZlSHVtYW5SZXF1ZXN0Gh8uc29jay52MS5VbmFyY2hpdmVIdW1hblJlc3BvbnNlIgASXwoSTGlzdEludml0ZVJlcXVlc3RzEiIuc29jay52MS5MaXN0SW52aXRlUmVxdWVzdHNSZXF1ZXN0GiMuc29jay52MS5MaXN0SW52aXRlUmVxdWVzdHNSZXNwb25zZSIAEmgKFUFwcHJvdmVJbnZpdGVSZXF1ZXN0cxIlLnNvY2sudjEuQXBwcm92ZUludml0ZVJlcXVlc3RzUmVxdWVzdBomLnNvY2sudjEuQXBwcm92ZUludml0ZVJlcXVlc3RzUmVzcG9uc2UiABJoChVEZWNsaW5lSW52aXRlUmVxdWVzdHMSJS5zb2NrLnYxLkRlY2xpbmVJbnZpdGVSZXF1ZXN0c1JlcXVlc3QaJi5zb2NrLnYxLkRlY2xpbmVJbnZpdGVSZXF1ZXN0c1Jlc3BvbnNlIgASUwoOR2V0TWVzc2FnZUhvbGQSHi5zb2NrLnYxLkdldE1lc3NhZ2VIb2xkUmVxdWVzdBofLnNvY2sudjEuR2V0TWVzc2FnZUhvbGRSZXNwb25zZSIAElMKDlNldE1lc3NhZ2VIb2xkEh4uc29jay52MS5TZXRNZXNzYWdlSG9sZFJlcXVlc3QaHy5zb2NrLnYxLlNldE1lc3NhZ2VIb2xkUmVzcG9uc2UiABJWCg9HZXRGZWF0dXJlRmxhZ3MSHy5zb2NrLnYxLkdldEZlYXR1cmVGbGFnc1JlcXVlc3QaIC5zb2NrLnYxLkdldEZlYXR1cmVGbGFnc1Jlc3BvbnNlIgASUwoOU2V0RmVhdHVyZUZsYWcSHi5zb2NrLnYxLlNldEZlYXR1cmVGbGFnUmVxdWVzdBofLnNvY2sudjEuU2V0RmVhdHVyZUZsYWdSZXNwb25zZSIAEkEKCEdyYW50UHJvEhguc29jay52MS5HcmFudFByb1JlcXVlc3QaGS5zb2NrLnYxLkdyYW50UHJvUmVzcG9uc2UiABJTCg5SZXZva2VQcm9HcmFudBIeLnNvY2sudjEuUmV2b2tlUHJvR3JhbnRSZXF1ZXN0Gh8uc29jay52MS5SZXZva2VQcm9HcmFudFJlc3BvbnNlIgASVgoPTWludFRyaWFnZVRva2VuEh8uc29jay52MS5NaW50VHJpYWdlVG9rZW5SZXF1ZXN0GiAuc29jay52MS5NaW50VHJpYWdlVG9rZW5SZXNwb25zZSIAElwKEVZlcmlmeVRyaWFnZVRva2VuEiEuc29jay52MS5WZXJpZnlUcmlhZ2VUb2tlblJlcXVlc3QaIi5zb2NrLnYxLlZlcmlmeVRyaWFnZVRva2VuUmVzcG9uc2UiADKHAQoVT3BlcmF0b3JTaWduSW5TZXJ2aWNlEm4KF1NpZ25Jbk9wZXJhdG9yV2l0aEFwcGxlEicuc29jay52MS5TaWduSW5PcGVyYXRvcldpdGhBcHBsZVJlcXVlc3QaKC5zb2NrLnYxLlNpZ25Jbk9wZXJhdG9yV2l0aEFwcGxlUmVzcG9uc2UiAEI5WjdnaXRodWIuY29tL2Flcnl4LWFpL3NvY2stY29udHJhY3QvZ2VuL2dvL3NvY2svdjE7c29ja3YxYgZwcm90bzM", [file_google_protobuf_timestamp, file_sock_v1_identity, file_sock_v1_invite_request, file_sock_v1_moderation, file_sock_v1_types]);
 
 /**
  * Not idempotent: each call mints a new token. The console calls it once
@@ -711,6 +711,13 @@ export type ListHumansRequest = Message<"sock.v1.ListHumansRequest"> & {
    * @generated from field: string handle_prefix = 3;
    */
   handlePrefix: string;
+
+  /**
+   * Unspecified lists live humans only.
+   *
+   * @generated from field: sock.v1.HumanArchiveFilter archive_filter = 4;
+   */
+  archiveFilter: HumanArchiveFilter;
 };
 
 /**
@@ -773,6 +780,13 @@ export type HumanSummary = Message<"sock.v1.HumanSummary"> & {
    * @generated from field: int32 puppet_count = 4;
    */
   puppetCount: number;
+
+  /**
+   * When the human was archived. Unset: not archived.
+   *
+   * @generated from field: google.protobuf.Timestamp archived_at = 5;
+   */
+  archivedAt?: Timestamp | undefined;
 };
 
 /**
@@ -1067,6 +1081,137 @@ export const EraseHumanResponseSchema: GenMessage<EraseHumanResponse> = /*@__PUR
   messageDesc(file_sock_v1_operator, 41);
 
 /**
+ * Creates a human with an email identity and a generated password: the
+ * network form of `sockd humans create`. Records no terms acceptance; the
+ * person accepts at their first consent.
+ *
+ * @generated from message sock.v1.CreateHumanRequest
+ */
+export type CreateHumanRequest = Message<"sock.v1.CreateHumanRequest"> & {
+  /**
+   * WorkOS validates it.
+   *
+   * @generated from field: string email = 1;
+   */
+  email: string;
+
+  /**
+   * 3 to 20 of [a-z0-9_], lowercased by the server.
+   *
+   * @generated from field: string handle = 2;
+   */
+  handle: string;
+
+  /**
+   * 1 to 64 characters.
+   *
+   * @generated from field: string display_name = 3;
+   */
+  displayName: string;
+};
+
+/**
+ * Describes the message sock.v1.CreateHumanRequest.
+ * Use `create(CreateHumanRequestSchema)` to create a new message.
+ */
+export const CreateHumanRequestSchema: GenMessage<CreateHumanRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_operator, 42);
+
+/**
+ * @generated from message sock.v1.CreateHumanResponse
+ */
+export type CreateHumanResponse = Message<"sock.v1.CreateHumanResponse"> & {
+  /**
+   * @generated from field: sock.v1.Account account = 1;
+   */
+  account?: Account | undefined;
+
+  /**
+   * 24 random characters, returned once. The hub never stores or logs it.
+   *
+   * @generated from field: string initial_password = 2;
+   */
+  initialPassword: string;
+};
+
+/**
+ * Describes the message sock.v1.CreateHumanResponse.
+ * Use `create(CreateHumanResponseSchema)` to create a new message.
+ */
+export const CreateHumanResponseSchema: GenMessage<CreateHumanResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_operator, 43);
+
+/**
+ * Shelves a human: every device revoked, sign-in refused, hidden from the
+ * default ListHumans. Reversible with UnarchiveHuman. A no-op when archived.
+ *
+ * @generated from message sock.v1.ArchiveHumanRequest
+ */
+export type ArchiveHumanRequest = Message<"sock.v1.ArchiveHumanRequest"> & {
+  /**
+   * A human's account id. A puppet's id is NOT_FOUND.
+   *
+   * @generated from field: string account_id = 1;
+   */
+  accountId: string;
+};
+
+/**
+ * Describes the message sock.v1.ArchiveHumanRequest.
+ * Use `create(ArchiveHumanRequestSchema)` to create a new message.
+ */
+export const ArchiveHumanRequestSchema: GenMessage<ArchiveHumanRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_operator, 44);
+
+/**
+ * @generated from message sock.v1.ArchiveHumanResponse
+ */
+export type ArchiveHumanResponse = Message<"sock.v1.ArchiveHumanResponse"> & {
+};
+
+/**
+ * Describes the message sock.v1.ArchiveHumanResponse.
+ * Use `create(ArchiveHumanResponseSchema)` to create a new message.
+ */
+export const ArchiveHumanResponseSchema: GenMessage<ArchiveHumanResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_operator, 45);
+
+/**
+ * Lifts an archive. Devices are not restored; the human signs in again. A
+ * no-op when not archived.
+ *
+ * @generated from message sock.v1.UnarchiveHumanRequest
+ */
+export type UnarchiveHumanRequest = Message<"sock.v1.UnarchiveHumanRequest"> & {
+  /**
+   * A human's account id. A puppet's id is NOT_FOUND.
+   *
+   * @generated from field: string account_id = 1;
+   */
+  accountId: string;
+};
+
+/**
+ * Describes the message sock.v1.UnarchiveHumanRequest.
+ * Use `create(UnarchiveHumanRequestSchema)` to create a new message.
+ */
+export const UnarchiveHumanRequestSchema: GenMessage<UnarchiveHumanRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_operator, 46);
+
+/**
+ * @generated from message sock.v1.UnarchiveHumanResponse
+ */
+export type UnarchiveHumanResponse = Message<"sock.v1.UnarchiveHumanResponse"> & {
+};
+
+/**
+ * Describes the message sock.v1.UnarchiveHumanResponse.
+ * Use `create(UnarchiveHumanResponseSchema)` to create a new message.
+ */
+export const UnarchiveHumanResponseSchema: GenMessage<UnarchiveHumanResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_operator, 47);
+
+/**
  * @generated from message sock.v1.SignInOperatorWithAppleRequest
  */
 export type SignInOperatorWithAppleRequest = Message<"sock.v1.SignInOperatorWithAppleRequest"> & {
@@ -1105,7 +1250,7 @@ export type SignInOperatorWithAppleRequest = Message<"sock.v1.SignInOperatorWith
  * Use `create(SignInOperatorWithAppleRequestSchema)` to create a new message.
  */
 export const SignInOperatorWithAppleRequestSchema: GenMessage<SignInOperatorWithAppleRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 42);
+  messageDesc(file_sock_v1_operator, 48);
 
 /**
  * @generated from message sock.v1.SignInOperatorWithAppleResponse
@@ -1133,7 +1278,7 @@ export type SignInOperatorWithAppleResponse = Message<"sock.v1.SignInOperatorWit
  * Use `create(SignInOperatorWithAppleResponseSchema)` to create a new message.
  */
 export const SignInOperatorWithAppleResponseSchema: GenMessage<SignInOperatorWithAppleResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 43);
+  messageDesc(file_sock_v1_operator, 49);
 
 /**
  * @generated from message sock.v1.ListInviteRequestsRequest
@@ -1167,7 +1312,7 @@ export type ListInviteRequestsRequest = Message<"sock.v1.ListInviteRequestsReque
  * Use `create(ListInviteRequestsRequestSchema)` to create a new message.
  */
 export const ListInviteRequestsRequestSchema: GenMessage<ListInviteRequestsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 44);
+  messageDesc(file_sock_v1_operator, 50);
 
 /**
  * @generated from message sock.v1.ListInviteRequestsResponse
@@ -1187,7 +1332,7 @@ export type ListInviteRequestsResponse = Message<"sock.v1.ListInviteRequestsResp
  * Use `create(ListInviteRequestsResponseSchema)` to create a new message.
  */
 export const ListInviteRequestsResponseSchema: GenMessage<ListInviteRequestsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 45);
+  messageDesc(file_sock_v1_operator, 51);
 
 /**
  * @generated from message sock.v1.ApproveInviteRequestsRequest
@@ -1206,7 +1351,7 @@ export type ApproveInviteRequestsRequest = Message<"sock.v1.ApproveInviteRequest
  * Use `create(ApproveInviteRequestsRequestSchema)` to create a new message.
  */
 export const ApproveInviteRequestsRequestSchema: GenMessage<ApproveInviteRequestsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 46);
+  messageDesc(file_sock_v1_operator, 52);
 
 /**
  * @generated from message sock.v1.ApproveInviteRequestsResponse
@@ -1225,7 +1370,7 @@ export type ApproveInviteRequestsResponse = Message<"sock.v1.ApproveInviteReques
  * Use `create(ApproveInviteRequestsResponseSchema)` to create a new message.
  */
 export const ApproveInviteRequestsResponseSchema: GenMessage<ApproveInviteRequestsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 47);
+  messageDesc(file_sock_v1_operator, 53);
 
 /**
  * @generated from message sock.v1.ApproveInviteRequestResult
@@ -1254,7 +1399,7 @@ export type ApproveInviteRequestResult = Message<"sock.v1.ApproveInviteRequestRe
  * Use `create(ApproveInviteRequestResultSchema)` to create a new message.
  */
 export const ApproveInviteRequestResultSchema: GenMessage<ApproveInviteRequestResult> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 48);
+  messageDesc(file_sock_v1_operator, 54);
 
 /**
  * @generated from message sock.v1.DeclineInviteRequestsRequest
@@ -1273,7 +1418,7 @@ export type DeclineInviteRequestsRequest = Message<"sock.v1.DeclineInviteRequest
  * Use `create(DeclineInviteRequestsRequestSchema)` to create a new message.
  */
 export const DeclineInviteRequestsRequestSchema: GenMessage<DeclineInviteRequestsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 49);
+  messageDesc(file_sock_v1_operator, 55);
 
 /**
  * @generated from message sock.v1.DeclineInviteRequestsResponse
@@ -1292,7 +1437,7 @@ export type DeclineInviteRequestsResponse = Message<"sock.v1.DeclineInviteReques
  * Use `create(DeclineInviteRequestsResponseSchema)` to create a new message.
  */
 export const DeclineInviteRequestsResponseSchema: GenMessage<DeclineInviteRequestsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 50);
+  messageDesc(file_sock_v1_operator, 56);
 
 /**
  * @generated from message sock.v1.DeclineInviteRequestResult
@@ -1314,7 +1459,48 @@ export type DeclineInviteRequestResult = Message<"sock.v1.DeclineInviteRequestRe
  * Use `create(DeclineInviteRequestResultSchema)` to create a new message.
  */
 export const DeclineInviteRequestResultSchema: GenMessage<DeclineInviteRequestResult> = /*@__PURE__*/
-  messageDesc(file_sock_v1_operator, 51);
+  messageDesc(file_sock_v1_operator, 57);
+
+/**
+ * Which humans ListHumans returns by archive state.
+ *
+ * @generated from enum sock.v1.HumanArchiveFilter
+ */
+export enum HumanArchiveFilter {
+  /**
+   * Same as LIVE.
+   *
+   * @generated from enum value: HUMAN_ARCHIVE_FILTER_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * Humans that are not archived.
+   *
+   * @generated from enum value: HUMAN_ARCHIVE_FILTER_LIVE = 1;
+   */
+  LIVE = 1,
+
+  /**
+   * Archived humans only.
+   *
+   * @generated from enum value: HUMAN_ARCHIVE_FILTER_ARCHIVED = 2;
+   */
+  ARCHIVED = 2,
+
+  /**
+   * Every human.
+   *
+   * @generated from enum value: HUMAN_ARCHIVE_FILTER_ALL = 3;
+   */
+  ALL = 3,
+}
+
+/**
+ * Describes the enum sock.v1.HumanArchiveFilter.
+ */
+export const HumanArchiveFilterSchema: GenEnum<HumanArchiveFilter> = /*@__PURE__*/
+  enumDesc(file_sock_v1_operator, 0);
 
 /**
  * @generated from enum sock.v1.OperatorSignInClient
@@ -1346,7 +1532,7 @@ export enum OperatorSignInClient {
  * Describes the enum sock.v1.OperatorSignInClient.
  */
 export const OperatorSignInClientSchema: GenEnum<OperatorSignInClient> = /*@__PURE__*/
-  enumDesc(file_sock_v1_operator, 0);
+  enumDesc(file_sock_v1_operator, 1);
 
 /**
  * @generated from enum sock.v1.InviteRequestState
@@ -1379,7 +1565,7 @@ export enum InviteRequestState {
  * Describes the enum sock.v1.InviteRequestState.
  */
 export const InviteRequestStateSchema: GenEnum<InviteRequestState> = /*@__PURE__*/
-  enumDesc(file_sock_v1_operator, 1);
+  enumDesc(file_sock_v1_operator, 2);
 
 /**
  * @generated from enum sock.v1.ApproveInviteRequestOutcome
@@ -1425,7 +1611,7 @@ export enum ApproveInviteRequestOutcome {
  * Describes the enum sock.v1.ApproveInviteRequestOutcome.
  */
 export const ApproveInviteRequestOutcomeSchema: GenEnum<ApproveInviteRequestOutcome> = /*@__PURE__*/
-  enumDesc(file_sock_v1_operator, 2);
+  enumDesc(file_sock_v1_operator, 3);
 
 /**
  * @generated from enum sock.v1.DeclineInviteRequestOutcome
@@ -1462,7 +1648,7 @@ export enum DeclineInviteRequestOutcome {
  * Describes the enum sock.v1.DeclineInviteRequestOutcome.
  */
 export const DeclineInviteRequestOutcomeSchema: GenEnum<DeclineInviteRequestOutcome> = /*@__PURE__*/
-  enumDesc(file_sock_v1_operator, 3);
+  enumDesc(file_sock_v1_operator, 4);
 
 /**
  * OperatorService: the operator's actions, for the operator CLI and the web
@@ -1546,6 +1732,32 @@ export const OperatorService: GenService<{
     methodKind: "unary";
     input: typeof EraseHumanRequestSchema;
     output: typeof EraseHumanResponseSchema;
+  },
+  /**
+   * Humans the operator creates and shelves (docs/specs/operator-human-lifecycle.md).
+   *
+   * @generated from rpc sock.v1.OperatorService.CreateHuman
+   */
+  createHuman: {
+    methodKind: "unary";
+    input: typeof CreateHumanRequestSchema;
+    output: typeof CreateHumanResponseSchema;
+  },
+  /**
+   * @generated from rpc sock.v1.OperatorService.ArchiveHuman
+   */
+  archiveHuman: {
+    methodKind: "unary";
+    input: typeof ArchiveHumanRequestSchema;
+    output: typeof ArchiveHumanResponseSchema;
+  },
+  /**
+   * @generated from rpc sock.v1.OperatorService.UnarchiveHuman
+   */
+  unarchiveHuman: {
+    methodKind: "unary";
+    input: typeof UnarchiveHumanRequestSchema;
+    output: typeof UnarchiveHumanResponseSchema;
   },
   /**
    * The console's invite request queue. ListInviteRequests takes

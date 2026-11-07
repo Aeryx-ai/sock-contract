@@ -25,6 +25,10 @@ service OperatorService {
   rpc GetHuman(GetHumanRequest) returns (GetHumanResponse) {}
   rpc ListAccountReports(ListAccountReportsRequest) returns (ListAccountReportsResponse) {}
   rpc EraseHuman(EraseHumanRequest) returns (EraseHumanResponse) {}
+  // Humans the operator creates and shelves (docs/specs/operator-human-lifecycle.md).
+  rpc CreateHuman(CreateHumanRequest) returns (CreateHumanResponse) {}
+  rpc ArchiveHuman(ArchiveHumanRequest) returns (ArchiveHumanResponse) {}
+  rpc UnarchiveHuman(UnarchiveHumanRequest) returns (UnarchiveHumanResponse) {}
   // The console's invite request queue. ListInviteRequests takes
   // full or read (sock-triage polls it); approve and decline are full only.
   rpc ListInviteRequests(ListInviteRequestsRequest) returns (ListInviteRequestsResponse) {}
@@ -222,6 +226,8 @@ message ListHumansRequest {
   // lowercased by the server; only humans whose handle starts with it are
   // listed.
   string handle_prefix = 3;
+  // Unspecified lists live humans only.
+  HumanArchiveFilter archive_filter = 4;
 }
 message ListHumansResponse {
   // Newest first, by account id, which is time-ordered. Fewer than the
@@ -239,6 +245,8 @@ message HumanSummary {
   google.protobuf.Timestamp suspended_at = 3;
   // Every puppet the human owns, system and connector puppets included.
   int32 puppet_count = 4;
+  // When the human was archived. Unset: not archived.
+  google.protobuf.Timestamp archived_at = 5;
 }
 
 message GetHumanRequest {
@@ -319,6 +327,51 @@ message EraseHumanRequest {
   string confirm_handle = 2;
 }
 message EraseHumanResponse {}
+
+// Creates a human with an email identity and a generated password: the
+// network form of `sockd humans create`. Records no terms acceptance; the
+// person accepts at their first consent.
+message CreateHumanRequest {
+  // WorkOS validates it.
+  string email = 1;
+  // 3 to 20 of [a-z0-9_], lowercased by the server.
+  string handle = 2;
+  // 1 to 64 characters.
+  string display_name = 3;
+}
+message CreateHumanResponse {
+  Account account = 1;
+  // 24 random characters, returned once. The hub never stores or logs it.
+  string initial_password = 2;
+}
+
+// Shelves a human: every device revoked, sign-in refused, hidden from the
+// default ListHumans. Reversible with UnarchiveHuman. A no-op when archived.
+message ArchiveHumanRequest {
+  // A human's account id. A puppet's id is NOT_FOUND.
+  string account_id = 1;
+}
+message ArchiveHumanResponse {}
+
+// Lifts an archive. Devices are not restored; the human signs in again. A
+// no-op when not archived.
+message UnarchiveHumanRequest {
+  // A human's account id. A puppet's id is NOT_FOUND.
+  string account_id = 1;
+}
+message UnarchiveHumanResponse {}
+
+// Which humans ListHumans returns by archive state.
+enum HumanArchiveFilter {
+  // Same as LIVE.
+  HUMAN_ARCHIVE_FILTER_UNSPECIFIED = 0;
+  // Humans that are not archived.
+  HUMAN_ARCHIVE_FILTER_LIVE = 1;
+  // Archived humans only.
+  HUMAN_ARCHIVE_FILTER_ARCHIVED = 2;
+  // Every human.
+  HUMAN_ARCHIVE_FILTER_ALL = 3;
+}
 
 // OperatorSignInService: the web console's Sign in with Apple.
 // Anonymous: no Authorization header; a sock_ot_ bearer is

@@ -62,6 +62,15 @@ const (
 	// OperatorServiceEraseHumanProcedure is the fully-qualified name of the OperatorService's
 	// EraseHuman RPC.
 	OperatorServiceEraseHumanProcedure = "/sock.v1.OperatorService/EraseHuman"
+	// OperatorServiceCreateHumanProcedure is the fully-qualified name of the OperatorService's
+	// CreateHuman RPC.
+	OperatorServiceCreateHumanProcedure = "/sock.v1.OperatorService/CreateHuman"
+	// OperatorServiceArchiveHumanProcedure is the fully-qualified name of the OperatorService's
+	// ArchiveHuman RPC.
+	OperatorServiceArchiveHumanProcedure = "/sock.v1.OperatorService/ArchiveHuman"
+	// OperatorServiceUnarchiveHumanProcedure is the fully-qualified name of the OperatorService's
+	// UnarchiveHuman RPC.
+	OperatorServiceUnarchiveHumanProcedure = "/sock.v1.OperatorService/UnarchiveHuman"
 	// OperatorServiceListInviteRequestsProcedure is the fully-qualified name of the OperatorService's
 	// ListInviteRequests RPC.
 	OperatorServiceListInviteRequestsProcedure = "/sock.v1.OperatorService/ListInviteRequests"
@@ -112,6 +121,10 @@ type OperatorServiceClient interface {
 	GetHuman(context.Context, *connect.Request[v1.GetHumanRequest]) (*connect.Response[v1.GetHumanResponse], error)
 	ListAccountReports(context.Context, *connect.Request[v1.ListAccountReportsRequest]) (*connect.Response[v1.ListAccountReportsResponse], error)
 	EraseHuman(context.Context, *connect.Request[v1.EraseHumanRequest]) (*connect.Response[v1.EraseHumanResponse], error)
+	// Humans the operator creates and shelves (docs/specs/operator-human-lifecycle.md).
+	CreateHuman(context.Context, *connect.Request[v1.CreateHumanRequest]) (*connect.Response[v1.CreateHumanResponse], error)
+	ArchiveHuman(context.Context, *connect.Request[v1.ArchiveHumanRequest]) (*connect.Response[v1.ArchiveHumanResponse], error)
+	UnarchiveHuman(context.Context, *connect.Request[v1.UnarchiveHumanRequest]) (*connect.Response[v1.UnarchiveHumanResponse], error)
 	// The console's invite request queue. ListInviteRequests takes
 	// full or read (sock-triage polls it); approve and decline are full only.
 	ListInviteRequests(context.Context, *connect.Request[v1.ListInviteRequestsRequest]) (*connect.Response[v1.ListInviteRequestsResponse], error)
@@ -206,6 +219,24 @@ func NewOperatorServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(operatorServiceMethods.ByName("EraseHuman")),
 			connect.WithClientOptions(opts...),
 		),
+		createHuman: connect.NewClient[v1.CreateHumanRequest, v1.CreateHumanResponse](
+			httpClient,
+			baseURL+OperatorServiceCreateHumanProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("CreateHuman")),
+			connect.WithClientOptions(opts...),
+		),
+		archiveHuman: connect.NewClient[v1.ArchiveHumanRequest, v1.ArchiveHumanResponse](
+			httpClient,
+			baseURL+OperatorServiceArchiveHumanProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("ArchiveHuman")),
+			connect.WithClientOptions(opts...),
+		),
+		unarchiveHuman: connect.NewClient[v1.UnarchiveHumanRequest, v1.UnarchiveHumanResponse](
+			httpClient,
+			baseURL+OperatorServiceUnarchiveHumanProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("UnarchiveHuman")),
+			connect.WithClientOptions(opts...),
+		),
 		listInviteRequests: connect.NewClient[v1.ListInviteRequestsRequest, v1.ListInviteRequestsResponse](
 			httpClient,
 			baseURL+OperatorServiceListInviteRequestsProcedure,
@@ -286,6 +317,9 @@ type operatorServiceClient struct {
 	getHuman              *connect.Client[v1.GetHumanRequest, v1.GetHumanResponse]
 	listAccountReports    *connect.Client[v1.ListAccountReportsRequest, v1.ListAccountReportsResponse]
 	eraseHuman            *connect.Client[v1.EraseHumanRequest, v1.EraseHumanResponse]
+	createHuman           *connect.Client[v1.CreateHumanRequest, v1.CreateHumanResponse]
+	archiveHuman          *connect.Client[v1.ArchiveHumanRequest, v1.ArchiveHumanResponse]
+	unarchiveHuman        *connect.Client[v1.UnarchiveHumanRequest, v1.UnarchiveHumanResponse]
 	listInviteRequests    *connect.Client[v1.ListInviteRequestsRequest, v1.ListInviteRequestsResponse]
 	approveInviteRequests *connect.Client[v1.ApproveInviteRequestsRequest, v1.ApproveInviteRequestsResponse]
 	declineInviteRequests *connect.Client[v1.DeclineInviteRequestsRequest, v1.DeclineInviteRequestsResponse]
@@ -342,6 +376,21 @@ func (c *operatorServiceClient) ListAccountReports(ctx context.Context, req *con
 // EraseHuman calls sock.v1.OperatorService.EraseHuman.
 func (c *operatorServiceClient) EraseHuman(ctx context.Context, req *connect.Request[v1.EraseHumanRequest]) (*connect.Response[v1.EraseHumanResponse], error) {
 	return c.eraseHuman.CallUnary(ctx, req)
+}
+
+// CreateHuman calls sock.v1.OperatorService.CreateHuman.
+func (c *operatorServiceClient) CreateHuman(ctx context.Context, req *connect.Request[v1.CreateHumanRequest]) (*connect.Response[v1.CreateHumanResponse], error) {
+	return c.createHuman.CallUnary(ctx, req)
+}
+
+// ArchiveHuman calls sock.v1.OperatorService.ArchiveHuman.
+func (c *operatorServiceClient) ArchiveHuman(ctx context.Context, req *connect.Request[v1.ArchiveHumanRequest]) (*connect.Response[v1.ArchiveHumanResponse], error) {
+	return c.archiveHuman.CallUnary(ctx, req)
+}
+
+// UnarchiveHuman calls sock.v1.OperatorService.UnarchiveHuman.
+func (c *operatorServiceClient) UnarchiveHuman(ctx context.Context, req *connect.Request[v1.UnarchiveHumanRequest]) (*connect.Response[v1.UnarchiveHumanResponse], error) {
+	return c.unarchiveHuman.CallUnary(ctx, req)
 }
 
 // ListInviteRequests calls sock.v1.OperatorService.ListInviteRequests.
@@ -411,6 +460,10 @@ type OperatorServiceHandler interface {
 	GetHuman(context.Context, *connect.Request[v1.GetHumanRequest]) (*connect.Response[v1.GetHumanResponse], error)
 	ListAccountReports(context.Context, *connect.Request[v1.ListAccountReportsRequest]) (*connect.Response[v1.ListAccountReportsResponse], error)
 	EraseHuman(context.Context, *connect.Request[v1.EraseHumanRequest]) (*connect.Response[v1.EraseHumanResponse], error)
+	// Humans the operator creates and shelves (docs/specs/operator-human-lifecycle.md).
+	CreateHuman(context.Context, *connect.Request[v1.CreateHumanRequest]) (*connect.Response[v1.CreateHumanResponse], error)
+	ArchiveHuman(context.Context, *connect.Request[v1.ArchiveHumanRequest]) (*connect.Response[v1.ArchiveHumanResponse], error)
+	UnarchiveHuman(context.Context, *connect.Request[v1.UnarchiveHumanRequest]) (*connect.Response[v1.UnarchiveHumanResponse], error)
 	// The console's invite request queue. ListInviteRequests takes
 	// full or read (sock-triage polls it); approve and decline are full only.
 	ListInviteRequests(context.Context, *connect.Request[v1.ListInviteRequestsRequest]) (*connect.Response[v1.ListInviteRequestsResponse], error)
@@ -501,6 +554,24 @@ func NewOperatorServiceHandler(svc OperatorServiceHandler, opts ...connect.Handl
 		connect.WithSchema(operatorServiceMethods.ByName("EraseHuman")),
 		connect.WithHandlerOptions(opts...),
 	)
+	operatorServiceCreateHumanHandler := connect.NewUnaryHandler(
+		OperatorServiceCreateHumanProcedure,
+		svc.CreateHuman,
+		connect.WithSchema(operatorServiceMethods.ByName("CreateHuman")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceArchiveHumanHandler := connect.NewUnaryHandler(
+		OperatorServiceArchiveHumanProcedure,
+		svc.ArchiveHuman,
+		connect.WithSchema(operatorServiceMethods.ByName("ArchiveHuman")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceUnarchiveHumanHandler := connect.NewUnaryHandler(
+		OperatorServiceUnarchiveHumanProcedure,
+		svc.UnarchiveHuman,
+		connect.WithSchema(operatorServiceMethods.ByName("UnarchiveHuman")),
+		connect.WithHandlerOptions(opts...),
+	)
 	operatorServiceListInviteRequestsHandler := connect.NewUnaryHandler(
 		OperatorServiceListInviteRequestsProcedure,
 		svc.ListInviteRequests,
@@ -587,6 +658,12 @@ func NewOperatorServiceHandler(svc OperatorServiceHandler, opts ...connect.Handl
 			operatorServiceListAccountReportsHandler.ServeHTTP(w, r)
 		case OperatorServiceEraseHumanProcedure:
 			operatorServiceEraseHumanHandler.ServeHTTP(w, r)
+		case OperatorServiceCreateHumanProcedure:
+			operatorServiceCreateHumanHandler.ServeHTTP(w, r)
+		case OperatorServiceArchiveHumanProcedure:
+			operatorServiceArchiveHumanHandler.ServeHTTP(w, r)
+		case OperatorServiceUnarchiveHumanProcedure:
+			operatorServiceUnarchiveHumanHandler.ServeHTTP(w, r)
 		case OperatorServiceListInviteRequestsProcedure:
 			operatorServiceListInviteRequestsHandler.ServeHTTP(w, r)
 		case OperatorServiceApproveInviteRequestsProcedure:
@@ -652,6 +729,18 @@ func (UnimplementedOperatorServiceHandler) ListAccountReports(context.Context, *
 
 func (UnimplementedOperatorServiceHandler) EraseHuman(context.Context, *connect.Request[v1.EraseHumanRequest]) (*connect.Response[v1.EraseHumanResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.EraseHuman is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) CreateHuman(context.Context, *connect.Request[v1.CreateHumanRequest]) (*connect.Response[v1.CreateHumanResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.CreateHuman is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) ArchiveHuman(context.Context, *connect.Request[v1.ArchiveHumanRequest]) (*connect.Response[v1.ArchiveHumanResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.ArchiveHuman is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) UnarchiveHuman(context.Context, *connect.Request[v1.UnarchiveHumanRequest]) (*connect.Response[v1.UnarchiveHumanResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.UnarchiveHuman is not implemented"))
 }
 
 func (UnimplementedOperatorServiceHandler) ListInviteRequests(context.Context, *connect.Request[v1.ListInviteRequestsRequest]) (*connect.Response[v1.ListInviteRequestsResponse], error) {

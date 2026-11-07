@@ -22,6 +22,63 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Which humans ListHumans returns by archive state.
+type HumanArchiveFilter int32
+
+const (
+	// Same as LIVE.
+	HumanArchiveFilter_HUMAN_ARCHIVE_FILTER_UNSPECIFIED HumanArchiveFilter = 0
+	// Humans that are not archived.
+	HumanArchiveFilter_HUMAN_ARCHIVE_FILTER_LIVE HumanArchiveFilter = 1
+	// Archived humans only.
+	HumanArchiveFilter_HUMAN_ARCHIVE_FILTER_ARCHIVED HumanArchiveFilter = 2
+	// Every human.
+	HumanArchiveFilter_HUMAN_ARCHIVE_FILTER_ALL HumanArchiveFilter = 3
+)
+
+// Enum value maps for HumanArchiveFilter.
+var (
+	HumanArchiveFilter_name = map[int32]string{
+		0: "HUMAN_ARCHIVE_FILTER_UNSPECIFIED",
+		1: "HUMAN_ARCHIVE_FILTER_LIVE",
+		2: "HUMAN_ARCHIVE_FILTER_ARCHIVED",
+		3: "HUMAN_ARCHIVE_FILTER_ALL",
+	}
+	HumanArchiveFilter_value = map[string]int32{
+		"HUMAN_ARCHIVE_FILTER_UNSPECIFIED": 0,
+		"HUMAN_ARCHIVE_FILTER_LIVE":        1,
+		"HUMAN_ARCHIVE_FILTER_ARCHIVED":    2,
+		"HUMAN_ARCHIVE_FILTER_ALL":         3,
+	}
+)
+
+func (x HumanArchiveFilter) Enum() *HumanArchiveFilter {
+	p := new(HumanArchiveFilter)
+	*p = x
+	return p
+}
+
+func (x HumanArchiveFilter) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (HumanArchiveFilter) Descriptor() protoreflect.EnumDescriptor {
+	return file_sock_v1_operator_proto_enumTypes[0].Descriptor()
+}
+
+func (HumanArchiveFilter) Type() protoreflect.EnumType {
+	return &file_sock_v1_operator_proto_enumTypes[0]
+}
+
+func (x HumanArchiveFilter) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use HumanArchiveFilter.Descriptor instead.
+func (HumanArchiveFilter) EnumDescriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{0}
+}
+
 type OperatorSignInClient int32
 
 const (
@@ -58,11 +115,11 @@ func (x OperatorSignInClient) String() string {
 }
 
 func (OperatorSignInClient) Descriptor() protoreflect.EnumDescriptor {
-	return file_sock_v1_operator_proto_enumTypes[0].Descriptor()
+	return file_sock_v1_operator_proto_enumTypes[1].Descriptor()
 }
 
 func (OperatorSignInClient) Type() protoreflect.EnumType {
-	return &file_sock_v1_operator_proto_enumTypes[0]
+	return &file_sock_v1_operator_proto_enumTypes[1]
 }
 
 func (x OperatorSignInClient) Number() protoreflect.EnumNumber {
@@ -71,7 +128,7 @@ func (x OperatorSignInClient) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use OperatorSignInClient.Descriptor instead.
 func (OperatorSignInClient) EnumDescriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{0}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{1}
 }
 
 type InviteRequestState int32
@@ -111,11 +168,11 @@ func (x InviteRequestState) String() string {
 }
 
 func (InviteRequestState) Descriptor() protoreflect.EnumDescriptor {
-	return file_sock_v1_operator_proto_enumTypes[1].Descriptor()
+	return file_sock_v1_operator_proto_enumTypes[2].Descriptor()
 }
 
 func (InviteRequestState) Type() protoreflect.EnumType {
-	return &file_sock_v1_operator_proto_enumTypes[1]
+	return &file_sock_v1_operator_proto_enumTypes[2]
 }
 
 func (x InviteRequestState) Number() protoreflect.EnumNumber {
@@ -124,7 +181,7 @@ func (x InviteRequestState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use InviteRequestState.Descriptor instead.
 func (InviteRequestState) EnumDescriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{1}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{2}
 }
 
 type ApproveInviteRequestOutcome int32
@@ -172,11 +229,11 @@ func (x ApproveInviteRequestOutcome) String() string {
 }
 
 func (ApproveInviteRequestOutcome) Descriptor() protoreflect.EnumDescriptor {
-	return file_sock_v1_operator_proto_enumTypes[2].Descriptor()
+	return file_sock_v1_operator_proto_enumTypes[3].Descriptor()
 }
 
 func (ApproveInviteRequestOutcome) Type() protoreflect.EnumType {
-	return &file_sock_v1_operator_proto_enumTypes[2]
+	return &file_sock_v1_operator_proto_enumTypes[3]
 }
 
 func (x ApproveInviteRequestOutcome) Number() protoreflect.EnumNumber {
@@ -185,7 +242,7 @@ func (x ApproveInviteRequestOutcome) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ApproveInviteRequestOutcome.Descriptor instead.
 func (ApproveInviteRequestOutcome) EnumDescriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{2}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{3}
 }
 
 type DeclineInviteRequestOutcome int32
@@ -227,11 +284,11 @@ func (x DeclineInviteRequestOutcome) String() string {
 }
 
 func (DeclineInviteRequestOutcome) Descriptor() protoreflect.EnumDescriptor {
-	return file_sock_v1_operator_proto_enumTypes[3].Descriptor()
+	return file_sock_v1_operator_proto_enumTypes[4].Descriptor()
 }
 
 func (DeclineInviteRequestOutcome) Type() protoreflect.EnumType {
-	return &file_sock_v1_operator_proto_enumTypes[3]
+	return &file_sock_v1_operator_proto_enumTypes[4]
 }
 
 func (x DeclineInviteRequestOutcome) Number() protoreflect.EnumNumber {
@@ -240,7 +297,7 @@ func (x DeclineInviteRequestOutcome) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DeclineInviteRequestOutcome.Descriptor instead.
 func (DeclineInviteRequestOutcome) EnumDescriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{3}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{4}
 }
 
 // Not idempotent: each call mints a new token. The console calls it once
@@ -1739,7 +1796,9 @@ type ListHumansRequest struct {
 	// Empty lists every human. Otherwise 1 to 20 characters of [A-Za-z0-9_],
 	// lowercased by the server; only humans whose handle starts with it are
 	// listed.
-	HandlePrefix  string `protobuf:"bytes,3,opt,name=handle_prefix,json=handlePrefix,proto3" json:"handle_prefix,omitempty"`
+	HandlePrefix string `protobuf:"bytes,3,opt,name=handle_prefix,json=handlePrefix,proto3" json:"handle_prefix,omitempty"`
+	// Unspecified lists live humans only.
+	ArchiveFilter HumanArchiveFilter `protobuf:"varint,4,opt,name=archive_filter,json=archiveFilter,proto3,enum=sock.v1.HumanArchiveFilter" json:"archive_filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1793,6 +1852,13 @@ func (x *ListHumansRequest) GetHandlePrefix() string {
 		return x.HandlePrefix
 	}
 	return ""
+}
+
+func (x *ListHumansRequest) GetArchiveFilter() HumanArchiveFilter {
+	if x != nil {
+		return x.ArchiveFilter
+	}
+	return HumanArchiveFilter_HUMAN_ARCHIVE_FILTER_UNSPECIFIED
 }
 
 type ListHumansResponse struct {
@@ -1851,7 +1917,9 @@ type HumanSummary struct {
 	// When the account was suspended. Unset: not suspended.
 	SuspendedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=suspended_at,json=suspendedAt,proto3" json:"suspended_at,omitempty"`
 	// Every puppet the human owns, system and connector puppets included.
-	PuppetCount   int32 `protobuf:"varint,4,opt,name=puppet_count,json=puppetCount,proto3" json:"puppet_count,omitempty"`
+	PuppetCount int32 `protobuf:"varint,4,opt,name=puppet_count,json=puppetCount,proto3" json:"puppet_count,omitempty"`
+	// When the human was archived. Unset: not archived.
+	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=archived_at,json=archivedAt,proto3" json:"archived_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1912,6 +1980,13 @@ func (x *HumanSummary) GetPuppetCount() int32 {
 		return x.PuppetCount
 	}
 	return 0
+}
+
+func (x *HumanSummary) GetArchivedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ArchivedAt
+	}
+	return nil
 }
 
 type GetHumanRequest struct {
@@ -2443,6 +2518,291 @@ func (*EraseHumanResponse) Descriptor() ([]byte, []int) {
 	return file_sock_v1_operator_proto_rawDescGZIP(), []int{41}
 }
 
+// Creates a human with an email identity and a generated password: the
+// network form of `sockd humans create`. Records no terms acceptance; the
+// person accepts at their first consent.
+type CreateHumanRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// WorkOS validates it.
+	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	// 3 to 20 of [a-z0-9_], lowercased by the server.
+	Handle string `protobuf:"bytes,2,opt,name=handle,proto3" json:"handle,omitempty"`
+	// 1 to 64 characters.
+	DisplayName   string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateHumanRequest) Reset() {
+	*x = CreateHumanRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateHumanRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateHumanRequest) ProtoMessage() {}
+
+func (x *CreateHumanRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateHumanRequest.ProtoReflect.Descriptor instead.
+func (*CreateHumanRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *CreateHumanRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *CreateHumanRequest) GetHandle() string {
+	if x != nil {
+		return x.Handle
+	}
+	return ""
+}
+
+func (x *CreateHumanRequest) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+type CreateHumanResponse struct {
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Account *Account               `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	// 24 random characters, returned once. The hub never stores or logs it.
+	InitialPassword string `protobuf:"bytes,2,opt,name=initial_password,json=initialPassword,proto3" json:"initial_password,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CreateHumanResponse) Reset() {
+	*x = CreateHumanResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateHumanResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateHumanResponse) ProtoMessage() {}
+
+func (x *CreateHumanResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateHumanResponse.ProtoReflect.Descriptor instead.
+func (*CreateHumanResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *CreateHumanResponse) GetAccount() *Account {
+	if x != nil {
+		return x.Account
+	}
+	return nil
+}
+
+func (x *CreateHumanResponse) GetInitialPassword() string {
+	if x != nil {
+		return x.InitialPassword
+	}
+	return ""
+}
+
+// Shelves a human: every device revoked, sign-in refused, hidden from the
+// default ListHumans. Reversible with UnarchiveHuman. A no-op when archived.
+type ArchiveHumanRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A human's account id. A puppet's id is NOT_FOUND.
+	AccountId     string `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveHumanRequest) Reset() {
+	*x = ArchiveHumanRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveHumanRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveHumanRequest) ProtoMessage() {}
+
+func (x *ArchiveHumanRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveHumanRequest.ProtoReflect.Descriptor instead.
+func (*ArchiveHumanRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *ArchiveHumanRequest) GetAccountId() string {
+	if x != nil {
+		return x.AccountId
+	}
+	return ""
+}
+
+type ArchiveHumanResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveHumanResponse) Reset() {
+	*x = ArchiveHumanResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveHumanResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveHumanResponse) ProtoMessage() {}
+
+func (x *ArchiveHumanResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveHumanResponse.ProtoReflect.Descriptor instead.
+func (*ArchiveHumanResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{45}
+}
+
+// Lifts an archive. Devices are not restored; the human signs in again. A
+// no-op when not archived.
+type UnarchiveHumanRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A human's account id. A puppet's id is NOT_FOUND.
+	AccountId     string `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnarchiveHumanRequest) Reset() {
+	*x = UnarchiveHumanRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnarchiveHumanRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnarchiveHumanRequest) ProtoMessage() {}
+
+func (x *UnarchiveHumanRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnarchiveHumanRequest.ProtoReflect.Descriptor instead.
+func (*UnarchiveHumanRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *UnarchiveHumanRequest) GetAccountId() string {
+	if x != nil {
+		return x.AccountId
+	}
+	return ""
+}
+
+type UnarchiveHumanResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnarchiveHumanResponse) Reset() {
+	*x = UnarchiveHumanResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnarchiveHumanResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnarchiveHumanResponse) ProtoMessage() {}
+
+func (x *UnarchiveHumanResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnarchiveHumanResponse.ProtoReflect.Descriptor instead.
+func (*UnarchiveHumanResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{47}
+}
+
 type SignInOperatorWithAppleRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The id_token Apple posted to the server's console callback, which the
@@ -2465,7 +2825,7 @@ type SignInOperatorWithAppleRequest struct {
 
 func (x *SignInOperatorWithAppleRequest) Reset() {
 	*x = SignInOperatorWithAppleRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[42]
+	mi := &file_sock_v1_operator_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2477,7 +2837,7 @@ func (x *SignInOperatorWithAppleRequest) String() string {
 func (*SignInOperatorWithAppleRequest) ProtoMessage() {}
 
 func (x *SignInOperatorWithAppleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[42]
+	mi := &file_sock_v1_operator_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2490,7 +2850,7 @@ func (x *SignInOperatorWithAppleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignInOperatorWithAppleRequest.ProtoReflect.Descriptor instead.
 func (*SignInOperatorWithAppleRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{42}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *SignInOperatorWithAppleRequest) GetIdentityToken() string {
@@ -2528,7 +2888,7 @@ type SignInOperatorWithAppleResponse struct {
 
 func (x *SignInOperatorWithAppleResponse) Reset() {
 	*x = SignInOperatorWithAppleResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[43]
+	mi := &file_sock_v1_operator_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2540,7 +2900,7 @@ func (x *SignInOperatorWithAppleResponse) String() string {
 func (*SignInOperatorWithAppleResponse) ProtoMessage() {}
 
 func (x *SignInOperatorWithAppleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[43]
+	mi := &file_sock_v1_operator_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2553,7 +2913,7 @@ func (x *SignInOperatorWithAppleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignInOperatorWithAppleResponse.ProtoReflect.Descriptor instead.
 func (*SignInOperatorWithAppleResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{43}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *SignInOperatorWithAppleResponse) GetToken() string {
@@ -2585,7 +2945,7 @@ type ListInviteRequestsRequest struct {
 
 func (x *ListInviteRequestsRequest) Reset() {
 	*x = ListInviteRequestsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[44]
+	mi := &file_sock_v1_operator_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2597,7 +2957,7 @@ func (x *ListInviteRequestsRequest) String() string {
 func (*ListInviteRequestsRequest) ProtoMessage() {}
 
 func (x *ListInviteRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[44]
+	mi := &file_sock_v1_operator_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2610,7 +2970,7 @@ func (x *ListInviteRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInviteRequestsRequest.ProtoReflect.Descriptor instead.
 func (*ListInviteRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{44}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *ListInviteRequestsRequest) GetLimit() int32 {
@@ -2645,7 +3005,7 @@ type ListInviteRequestsResponse struct {
 
 func (x *ListInviteRequestsResponse) Reset() {
 	*x = ListInviteRequestsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[45]
+	mi := &file_sock_v1_operator_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2657,7 +3017,7 @@ func (x *ListInviteRequestsResponse) String() string {
 func (*ListInviteRequestsResponse) ProtoMessage() {}
 
 func (x *ListInviteRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[45]
+	mi := &file_sock_v1_operator_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2670,7 +3030,7 @@ func (x *ListInviteRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInviteRequestsResponse.ProtoReflect.Descriptor instead.
 func (*ListInviteRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{45}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *ListInviteRequestsResponse) GetRequests() []*InviteRequest {
@@ -2690,7 +3050,7 @@ type ApproveInviteRequestsRequest struct {
 
 func (x *ApproveInviteRequestsRequest) Reset() {
 	*x = ApproveInviteRequestsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[46]
+	mi := &file_sock_v1_operator_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2702,7 +3062,7 @@ func (x *ApproveInviteRequestsRequest) String() string {
 func (*ApproveInviteRequestsRequest) ProtoMessage() {}
 
 func (x *ApproveInviteRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[46]
+	mi := &file_sock_v1_operator_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2715,7 +3075,7 @@ func (x *ApproveInviteRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveInviteRequestsRequest.ProtoReflect.Descriptor instead.
 func (*ApproveInviteRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{46}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *ApproveInviteRequestsRequest) GetRequestIds() []string {
@@ -2735,7 +3095,7 @@ type ApproveInviteRequestsResponse struct {
 
 func (x *ApproveInviteRequestsResponse) Reset() {
 	*x = ApproveInviteRequestsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[47]
+	mi := &file_sock_v1_operator_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2747,7 +3107,7 @@ func (x *ApproveInviteRequestsResponse) String() string {
 func (*ApproveInviteRequestsResponse) ProtoMessage() {}
 
 func (x *ApproveInviteRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[47]
+	mi := &file_sock_v1_operator_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2760,7 +3120,7 @@ func (x *ApproveInviteRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveInviteRequestsResponse.ProtoReflect.Descriptor instead.
 func (*ApproveInviteRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{47}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *ApproveInviteRequestsResponse) GetResults() []*ApproveInviteRequestResult {
@@ -2782,7 +3142,7 @@ type ApproveInviteRequestResult struct {
 
 func (x *ApproveInviteRequestResult) Reset() {
 	*x = ApproveInviteRequestResult{}
-	mi := &file_sock_v1_operator_proto_msgTypes[48]
+	mi := &file_sock_v1_operator_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2794,7 +3154,7 @@ func (x *ApproveInviteRequestResult) String() string {
 func (*ApproveInviteRequestResult) ProtoMessage() {}
 
 func (x *ApproveInviteRequestResult) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[48]
+	mi := &file_sock_v1_operator_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2807,7 +3167,7 @@ func (x *ApproveInviteRequestResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveInviteRequestResult.ProtoReflect.Descriptor instead.
 func (*ApproveInviteRequestResult) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{48}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *ApproveInviteRequestResult) GetRequestId() string {
@@ -2841,7 +3201,7 @@ type DeclineInviteRequestsRequest struct {
 
 func (x *DeclineInviteRequestsRequest) Reset() {
 	*x = DeclineInviteRequestsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[49]
+	mi := &file_sock_v1_operator_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2853,7 +3213,7 @@ func (x *DeclineInviteRequestsRequest) String() string {
 func (*DeclineInviteRequestsRequest) ProtoMessage() {}
 
 func (x *DeclineInviteRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[49]
+	mi := &file_sock_v1_operator_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2866,7 +3226,7 @@ func (x *DeclineInviteRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclineInviteRequestsRequest.ProtoReflect.Descriptor instead.
 func (*DeclineInviteRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{49}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *DeclineInviteRequestsRequest) GetRequestIds() []string {
@@ -2886,7 +3246,7 @@ type DeclineInviteRequestsResponse struct {
 
 func (x *DeclineInviteRequestsResponse) Reset() {
 	*x = DeclineInviteRequestsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[50]
+	mi := &file_sock_v1_operator_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2898,7 +3258,7 @@ func (x *DeclineInviteRequestsResponse) String() string {
 func (*DeclineInviteRequestsResponse) ProtoMessage() {}
 
 func (x *DeclineInviteRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[50]
+	mi := &file_sock_v1_operator_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2911,7 +3271,7 @@ func (x *DeclineInviteRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclineInviteRequestsResponse.ProtoReflect.Descriptor instead.
 func (*DeclineInviteRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{50}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *DeclineInviteRequestsResponse) GetResults() []*DeclineInviteRequestResult {
@@ -2931,7 +3291,7 @@ type DeclineInviteRequestResult struct {
 
 func (x *DeclineInviteRequestResult) Reset() {
 	*x = DeclineInviteRequestResult{}
-	mi := &file_sock_v1_operator_proto_msgTypes[51]
+	mi := &file_sock_v1_operator_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2943,7 +3303,7 @@ func (x *DeclineInviteRequestResult) String() string {
 func (*DeclineInviteRequestResult) ProtoMessage() {}
 
 func (x *DeclineInviteRequestResult) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[51]
+	mi := &file_sock_v1_operator_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2956,7 +3316,7 @@ func (x *DeclineInviteRequestResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclineInviteRequestResult.ProtoReflect.Descriptor instead.
 func (*DeclineInviteRequestResult) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{51}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *DeclineInviteRequestResult) GetRequestId() string {
@@ -3058,18 +3418,21 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"account_id\x18\x01 \x01(\tR\taccountId\"\x1a\n" +
 	"\x18ReinstateAccountResponse\"\x1c\n" +
 	"\x1aRevokeOperatorTokenRequest\"\x1d\n" +
-	"\x1bRevokeOperatorTokenResponse\"x\n" +
+	"\x1bRevokeOperatorTokenResponse\"\xbc\x01\n" +
 	"\x11ListHumansRequest\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12(\n" +
 	"\x10after_account_id\x18\x02 \x01(\tR\x0eafterAccountId\x12#\n" +
-	"\rhandle_prefix\x18\x03 \x01(\tR\fhandlePrefix\"C\n" +
+	"\rhandle_prefix\x18\x03 \x01(\tR\fhandlePrefix\x12B\n" +
+	"\x0earchive_filter\x18\x04 \x01(\x0e2\x1b.sock.v1.HumanArchiveFilterR\rarchiveFilter\"C\n" +
 	"\x12ListHumansResponse\x12-\n" +
-	"\x06humans\x18\x01 \x03(\v2\x15.sock.v1.HumanSummaryR\x06humans\"\xd5\x01\n" +
+	"\x06humans\x18\x01 \x03(\v2\x15.sock.v1.HumanSummaryR\x06humans\"\x92\x02\n" +
 	"\fHumanSummary\x12*\n" +
 	"\aaccount\x18\x01 \x01(\v2\x10.sock.v1.AccountR\aaccount\x127\n" +
 	"\tjoined_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\bjoinedAt\x12=\n" +
 	"\fsuspended_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\vsuspendedAt\x12!\n" +
-	"\fpuppet_count\x18\x04 \x01(\x05R\vpuppetCount\"0\n" +
+	"\fpuppet_count\x18\x04 \x01(\x05R\vpuppetCount\x12;\n" +
+	"\varchived_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"archivedAt\"0\n" +
 	"\x0fGetHumanRequest\x12\x1d\n" +
 	"\n" +
 	"account_id\x18\x01 \x01(\tR\taccountId\"\xcd\x03\n" +
@@ -3112,7 +3475,22 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"\n" +
 	"account_id\x18\x01 \x01(\tR\taccountId\x12%\n" +
 	"\x0econfirm_handle\x18\x02 \x01(\tR\rconfirmHandle\"\x14\n" +
-	"\x12EraseHumanResponse\"\x94\x01\n" +
+	"\x12EraseHumanResponse\"e\n" +
+	"\x12CreateHumanRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x16\n" +
+	"\x06handle\x18\x02 \x01(\tR\x06handle\x12!\n" +
+	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\"l\n" +
+	"\x13CreateHumanResponse\x12*\n" +
+	"\aaccount\x18\x01 \x01(\v2\x10.sock.v1.AccountR\aaccount\x12)\n" +
+	"\x10initial_password\x18\x02 \x01(\tR\x0finitialPassword\"4\n" +
+	"\x13ArchiveHumanRequest\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\tR\taccountId\"\x16\n" +
+	"\x14ArchiveHumanResponse\"6\n" +
+	"\x15UnarchiveHumanRequest\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\tR\taccountId\"\x18\n" +
+	"\x16UnarchiveHumanResponse\"\x94\x01\n" +
 	"\x1eSignInOperatorWithAppleRequest\x12%\n" +
 	"\x0eidentity_token\x18\x01 \x01(\tR\ridentityToken\x12\x14\n" +
 	"\x05nonce\x18\x02 \x01(\tR\x05nonce\x125\n" +
@@ -3145,7 +3523,12 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"\x1aDeclineInviteRequestResult\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x01 \x01(\tR\trequestId\x12>\n" +
-	"\aoutcome\x18\x02 \x01(\x0e2$.sock.v1.DeclineInviteRequestOutcomeR\aoutcome*\x85\x01\n" +
+	"\aoutcome\x18\x02 \x01(\x0e2$.sock.v1.DeclineInviteRequestOutcomeR\aoutcome*\x9a\x01\n" +
+	"\x12HumanArchiveFilter\x12$\n" +
+	" HUMAN_ARCHIVE_FILTER_UNSPECIFIED\x10\x00\x12\x1d\n" +
+	"\x19HUMAN_ARCHIVE_FILTER_LIVE\x10\x01\x12!\n" +
+	"\x1dHUMAN_ARCHIVE_FILTER_ARCHIVED\x10\x02\x12\x1c\n" +
+	"\x18HUMAN_ARCHIVE_FILTER_ALL\x10\x03*\x85\x01\n" +
 	"\x14OperatorSignInClient\x12'\n" +
 	"#OPERATOR_SIGN_IN_CLIENT_UNSPECIFIED\x10\x00\x12#\n" +
 	"\x1fOPERATOR_SIGN_IN_CLIENT_CONSOLE\x10\x01\x12\x1f\n" +
@@ -3165,7 +3548,7 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"*DECLINE_INVITE_REQUEST_OUTCOME_UNSPECIFIED\x10\x00\x12+\n" +
 	"'DECLINE_INVITE_REQUEST_OUTCOME_DECLINED\x10\x01\x12+\n" +
 	"'DECLINE_INVITE_REQUEST_OUTCOME_APPROVED\x10\x02\x12,\n" +
-	"(DECLINE_INVITE_REQUEST_OUTCOME_NOT_FOUND\x10\x032\xc7\r\n" +
+	"(DECLINE_INVITE_REQUEST_OUTCOME_NOT_FOUND\x10\x032\xb7\x0f\n" +
 	"\x0fOperatorService\x12G\n" +
 	"\n" +
 	"MintInvite\x12\x1a.sock.v1.MintInviteRequest\x1a\x1b.sock.v1.MintInviteResponse\"\x00\x12J\n" +
@@ -3178,7 +3561,10 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"\bGetHuman\x12\x18.sock.v1.GetHumanRequest\x1a\x19.sock.v1.GetHumanResponse\"\x00\x12_\n" +
 	"\x12ListAccountReports\x12\".sock.v1.ListAccountReportsRequest\x1a#.sock.v1.ListAccountReportsResponse\"\x00\x12G\n" +
 	"\n" +
-	"EraseHuman\x12\x1a.sock.v1.EraseHumanRequest\x1a\x1b.sock.v1.EraseHumanResponse\"\x00\x12_\n" +
+	"EraseHuman\x12\x1a.sock.v1.EraseHumanRequest\x1a\x1b.sock.v1.EraseHumanResponse\"\x00\x12J\n" +
+	"\vCreateHuman\x12\x1b.sock.v1.CreateHumanRequest\x1a\x1c.sock.v1.CreateHumanResponse\"\x00\x12M\n" +
+	"\fArchiveHuman\x12\x1c.sock.v1.ArchiveHumanRequest\x1a\x1d.sock.v1.ArchiveHumanResponse\"\x00\x12S\n" +
+	"\x0eUnarchiveHuman\x12\x1e.sock.v1.UnarchiveHumanRequest\x1a\x1f.sock.v1.UnarchiveHumanResponse\"\x00\x12_\n" +
 	"\x12ListInviteRequests\x12\".sock.v1.ListInviteRequestsRequest\x1a#.sock.v1.ListInviteRequestsResponse\"\x00\x12h\n" +
 	"\x15ApproveInviteRequests\x12%.sock.v1.ApproveInviteRequestsRequest\x1a&.sock.v1.ApproveInviteRequestsResponse\"\x00\x12h\n" +
 	"\x15DeclineInviteRequests\x12%.sock.v1.DeclineInviteRequestsRequest\x1a&.sock.v1.DeclineInviteRequestsResponse\"\x00\x12S\n" +
@@ -3206,171 +3592,187 @@ func file_sock_v1_operator_proto_rawDescGZIP() []byte {
 	return file_sock_v1_operator_proto_rawDescData
 }
 
-var file_sock_v1_operator_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_sock_v1_operator_proto_msgTypes = make([]protoimpl.MessageInfo, 52)
+var file_sock_v1_operator_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_sock_v1_operator_proto_msgTypes = make([]protoimpl.MessageInfo, 58)
 var file_sock_v1_operator_proto_goTypes = []any{
-	(OperatorSignInClient)(0),               // 0: sock.v1.OperatorSignInClient
-	(InviteRequestState)(0),                 // 1: sock.v1.InviteRequestState
-	(ApproveInviteRequestOutcome)(0),        // 2: sock.v1.ApproveInviteRequestOutcome
-	(DeclineInviteRequestOutcome)(0),        // 3: sock.v1.DeclineInviteRequestOutcome
-	(*MintTriageTokenRequest)(nil),          // 4: sock.v1.MintTriageTokenRequest
-	(*MintTriageTokenResponse)(nil),         // 5: sock.v1.MintTriageTokenResponse
-	(*VerifyTriageTokenRequest)(nil),        // 6: sock.v1.VerifyTriageTokenRequest
-	(*VerifyTriageTokenResponse)(nil),       // 7: sock.v1.VerifyTriageTokenResponse
-	(*GrantProRequest)(nil),                 // 8: sock.v1.GrantProRequest
-	(*GrantProResponse)(nil),                // 9: sock.v1.GrantProResponse
-	(*RevokeProGrantRequest)(nil),           // 10: sock.v1.RevokeProGrantRequest
-	(*RevokeProGrantResponse)(nil),          // 11: sock.v1.RevokeProGrantResponse
-	(*ProGrant)(nil),                        // 12: sock.v1.ProGrant
-	(*ProTrial)(nil),                        // 13: sock.v1.ProTrial
-	(*ProSubscriptionSummary)(nil),          // 14: sock.v1.ProSubscriptionSummary
-	(*GetMessageHoldRequest)(nil),           // 15: sock.v1.GetMessageHoldRequest
-	(*GetMessageHoldResponse)(nil),          // 16: sock.v1.GetMessageHoldResponse
-	(*SetMessageHoldRequest)(nil),           // 17: sock.v1.SetMessageHoldRequest
-	(*SetMessageHoldResponse)(nil),          // 18: sock.v1.SetMessageHoldResponse
-	(*FeatureFlag)(nil),                     // 19: sock.v1.FeatureFlag
-	(*FeatureFlagSet)(nil),                  // 20: sock.v1.FeatureFlagSet
-	(*GetFeatureFlagsRequest)(nil),          // 21: sock.v1.GetFeatureFlagsRequest
-	(*GetFeatureFlagsResponse)(nil),         // 22: sock.v1.GetFeatureFlagsResponse
-	(*SetFeatureFlagRequest)(nil),           // 23: sock.v1.SetFeatureFlagRequest
-	(*SetFeatureFlagResponse)(nil),          // 24: sock.v1.SetFeatureFlagResponse
-	(*MintInviteRequest)(nil),               // 25: sock.v1.MintInviteRequest
-	(*MintInviteResponse)(nil),              // 26: sock.v1.MintInviteResponse
-	(*ListReportsRequest)(nil),              // 27: sock.v1.ListReportsRequest
-	(*ListReportsResponse)(nil),             // 28: sock.v1.ListReportsResponse
-	(*ResolveReportRequest)(nil),            // 29: sock.v1.ResolveReportRequest
-	(*ResolveReportResponse)(nil),           // 30: sock.v1.ResolveReportResponse
-	(*ReinstateAccountRequest)(nil),         // 31: sock.v1.ReinstateAccountRequest
-	(*ReinstateAccountResponse)(nil),        // 32: sock.v1.ReinstateAccountResponse
-	(*RevokeOperatorTokenRequest)(nil),      // 33: sock.v1.RevokeOperatorTokenRequest
-	(*RevokeOperatorTokenResponse)(nil),     // 34: sock.v1.RevokeOperatorTokenResponse
-	(*ListHumansRequest)(nil),               // 35: sock.v1.ListHumansRequest
-	(*ListHumansResponse)(nil),              // 36: sock.v1.ListHumansResponse
-	(*HumanSummary)(nil),                    // 37: sock.v1.HumanSummary
-	(*GetHumanRequest)(nil),                 // 38: sock.v1.GetHumanRequest
-	(*GetHumanResponse)(nil),                // 39: sock.v1.GetHumanResponse
-	(*TermsAcceptance)(nil),                 // 40: sock.v1.TermsAcceptance
-	(*ListAccountReportsRequest)(nil),       // 41: sock.v1.ListAccountReportsRequest
-	(*ListAccountReportsResponse)(nil),      // 42: sock.v1.ListAccountReportsResponse
-	(*ReportSummary)(nil),                   // 43: sock.v1.ReportSummary
-	(*EraseHumanRequest)(nil),               // 44: sock.v1.EraseHumanRequest
-	(*EraseHumanResponse)(nil),              // 45: sock.v1.EraseHumanResponse
-	(*SignInOperatorWithAppleRequest)(nil),  // 46: sock.v1.SignInOperatorWithAppleRequest
-	(*SignInOperatorWithAppleResponse)(nil), // 47: sock.v1.SignInOperatorWithAppleResponse
-	(*ListInviteRequestsRequest)(nil),       // 48: sock.v1.ListInviteRequestsRequest
-	(*ListInviteRequestsResponse)(nil),      // 49: sock.v1.ListInviteRequestsResponse
-	(*ApproveInviteRequestsRequest)(nil),    // 50: sock.v1.ApproveInviteRequestsRequest
-	(*ApproveInviteRequestsResponse)(nil),   // 51: sock.v1.ApproveInviteRequestsResponse
-	(*ApproveInviteRequestResult)(nil),      // 52: sock.v1.ApproveInviteRequestResult
-	(*DeclineInviteRequestsRequest)(nil),    // 53: sock.v1.DeclineInviteRequestsRequest
-	(*DeclineInviteRequestsResponse)(nil),   // 54: sock.v1.DeclineInviteRequestsResponse
-	(*DeclineInviteRequestResult)(nil),      // 55: sock.v1.DeclineInviteRequestResult
-	(*timestamppb.Timestamp)(nil),           // 56: google.protobuf.Timestamp
-	(*Report)(nil),                          // 57: sock.v1.Report
-	(*Account)(nil),                         // 58: sock.v1.Account
-	(ResolutionOutcome)(0),                  // 59: sock.v1.ResolutionOutcome
-	(*Resolution)(nil),                      // 60: sock.v1.Resolution
-	(*Device)(nil),                          // 61: sock.v1.Device
-	(*PuppetWithDevices)(nil),               // 62: sock.v1.PuppetWithDevices
-	(*ProStatus)(nil),                       // 63: sock.v1.ProStatus
-	(ReportReason)(0),                       // 64: sock.v1.ReportReason
-	(*InviteRequest)(nil),                   // 65: sock.v1.InviteRequest
-	(*ApprovedInvite)(nil),                  // 66: sock.v1.ApprovedInvite
+	(HumanArchiveFilter)(0),                 // 0: sock.v1.HumanArchiveFilter
+	(OperatorSignInClient)(0),               // 1: sock.v1.OperatorSignInClient
+	(InviteRequestState)(0),                 // 2: sock.v1.InviteRequestState
+	(ApproveInviteRequestOutcome)(0),        // 3: sock.v1.ApproveInviteRequestOutcome
+	(DeclineInviteRequestOutcome)(0),        // 4: sock.v1.DeclineInviteRequestOutcome
+	(*MintTriageTokenRequest)(nil),          // 5: sock.v1.MintTriageTokenRequest
+	(*MintTriageTokenResponse)(nil),         // 6: sock.v1.MintTriageTokenResponse
+	(*VerifyTriageTokenRequest)(nil),        // 7: sock.v1.VerifyTriageTokenRequest
+	(*VerifyTriageTokenResponse)(nil),       // 8: sock.v1.VerifyTriageTokenResponse
+	(*GrantProRequest)(nil),                 // 9: sock.v1.GrantProRequest
+	(*GrantProResponse)(nil),                // 10: sock.v1.GrantProResponse
+	(*RevokeProGrantRequest)(nil),           // 11: sock.v1.RevokeProGrantRequest
+	(*RevokeProGrantResponse)(nil),          // 12: sock.v1.RevokeProGrantResponse
+	(*ProGrant)(nil),                        // 13: sock.v1.ProGrant
+	(*ProTrial)(nil),                        // 14: sock.v1.ProTrial
+	(*ProSubscriptionSummary)(nil),          // 15: sock.v1.ProSubscriptionSummary
+	(*GetMessageHoldRequest)(nil),           // 16: sock.v1.GetMessageHoldRequest
+	(*GetMessageHoldResponse)(nil),          // 17: sock.v1.GetMessageHoldResponse
+	(*SetMessageHoldRequest)(nil),           // 18: sock.v1.SetMessageHoldRequest
+	(*SetMessageHoldResponse)(nil),          // 19: sock.v1.SetMessageHoldResponse
+	(*FeatureFlag)(nil),                     // 20: sock.v1.FeatureFlag
+	(*FeatureFlagSet)(nil),                  // 21: sock.v1.FeatureFlagSet
+	(*GetFeatureFlagsRequest)(nil),          // 22: sock.v1.GetFeatureFlagsRequest
+	(*GetFeatureFlagsResponse)(nil),         // 23: sock.v1.GetFeatureFlagsResponse
+	(*SetFeatureFlagRequest)(nil),           // 24: sock.v1.SetFeatureFlagRequest
+	(*SetFeatureFlagResponse)(nil),          // 25: sock.v1.SetFeatureFlagResponse
+	(*MintInviteRequest)(nil),               // 26: sock.v1.MintInviteRequest
+	(*MintInviteResponse)(nil),              // 27: sock.v1.MintInviteResponse
+	(*ListReportsRequest)(nil),              // 28: sock.v1.ListReportsRequest
+	(*ListReportsResponse)(nil),             // 29: sock.v1.ListReportsResponse
+	(*ResolveReportRequest)(nil),            // 30: sock.v1.ResolveReportRequest
+	(*ResolveReportResponse)(nil),           // 31: sock.v1.ResolveReportResponse
+	(*ReinstateAccountRequest)(nil),         // 32: sock.v1.ReinstateAccountRequest
+	(*ReinstateAccountResponse)(nil),        // 33: sock.v1.ReinstateAccountResponse
+	(*RevokeOperatorTokenRequest)(nil),      // 34: sock.v1.RevokeOperatorTokenRequest
+	(*RevokeOperatorTokenResponse)(nil),     // 35: sock.v1.RevokeOperatorTokenResponse
+	(*ListHumansRequest)(nil),               // 36: sock.v1.ListHumansRequest
+	(*ListHumansResponse)(nil),              // 37: sock.v1.ListHumansResponse
+	(*HumanSummary)(nil),                    // 38: sock.v1.HumanSummary
+	(*GetHumanRequest)(nil),                 // 39: sock.v1.GetHumanRequest
+	(*GetHumanResponse)(nil),                // 40: sock.v1.GetHumanResponse
+	(*TermsAcceptance)(nil),                 // 41: sock.v1.TermsAcceptance
+	(*ListAccountReportsRequest)(nil),       // 42: sock.v1.ListAccountReportsRequest
+	(*ListAccountReportsResponse)(nil),      // 43: sock.v1.ListAccountReportsResponse
+	(*ReportSummary)(nil),                   // 44: sock.v1.ReportSummary
+	(*EraseHumanRequest)(nil),               // 45: sock.v1.EraseHumanRequest
+	(*EraseHumanResponse)(nil),              // 46: sock.v1.EraseHumanResponse
+	(*CreateHumanRequest)(nil),              // 47: sock.v1.CreateHumanRequest
+	(*CreateHumanResponse)(nil),             // 48: sock.v1.CreateHumanResponse
+	(*ArchiveHumanRequest)(nil),             // 49: sock.v1.ArchiveHumanRequest
+	(*ArchiveHumanResponse)(nil),            // 50: sock.v1.ArchiveHumanResponse
+	(*UnarchiveHumanRequest)(nil),           // 51: sock.v1.UnarchiveHumanRequest
+	(*UnarchiveHumanResponse)(nil),          // 52: sock.v1.UnarchiveHumanResponse
+	(*SignInOperatorWithAppleRequest)(nil),  // 53: sock.v1.SignInOperatorWithAppleRequest
+	(*SignInOperatorWithAppleResponse)(nil), // 54: sock.v1.SignInOperatorWithAppleResponse
+	(*ListInviteRequestsRequest)(nil),       // 55: sock.v1.ListInviteRequestsRequest
+	(*ListInviteRequestsResponse)(nil),      // 56: sock.v1.ListInviteRequestsResponse
+	(*ApproveInviteRequestsRequest)(nil),    // 57: sock.v1.ApproveInviteRequestsRequest
+	(*ApproveInviteRequestsResponse)(nil),   // 58: sock.v1.ApproveInviteRequestsResponse
+	(*ApproveInviteRequestResult)(nil),      // 59: sock.v1.ApproveInviteRequestResult
+	(*DeclineInviteRequestsRequest)(nil),    // 60: sock.v1.DeclineInviteRequestsRequest
+	(*DeclineInviteRequestsResponse)(nil),   // 61: sock.v1.DeclineInviteRequestsResponse
+	(*DeclineInviteRequestResult)(nil),      // 62: sock.v1.DeclineInviteRequestResult
+	(*timestamppb.Timestamp)(nil),           // 63: google.protobuf.Timestamp
+	(*Report)(nil),                          // 64: sock.v1.Report
+	(*Account)(nil),                         // 65: sock.v1.Account
+	(ResolutionOutcome)(0),                  // 66: sock.v1.ResolutionOutcome
+	(*Resolution)(nil),                      // 67: sock.v1.Resolution
+	(*Device)(nil),                          // 68: sock.v1.Device
+	(*PuppetWithDevices)(nil),               // 69: sock.v1.PuppetWithDevices
+	(*ProStatus)(nil),                       // 70: sock.v1.ProStatus
+	(ReportReason)(0),                       // 71: sock.v1.ReportReason
+	(*InviteRequest)(nil),                   // 72: sock.v1.InviteRequest
+	(*ApprovedInvite)(nil),                  // 73: sock.v1.ApprovedInvite
 }
 var file_sock_v1_operator_proto_depIdxs = []int32{
-	56, // 0: sock.v1.MintTriageTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
-	56, // 1: sock.v1.VerifyTriageTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
-	56, // 2: sock.v1.GrantProRequest.ends_at:type_name -> google.protobuf.Timestamp
-	12, // 3: sock.v1.GrantProResponse.grant:type_name -> sock.v1.ProGrant
-	56, // 4: sock.v1.ProGrant.granted_at:type_name -> google.protobuf.Timestamp
-	56, // 5: sock.v1.ProGrant.ends_at:type_name -> google.protobuf.Timestamp
-	56, // 6: sock.v1.ProGrant.revoked_at:type_name -> google.protobuf.Timestamp
-	56, // 7: sock.v1.ProTrial.started_at:type_name -> google.protobuf.Timestamp
-	56, // 8: sock.v1.ProTrial.ends_at:type_name -> google.protobuf.Timestamp
-	56, // 9: sock.v1.ProSubscriptionSummary.active_until:type_name -> google.protobuf.Timestamp
-	20, // 10: sock.v1.FeatureFlag.last_set:type_name -> sock.v1.FeatureFlagSet
-	56, // 11: sock.v1.FeatureFlagSet.at:type_name -> google.protobuf.Timestamp
-	19, // 12: sock.v1.GetFeatureFlagsResponse.flags:type_name -> sock.v1.FeatureFlag
-	19, // 13: sock.v1.SetFeatureFlagResponse.flag:type_name -> sock.v1.FeatureFlag
-	56, // 14: sock.v1.MintInviteResponse.expires_at:type_name -> google.protobuf.Timestamp
-	57, // 15: sock.v1.ListReportsResponse.reports:type_name -> sock.v1.Report
-	58, // 16: sock.v1.ListReportsResponse.accounts:type_name -> sock.v1.Account
-	59, // 17: sock.v1.ResolveReportRequest.outcome:type_name -> sock.v1.ResolutionOutcome
-	60, // 18: sock.v1.ResolveReportResponse.resolution:type_name -> sock.v1.Resolution
-	37, // 19: sock.v1.ListHumansResponse.humans:type_name -> sock.v1.HumanSummary
-	58, // 20: sock.v1.HumanSummary.account:type_name -> sock.v1.Account
-	56, // 21: sock.v1.HumanSummary.joined_at:type_name -> google.protobuf.Timestamp
-	56, // 22: sock.v1.HumanSummary.suspended_at:type_name -> google.protobuf.Timestamp
-	37, // 23: sock.v1.GetHumanResponse.human:type_name -> sock.v1.HumanSummary
-	61, // 24: sock.v1.GetHumanResponse.devices:type_name -> sock.v1.Device
-	62, // 25: sock.v1.GetHumanResponse.puppets:type_name -> sock.v1.PuppetWithDevices
-	40, // 26: sock.v1.GetHumanResponse.terms_acceptances:type_name -> sock.v1.TermsAcceptance
-	63, // 27: sock.v1.GetHumanResponse.pro:type_name -> sock.v1.ProStatus
-	13, // 28: sock.v1.GetHumanResponse.trial:type_name -> sock.v1.ProTrial
-	14, // 29: sock.v1.GetHumanResponse.subscriptions:type_name -> sock.v1.ProSubscriptionSummary
-	12, // 30: sock.v1.GetHumanResponse.grants:type_name -> sock.v1.ProGrant
-	56, // 31: sock.v1.TermsAcceptance.accepted_at:type_name -> google.protobuf.Timestamp
-	43, // 32: sock.v1.ListAccountReportsResponse.reports:type_name -> sock.v1.ReportSummary
-	58, // 33: sock.v1.ListAccountReportsResponse.accounts:type_name -> sock.v1.Account
-	64, // 34: sock.v1.ReportSummary.reason:type_name -> sock.v1.ReportReason
-	56, // 35: sock.v1.ReportSummary.created_at:type_name -> google.protobuf.Timestamp
-	60, // 36: sock.v1.ReportSummary.resolution:type_name -> sock.v1.Resolution
-	0,  // 37: sock.v1.SignInOperatorWithAppleRequest.client:type_name -> sock.v1.OperatorSignInClient
-	56, // 38: sock.v1.SignInOperatorWithAppleResponse.expires_at:type_name -> google.protobuf.Timestamp
-	1,  // 39: sock.v1.ListInviteRequestsRequest.state:type_name -> sock.v1.InviteRequestState
-	65, // 40: sock.v1.ListInviteRequestsResponse.requests:type_name -> sock.v1.InviteRequest
-	52, // 41: sock.v1.ApproveInviteRequestsResponse.results:type_name -> sock.v1.ApproveInviteRequestResult
-	2,  // 42: sock.v1.ApproveInviteRequestResult.outcome:type_name -> sock.v1.ApproveInviteRequestOutcome
-	66, // 43: sock.v1.ApproveInviteRequestResult.invite:type_name -> sock.v1.ApprovedInvite
-	55, // 44: sock.v1.DeclineInviteRequestsResponse.results:type_name -> sock.v1.DeclineInviteRequestResult
-	3,  // 45: sock.v1.DeclineInviteRequestResult.outcome:type_name -> sock.v1.DeclineInviteRequestOutcome
-	25, // 46: sock.v1.OperatorService.MintInvite:input_type -> sock.v1.MintInviteRequest
-	27, // 47: sock.v1.OperatorService.ListReports:input_type -> sock.v1.ListReportsRequest
-	29, // 48: sock.v1.OperatorService.ResolveReport:input_type -> sock.v1.ResolveReportRequest
-	31, // 49: sock.v1.OperatorService.ReinstateAccount:input_type -> sock.v1.ReinstateAccountRequest
-	33, // 50: sock.v1.OperatorService.RevokeOperatorToken:input_type -> sock.v1.RevokeOperatorTokenRequest
-	35, // 51: sock.v1.OperatorService.ListHumans:input_type -> sock.v1.ListHumansRequest
-	38, // 52: sock.v1.OperatorService.GetHuman:input_type -> sock.v1.GetHumanRequest
-	41, // 53: sock.v1.OperatorService.ListAccountReports:input_type -> sock.v1.ListAccountReportsRequest
-	44, // 54: sock.v1.OperatorService.EraseHuman:input_type -> sock.v1.EraseHumanRequest
-	48, // 55: sock.v1.OperatorService.ListInviteRequests:input_type -> sock.v1.ListInviteRequestsRequest
-	50, // 56: sock.v1.OperatorService.ApproveInviteRequests:input_type -> sock.v1.ApproveInviteRequestsRequest
-	53, // 57: sock.v1.OperatorService.DeclineInviteRequests:input_type -> sock.v1.DeclineInviteRequestsRequest
-	15, // 58: sock.v1.OperatorService.GetMessageHold:input_type -> sock.v1.GetMessageHoldRequest
-	17, // 59: sock.v1.OperatorService.SetMessageHold:input_type -> sock.v1.SetMessageHoldRequest
-	21, // 60: sock.v1.OperatorService.GetFeatureFlags:input_type -> sock.v1.GetFeatureFlagsRequest
-	23, // 61: sock.v1.OperatorService.SetFeatureFlag:input_type -> sock.v1.SetFeatureFlagRequest
-	8,  // 62: sock.v1.OperatorService.GrantPro:input_type -> sock.v1.GrantProRequest
-	10, // 63: sock.v1.OperatorService.RevokeProGrant:input_type -> sock.v1.RevokeProGrantRequest
-	4,  // 64: sock.v1.OperatorService.MintTriageToken:input_type -> sock.v1.MintTriageTokenRequest
-	6,  // 65: sock.v1.OperatorService.VerifyTriageToken:input_type -> sock.v1.VerifyTriageTokenRequest
-	46, // 66: sock.v1.OperatorSignInService.SignInOperatorWithApple:input_type -> sock.v1.SignInOperatorWithAppleRequest
-	26, // 67: sock.v1.OperatorService.MintInvite:output_type -> sock.v1.MintInviteResponse
-	28, // 68: sock.v1.OperatorService.ListReports:output_type -> sock.v1.ListReportsResponse
-	30, // 69: sock.v1.OperatorService.ResolveReport:output_type -> sock.v1.ResolveReportResponse
-	32, // 70: sock.v1.OperatorService.ReinstateAccount:output_type -> sock.v1.ReinstateAccountResponse
-	34, // 71: sock.v1.OperatorService.RevokeOperatorToken:output_type -> sock.v1.RevokeOperatorTokenResponse
-	36, // 72: sock.v1.OperatorService.ListHumans:output_type -> sock.v1.ListHumansResponse
-	39, // 73: sock.v1.OperatorService.GetHuman:output_type -> sock.v1.GetHumanResponse
-	42, // 74: sock.v1.OperatorService.ListAccountReports:output_type -> sock.v1.ListAccountReportsResponse
-	45, // 75: sock.v1.OperatorService.EraseHuman:output_type -> sock.v1.EraseHumanResponse
-	49, // 76: sock.v1.OperatorService.ListInviteRequests:output_type -> sock.v1.ListInviteRequestsResponse
-	51, // 77: sock.v1.OperatorService.ApproveInviteRequests:output_type -> sock.v1.ApproveInviteRequestsResponse
-	54, // 78: sock.v1.OperatorService.DeclineInviteRequests:output_type -> sock.v1.DeclineInviteRequestsResponse
-	16, // 79: sock.v1.OperatorService.GetMessageHold:output_type -> sock.v1.GetMessageHoldResponse
-	18, // 80: sock.v1.OperatorService.SetMessageHold:output_type -> sock.v1.SetMessageHoldResponse
-	22, // 81: sock.v1.OperatorService.GetFeatureFlags:output_type -> sock.v1.GetFeatureFlagsResponse
-	24, // 82: sock.v1.OperatorService.SetFeatureFlag:output_type -> sock.v1.SetFeatureFlagResponse
-	9,  // 83: sock.v1.OperatorService.GrantPro:output_type -> sock.v1.GrantProResponse
-	11, // 84: sock.v1.OperatorService.RevokeProGrant:output_type -> sock.v1.RevokeProGrantResponse
-	5,  // 85: sock.v1.OperatorService.MintTriageToken:output_type -> sock.v1.MintTriageTokenResponse
-	7,  // 86: sock.v1.OperatorService.VerifyTriageToken:output_type -> sock.v1.VerifyTriageTokenResponse
-	47, // 87: sock.v1.OperatorSignInService.SignInOperatorWithApple:output_type -> sock.v1.SignInOperatorWithAppleResponse
-	67, // [67:88] is the sub-list for method output_type
-	46, // [46:67] is the sub-list for method input_type
-	46, // [46:46] is the sub-list for extension type_name
-	46, // [46:46] is the sub-list for extension extendee
-	0,  // [0:46] is the sub-list for field type_name
+	63, // 0: sock.v1.MintTriageTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
+	63, // 1: sock.v1.VerifyTriageTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
+	63, // 2: sock.v1.GrantProRequest.ends_at:type_name -> google.protobuf.Timestamp
+	13, // 3: sock.v1.GrantProResponse.grant:type_name -> sock.v1.ProGrant
+	63, // 4: sock.v1.ProGrant.granted_at:type_name -> google.protobuf.Timestamp
+	63, // 5: sock.v1.ProGrant.ends_at:type_name -> google.protobuf.Timestamp
+	63, // 6: sock.v1.ProGrant.revoked_at:type_name -> google.protobuf.Timestamp
+	63, // 7: sock.v1.ProTrial.started_at:type_name -> google.protobuf.Timestamp
+	63, // 8: sock.v1.ProTrial.ends_at:type_name -> google.protobuf.Timestamp
+	63, // 9: sock.v1.ProSubscriptionSummary.active_until:type_name -> google.protobuf.Timestamp
+	21, // 10: sock.v1.FeatureFlag.last_set:type_name -> sock.v1.FeatureFlagSet
+	63, // 11: sock.v1.FeatureFlagSet.at:type_name -> google.protobuf.Timestamp
+	20, // 12: sock.v1.GetFeatureFlagsResponse.flags:type_name -> sock.v1.FeatureFlag
+	20, // 13: sock.v1.SetFeatureFlagResponse.flag:type_name -> sock.v1.FeatureFlag
+	63, // 14: sock.v1.MintInviteResponse.expires_at:type_name -> google.protobuf.Timestamp
+	64, // 15: sock.v1.ListReportsResponse.reports:type_name -> sock.v1.Report
+	65, // 16: sock.v1.ListReportsResponse.accounts:type_name -> sock.v1.Account
+	66, // 17: sock.v1.ResolveReportRequest.outcome:type_name -> sock.v1.ResolutionOutcome
+	67, // 18: sock.v1.ResolveReportResponse.resolution:type_name -> sock.v1.Resolution
+	0,  // 19: sock.v1.ListHumansRequest.archive_filter:type_name -> sock.v1.HumanArchiveFilter
+	38, // 20: sock.v1.ListHumansResponse.humans:type_name -> sock.v1.HumanSummary
+	65, // 21: sock.v1.HumanSummary.account:type_name -> sock.v1.Account
+	63, // 22: sock.v1.HumanSummary.joined_at:type_name -> google.protobuf.Timestamp
+	63, // 23: sock.v1.HumanSummary.suspended_at:type_name -> google.protobuf.Timestamp
+	63, // 24: sock.v1.HumanSummary.archived_at:type_name -> google.protobuf.Timestamp
+	38, // 25: sock.v1.GetHumanResponse.human:type_name -> sock.v1.HumanSummary
+	68, // 26: sock.v1.GetHumanResponse.devices:type_name -> sock.v1.Device
+	69, // 27: sock.v1.GetHumanResponse.puppets:type_name -> sock.v1.PuppetWithDevices
+	41, // 28: sock.v1.GetHumanResponse.terms_acceptances:type_name -> sock.v1.TermsAcceptance
+	70, // 29: sock.v1.GetHumanResponse.pro:type_name -> sock.v1.ProStatus
+	14, // 30: sock.v1.GetHumanResponse.trial:type_name -> sock.v1.ProTrial
+	15, // 31: sock.v1.GetHumanResponse.subscriptions:type_name -> sock.v1.ProSubscriptionSummary
+	13, // 32: sock.v1.GetHumanResponse.grants:type_name -> sock.v1.ProGrant
+	63, // 33: sock.v1.TermsAcceptance.accepted_at:type_name -> google.protobuf.Timestamp
+	44, // 34: sock.v1.ListAccountReportsResponse.reports:type_name -> sock.v1.ReportSummary
+	65, // 35: sock.v1.ListAccountReportsResponse.accounts:type_name -> sock.v1.Account
+	71, // 36: sock.v1.ReportSummary.reason:type_name -> sock.v1.ReportReason
+	63, // 37: sock.v1.ReportSummary.created_at:type_name -> google.protobuf.Timestamp
+	67, // 38: sock.v1.ReportSummary.resolution:type_name -> sock.v1.Resolution
+	65, // 39: sock.v1.CreateHumanResponse.account:type_name -> sock.v1.Account
+	1,  // 40: sock.v1.SignInOperatorWithAppleRequest.client:type_name -> sock.v1.OperatorSignInClient
+	63, // 41: sock.v1.SignInOperatorWithAppleResponse.expires_at:type_name -> google.protobuf.Timestamp
+	2,  // 42: sock.v1.ListInviteRequestsRequest.state:type_name -> sock.v1.InviteRequestState
+	72, // 43: sock.v1.ListInviteRequestsResponse.requests:type_name -> sock.v1.InviteRequest
+	59, // 44: sock.v1.ApproveInviteRequestsResponse.results:type_name -> sock.v1.ApproveInviteRequestResult
+	3,  // 45: sock.v1.ApproveInviteRequestResult.outcome:type_name -> sock.v1.ApproveInviteRequestOutcome
+	73, // 46: sock.v1.ApproveInviteRequestResult.invite:type_name -> sock.v1.ApprovedInvite
+	62, // 47: sock.v1.DeclineInviteRequestsResponse.results:type_name -> sock.v1.DeclineInviteRequestResult
+	4,  // 48: sock.v1.DeclineInviteRequestResult.outcome:type_name -> sock.v1.DeclineInviteRequestOutcome
+	26, // 49: sock.v1.OperatorService.MintInvite:input_type -> sock.v1.MintInviteRequest
+	28, // 50: sock.v1.OperatorService.ListReports:input_type -> sock.v1.ListReportsRequest
+	30, // 51: sock.v1.OperatorService.ResolveReport:input_type -> sock.v1.ResolveReportRequest
+	32, // 52: sock.v1.OperatorService.ReinstateAccount:input_type -> sock.v1.ReinstateAccountRequest
+	34, // 53: sock.v1.OperatorService.RevokeOperatorToken:input_type -> sock.v1.RevokeOperatorTokenRequest
+	36, // 54: sock.v1.OperatorService.ListHumans:input_type -> sock.v1.ListHumansRequest
+	39, // 55: sock.v1.OperatorService.GetHuman:input_type -> sock.v1.GetHumanRequest
+	42, // 56: sock.v1.OperatorService.ListAccountReports:input_type -> sock.v1.ListAccountReportsRequest
+	45, // 57: sock.v1.OperatorService.EraseHuman:input_type -> sock.v1.EraseHumanRequest
+	47, // 58: sock.v1.OperatorService.CreateHuman:input_type -> sock.v1.CreateHumanRequest
+	49, // 59: sock.v1.OperatorService.ArchiveHuman:input_type -> sock.v1.ArchiveHumanRequest
+	51, // 60: sock.v1.OperatorService.UnarchiveHuman:input_type -> sock.v1.UnarchiveHumanRequest
+	55, // 61: sock.v1.OperatorService.ListInviteRequests:input_type -> sock.v1.ListInviteRequestsRequest
+	57, // 62: sock.v1.OperatorService.ApproveInviteRequests:input_type -> sock.v1.ApproveInviteRequestsRequest
+	60, // 63: sock.v1.OperatorService.DeclineInviteRequests:input_type -> sock.v1.DeclineInviteRequestsRequest
+	16, // 64: sock.v1.OperatorService.GetMessageHold:input_type -> sock.v1.GetMessageHoldRequest
+	18, // 65: sock.v1.OperatorService.SetMessageHold:input_type -> sock.v1.SetMessageHoldRequest
+	22, // 66: sock.v1.OperatorService.GetFeatureFlags:input_type -> sock.v1.GetFeatureFlagsRequest
+	24, // 67: sock.v1.OperatorService.SetFeatureFlag:input_type -> sock.v1.SetFeatureFlagRequest
+	9,  // 68: sock.v1.OperatorService.GrantPro:input_type -> sock.v1.GrantProRequest
+	11, // 69: sock.v1.OperatorService.RevokeProGrant:input_type -> sock.v1.RevokeProGrantRequest
+	5,  // 70: sock.v1.OperatorService.MintTriageToken:input_type -> sock.v1.MintTriageTokenRequest
+	7,  // 71: sock.v1.OperatorService.VerifyTriageToken:input_type -> sock.v1.VerifyTriageTokenRequest
+	53, // 72: sock.v1.OperatorSignInService.SignInOperatorWithApple:input_type -> sock.v1.SignInOperatorWithAppleRequest
+	27, // 73: sock.v1.OperatorService.MintInvite:output_type -> sock.v1.MintInviteResponse
+	29, // 74: sock.v1.OperatorService.ListReports:output_type -> sock.v1.ListReportsResponse
+	31, // 75: sock.v1.OperatorService.ResolveReport:output_type -> sock.v1.ResolveReportResponse
+	33, // 76: sock.v1.OperatorService.ReinstateAccount:output_type -> sock.v1.ReinstateAccountResponse
+	35, // 77: sock.v1.OperatorService.RevokeOperatorToken:output_type -> sock.v1.RevokeOperatorTokenResponse
+	37, // 78: sock.v1.OperatorService.ListHumans:output_type -> sock.v1.ListHumansResponse
+	40, // 79: sock.v1.OperatorService.GetHuman:output_type -> sock.v1.GetHumanResponse
+	43, // 80: sock.v1.OperatorService.ListAccountReports:output_type -> sock.v1.ListAccountReportsResponse
+	46, // 81: sock.v1.OperatorService.EraseHuman:output_type -> sock.v1.EraseHumanResponse
+	48, // 82: sock.v1.OperatorService.CreateHuman:output_type -> sock.v1.CreateHumanResponse
+	50, // 83: sock.v1.OperatorService.ArchiveHuman:output_type -> sock.v1.ArchiveHumanResponse
+	52, // 84: sock.v1.OperatorService.UnarchiveHuman:output_type -> sock.v1.UnarchiveHumanResponse
+	56, // 85: sock.v1.OperatorService.ListInviteRequests:output_type -> sock.v1.ListInviteRequestsResponse
+	58, // 86: sock.v1.OperatorService.ApproveInviteRequests:output_type -> sock.v1.ApproveInviteRequestsResponse
+	61, // 87: sock.v1.OperatorService.DeclineInviteRequests:output_type -> sock.v1.DeclineInviteRequestsResponse
+	17, // 88: sock.v1.OperatorService.GetMessageHold:output_type -> sock.v1.GetMessageHoldResponse
+	19, // 89: sock.v1.OperatorService.SetMessageHold:output_type -> sock.v1.SetMessageHoldResponse
+	23, // 90: sock.v1.OperatorService.GetFeatureFlags:output_type -> sock.v1.GetFeatureFlagsResponse
+	25, // 91: sock.v1.OperatorService.SetFeatureFlag:output_type -> sock.v1.SetFeatureFlagResponse
+	10, // 92: sock.v1.OperatorService.GrantPro:output_type -> sock.v1.GrantProResponse
+	12, // 93: sock.v1.OperatorService.RevokeProGrant:output_type -> sock.v1.RevokeProGrantResponse
+	6,  // 94: sock.v1.OperatorService.MintTriageToken:output_type -> sock.v1.MintTriageTokenResponse
+	8,  // 95: sock.v1.OperatorService.VerifyTriageToken:output_type -> sock.v1.VerifyTriageTokenResponse
+	54, // 96: sock.v1.OperatorSignInService.SignInOperatorWithApple:output_type -> sock.v1.SignInOperatorWithAppleResponse
+	73, // [73:97] is the sub-list for method output_type
+	49, // [49:73] is the sub-list for method input_type
+	49, // [49:49] is the sub-list for extension type_name
+	49, // [49:49] is the sub-list for extension extendee
+	0,  // [0:49] is the sub-list for field type_name
 }
 
 func init() { file_sock_v1_operator_proto_init() }
@@ -3387,8 +3789,8 @@ func file_sock_v1_operator_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sock_v1_operator_proto_rawDesc), len(file_sock_v1_operator_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   52,
+			NumEnums:      5,
+			NumMessages:   58,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
