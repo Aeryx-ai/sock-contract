@@ -172,8 +172,8 @@ Changes to the Users page. All writes are behind `full` scope as today.
 
 - Create human: a form (email, handle, display name) above the list. On success it shows the handle and the initial password once, with a Copy button and "Shown once. sock does not keep it." The password lives in one DOM text node, never in `sessionStorage`, the URL or an `aria-live` region, and is cleared when the operator dismisses it, searches, opens another human or leaves the tab. The list reloads and opens the new human.
 - Archived filter: Live (default), Archived, All, beside the handle search.
-- Human detail: Archive (confirm naming the handle: "Archive @h? They are signed out everywhere and cannot sign in until unarchived.") on a live human; Unarchive on an archived one; Erase only on an archived human, with the existing `confirm_handle` prompt, naming it irreversible.
-- Gated like the Flags tab: hidden when `CreateHuman`, `ArchiveHuman` or `UnarchiveHuman` answers `Unimplemented`, so a console push never outruns the hub (tracked as `sock-console-7hl`).
+- Human detail: Archive (confirm naming the handle: "Archive @h? They are signed out everywhere and cannot sign in until unarchived.") on a live human; Unarchive on an archived one; Erase only on an archived human, behind a prompt that names it irreversible and asks for the handle, which is sent as `confirm_handle`.
+- A hub that does not serve these yet answers `Unimplemented`, shown as "This hub does not serve that yet." Hiding the controls outright waits on `sock-console-7hl`.
 
 ## Threats
 
