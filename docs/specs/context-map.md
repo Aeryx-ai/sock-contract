@@ -26,6 +26,7 @@ Pass 11: feature flags and open registration. Pass 10: History Transfer. Pass 9:
 | Flag set | The fact that an operator token set a flag to a value at a time: the `OperatorAction` with target `FlagSet` | Identity |
 | Registration policy | `invite_only` or `open`: whether registering needs an invite. `open` exactly when `open_registration` is on | Identity |
 | Invite | Single-use code that lets one Apple identity register | Identity |
+| Download asset, daily downloads | A release file in the bucket, and how often the hub's redirect sent someone to it on a UTC day ([downloads](downloads.md)) | Analytics: a schema of aggregate facts, not a bounded context |
 | Participant | An account as Messaging sees it: human, or puppet with an owner | Messaging |
 | Endpoint | A human's device as a place deliveries go | Messaging |
 | Push registration | An endpoint's APNs address | Messaging |
