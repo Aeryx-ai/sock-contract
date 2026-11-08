@@ -145,7 +145,7 @@ Every aggregate transition, traced through the three contracts. DDL table names 
 | Transition | API | Event | DDL |
 |---|---|---|---|
 | `Account.RegisterHuman` | `RegisterWithApple` | `HumanRegistered` | `identity.accounts`, `identity.humans` |
-| `TerminalSignIn.Start`, `Claim`, `Approve` | `StartTerminalSignIn`, `POST /login`, `GET /workos/terminal-callback` ([terminal sign-in](terminal-sign-in.md)) | none: private to the sign-in | `identity.terminal_sign_ins`, `identity.terminal_sign_in_claims`, `identity.terminal_sign_in_approvals` |
+| `TerminalSignIn.Start`, `Claim`, `Answer`, `Approve` | `StartTerminalSignIn`, `POST /login`, `GET /workos/terminal-callback`, `POST /workos/terminal-approve` ([terminal sign-in](terminal-sign-in.md)) | none: private to the sign-in | `identity.terminal_sign_ins`, `identity.terminal_sign_in_claims`, `identity.terminal_sign_in_answers`, `identity.terminal_sign_in_approvals` |
 | `TerminalSignIn.Finish` | `FinishTerminalSignIn` | `DeviceAdded` when it issues a session; none for a ticket | deletes `identity.terminal_sign_ins` (cascading); `identity.devices` or `identity.registration_tickets` |
 | `Account.CreatePuppet` | `CreatePuppet` (session or machine key), `POST /oauth/consent` (Allow, new puppet) | `PuppetCreated` | `identity.accounts`, `identity.puppets`; no puppet count |
 | `Account.UpdateDisplayName` | `UpdateDisplayName` | none: Messaging holds no names | `identity.accounts.display_name` |

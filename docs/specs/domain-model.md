@@ -373,20 +373,22 @@ Entity, aggregate root ([terminal sign-in](terminal-sign-in.md)). One `sock logi
 | `createdAt`, `expiresAt` | Timestamp | 10 minutes apart |
 | `polledAt` | Timestamp | The last `Finish`; a call within the poll interval is refused |
 | `claim` | optional | The browser that entered the code: `browserHash` (SHA-256 of its cookie), `claimedAt` |
-| `approval` | optional, only with a claim | AuthKit's answer: `SignedInEmail` (WorkOS user, verified, method), `approvedAt` |
+| `answer` | optional, only with a claim | AuthKit's answer: `SignedInEmail` (WorkOS user, verified, method), `approveTokenHash` (SHA-256 of the approve form's token), `answeredAt` |
+| `approval` | optional, only with an answer | The person's yes on the hub's page: `approvedAt` |
 
 ### Behaviors
 
 - `Start(label)` (factory): a fresh secret and code; returns the sign-in and its token, once
-- `Claim(browserHash)`: binds the browser; refused once approved or expired; a later claim replaces an earlier one
-- `Approve(browserHash, signedIn)`: records the sign-in when the hash matches the claim's in constant time; refused without a claim, for another browser, once approved, or expired
+- `Claim(browserHash)`: binds the browser; refused once answered or expired; a later claim replaces an earlier one and what it earned
+- `Answer(browserHash, signedIn, approveTokenHash)`: records who AuthKit signed in when the hash matches the claim's in constant time; refused without a claim, for another browser, once answered, or expired
+- `Approve(browserHash, approveToken)`: the person's yes from the claiming browser with the answer's token; refused without an answer, for another browser, a wrong token, once approved, or expired
 - `Finish(secret, now)`: pending without an approval; with one, `Device.Issue` or `RegistrationTicket.Issue` for the approval's user and the sign-in is deleted, in one transaction
 
 ### Invariants
 
 - The token is shown once; the secret is never stored.
 - Finished at most once: `Finish` deletes the sign-in.
-- An approval exists only with a claim, from the claiming browser.
+- An answer exists only with a claim, from the claiming browser; an approval only with an answer, from that browser, with its token.
 - No two live sign-ins share a code.
 
 ### Relationships
