@@ -684,6 +684,153 @@ public nonisolated struct Sock_V1_SignInWithGoogleResponse: Sendable {
   public init() {}
 }
 
+public nonisolated struct Sock_V1_StartTerminalSignInRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Label for the device the sign-in will issue, 1 to 64 characters.
+  public var deviceLabel: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_StartTerminalSignInResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// sock_tl_<id>_<secret>: the terminal's claim on this sign-in. Returned
+  /// once; the server keeps only a hash.
+  public var terminalSignIn: String = String()
+
+  /// The code the person enters in the browser: 8 letters, shown as
+  /// XXXX-XXXX.
+  public var userCode: String = String()
+
+  /// The hub page that takes the code, and the same page with the code
+  /// filled in.
+  public var verificationURL: String = String()
+
+  public var verificationURLComplete: String = String()
+
+  /// When the sign-in lapses unfinished.
+  public var expiresAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {_expiresAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_expiresAt = newValue}
+  }
+  /// Returns true if `expiresAt` has been explicitly set.
+  public var hasExpiresAt: Bool {self._expiresAt != nil}
+  /// Clears the value of `expiresAt`. Subsequent reads from it will return its default value.
+  public mutating func clearExpiresAt() {self._expiresAt = nil}
+
+  /// How long the terminal waits between FinishTerminalSignIn calls.
+  public var pollInterval: SwiftProtobuf.Google_Protobuf_Duration {
+    get {_pollInterval ?? SwiftProtobuf.Google_Protobuf_Duration()}
+    set {_pollInterval = newValue}
+  }
+  /// Returns true if `pollInterval` has been explicitly set.
+  public var hasPollInterval: Bool {self._pollInterval != nil}
+  /// Clears the value of `pollInterval`. Subsequent reads from it will return its default value.
+  public mutating func clearPollInterval() {self._pollInterval = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _expiresAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+  fileprivate var _pollInterval: SwiftProtobuf.Google_Protobuf_Duration? = nil
+}
+
+public nonisolated struct Sock_V1_FinishTerminalSignInRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// StartTerminalSignInResponse.terminal_sign_in.
+  public var terminalSignIn: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_FinishTerminalSignInResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var result: Sock_V1_FinishTerminalSignInResponse.OneOf_Result? = nil
+
+  /// The browser signed in to a human: the terminal's session. The
+  /// sign-in is spent.
+  public var session: Sock_V1_Session {
+    get {
+      if case .session(let v)? = result {return v}
+      return Sock_V1_Session()
+    }
+    set {result = .session(newValue)}
+  }
+
+  /// The browser signed in to a WorkOS user with no human: register with
+  /// the ticket (RegisterWithEmail). The sign-in is spent.
+  public var registration: Sock_V1_RegistrationTicket {
+    get {
+      if case .registration(let v)? = result {return v}
+      return Sock_V1_RegistrationTicket()
+    }
+    set {result = .registration(newValue)}
+  }
+
+  /// Nobody has finished in the browser yet; call again after retry_after.
+  public var pending: Sock_V1_TerminalSignInPending {
+    get {
+      if case .pending(let v)? = result {return v}
+      return Sock_V1_TerminalSignInPending()
+    }
+    set {result = .pending(newValue)}
+  }
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public nonisolated enum OneOf_Result: Equatable, Sendable {
+    /// The browser signed in to a human: the terminal's session. The
+    /// sign-in is spent.
+    case session(Sock_V1_Session)
+    /// The browser signed in to a WorkOS user with no human: register with
+    /// the ticket (RegisterWithEmail). The sign-in is spent.
+    case registration(Sock_V1_RegistrationTicket)
+    /// Nobody has finished in the browser yet; call again after retry_after.
+    case pending(Sock_V1_TerminalSignInPending)
+
+  }
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_TerminalSignInPending: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var retryAfter: SwiftProtobuf.Google_Protobuf_Duration {
+    get {_retryAfter ?? SwiftProtobuf.Google_Protobuf_Duration()}
+    set {_retryAfter = newValue}
+  }
+  /// Returns true if `retryAfter` has been explicitly set.
+  public var hasRetryAfter: Bool {self._retryAfter != nil}
+  /// Clears the value of `retryAfter`. Subsequent reads from it will return its default value.
+  public mutating func clearRetryAfter() {self._retryAfter = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _retryAfter: SwiftProtobuf.Google_Protobuf_Duration? = nil
+}
+
 public nonisolated struct Sock_V1_StartPasskeyRegistrationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2689,6 +2836,243 @@ nonisolated extension Sock_V1_SignInWithGoogleResponse: SwiftProtobuf.Message, S
 
   public static func ==(lhs: Sock_V1_SignInWithGoogleResponse, rhs: Sock_V1_SignInWithGoogleResponse) -> Bool {
     if lhs.result != rhs.result {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_StartTerminalSignInRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".StartTerminalSignInRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}device_label\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.deviceLabel) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.deviceLabel.isEmpty {
+      try visitor.visitSingularStringField(value: self.deviceLabel, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_StartTerminalSignInRequest, rhs: Sock_V1_StartTerminalSignInRequest) -> Bool {
+    if lhs.deviceLabel != rhs.deviceLabel {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_StartTerminalSignInResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".StartTerminalSignInResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}terminal_sign_in\0\u{3}user_code\0\u{3}verification_url\0\u{3}verification_url_complete\0\u{3}expires_at\0\u{3}poll_interval\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.terminalSignIn) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.userCode) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.verificationURL) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.verificationURLComplete) }()
+      case 5: try { try decoder.decodeSingularMessageField(value: &self._expiresAt) }()
+      case 6: try { try decoder.decodeSingularMessageField(value: &self._pollInterval) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.terminalSignIn.isEmpty {
+      try visitor.visitSingularStringField(value: self.terminalSignIn, fieldNumber: 1)
+    }
+    if !self.userCode.isEmpty {
+      try visitor.visitSingularStringField(value: self.userCode, fieldNumber: 2)
+    }
+    if !self.verificationURL.isEmpty {
+      try visitor.visitSingularStringField(value: self.verificationURL, fieldNumber: 3)
+    }
+    if !self.verificationURLComplete.isEmpty {
+      try visitor.visitSingularStringField(value: self.verificationURLComplete, fieldNumber: 4)
+    }
+    try { if let v = self._expiresAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    } }()
+    try { if let v = self._pollInterval {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_StartTerminalSignInResponse, rhs: Sock_V1_StartTerminalSignInResponse) -> Bool {
+    if lhs.terminalSignIn != rhs.terminalSignIn {return false}
+    if lhs.userCode != rhs.userCode {return false}
+    if lhs.verificationURL != rhs.verificationURL {return false}
+    if lhs.verificationURLComplete != rhs.verificationURLComplete {return false}
+    if lhs._expiresAt != rhs._expiresAt {return false}
+    if lhs._pollInterval != rhs._pollInterval {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_FinishTerminalSignInRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".FinishTerminalSignInRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}terminal_sign_in\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.terminalSignIn) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.terminalSignIn.isEmpty {
+      try visitor.visitSingularStringField(value: self.terminalSignIn, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_FinishTerminalSignInRequest, rhs: Sock_V1_FinishTerminalSignInRequest) -> Bool {
+    if lhs.terminalSignIn != rhs.terminalSignIn {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_FinishTerminalSignInResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".FinishTerminalSignInResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}session\0\u{1}registration\0\u{1}pending\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try {
+        var v: Sock_V1_Session?
+        var hadOneofValue = false
+        if let current = self.result {
+          hadOneofValue = true
+          if case .session(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.result = .session(v)
+        }
+      }()
+      case 2: try {
+        var v: Sock_V1_RegistrationTicket?
+        var hadOneofValue = false
+        if let current = self.result {
+          hadOneofValue = true
+          if case .registration(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.result = .registration(v)
+        }
+      }()
+      case 3: try {
+        var v: Sock_V1_TerminalSignInPending?
+        var hadOneofValue = false
+        if let current = self.result {
+          hadOneofValue = true
+          if case .pending(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.result = .pending(v)
+        }
+      }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    switch self.result {
+    case .session?: try {
+      guard case .session(let v)? = self.result else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    }()
+    case .registration?: try {
+      guard case .registration(let v)? = self.result else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    }()
+    case .pending?: try {
+      guard case .pending(let v)? = self.result else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+    }()
+    case nil: break
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_FinishTerminalSignInResponse, rhs: Sock_V1_FinishTerminalSignInResponse) -> Bool {
+    if lhs.result != rhs.result {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_TerminalSignInPending: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".TerminalSignInPending"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}retry_after\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._retryAfter) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._retryAfter {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_TerminalSignInPending, rhs: Sock_V1_TerminalSignInPending) -> Bool {
+    if lhs._retryAfter != rhs._retryAfter {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -151,4 +151,8 @@ enum ErrorReason {
   // (SignInWithEmailPassword). One answer for an unknown address, a wrong
   // password and a user with no password.
   ERROR_REASON_PASSWORD_INVALID = 69;
+
+  // unauthenticated: the terminal sign-in is unknown, expired, already spent,
+  // or the secret is wrong (FinishTerminalSignIn). Run sock login again.
+  ERROR_REASON_TERMINAL_SIGN_IN_INVALID = 70;
 }

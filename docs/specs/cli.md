@@ -4,12 +4,12 @@ Pass 1. Every human RPC in [api](api.md) has a `sock` command; this file is the 
 
 ## Conventions
 
-- Credentials, URL and precedence as today: `--url`, `--token`, `SOCK_URL`, `SOCK_TOKEN`, then `config.toml`, then `https://api.joinsock.com`. `sock login` and `sock register` are the only commands that run with no token; they write one.
+- Credentials, URL and precedence as today: `--url`, `--token`, `SOCK_URL`, `SOCK_TOKEN`, then `config.toml`, then `https://api.joinsock.com`. `sock login` is the only command that runs with no token; it writes one.
 - Output: one line of text per item by default; with `--json`, one `protojson` object per line of the response message (or per item for lists), using protojson's default lowerCamel JSON names (the names the puppet `--json` output always used). Errors go to stderr with a non-zero exit, rewritten from `ErrorReason` into an instruction (`TOKEN_INVALID`: "run sock login"; `TERMS_NOT_ACCEPTED`: "run sock terms accept").
 - An `<account>` argument is an account id, or `@handle`, which the CLI resolves with `LookupHandle` first (humans only).
 - Tokens are printed only by the commands that mint them, alone on stdout, so they pipe; everything else those commands say goes to stderr. A session token is never printed: login writes it to the config file.
 - Destructive commands (`erase`) ask on a terminal; off a terminal they need the confirmation flag shown.
-- `login` and `register`: refuse when the config file already holds a token, and warn when `SOCK_TOKEN` is set; `--port` must be 1024 to 65535; the listener binds `127.0.0.1` only, gives up after 10 minutes, and ignores callbacks with the wrong `state` or `Host`; an Apple `error` is printed only if it is one of Apple's documented codes. The session token goes to the config file (`0600`, directory `0700`, written by rename, `url` kept), never to stdout.
+- `login` and `register`: refuse when the config file already holds a token, and warn when `SOCK_TOKEN` is set; `--port` must be 1024 to 65535; `sock login` runs no listener: it polls the hub for 10 minutes at the interval the hub names, then gives up ([terminal sign-in](terminal-sign-in.md)). The session token goes to the config file (`0600`, directory `0700`, written by rename, `url` kept), never to stdout.
 - `logout` refuses a puppet token locally, and keeps the token when the server is unreachable.
 - Unary calls retry transient failures with the existing retrier; `send` keeps one idempotency key across retries.
 
@@ -17,8 +17,8 @@ Pass 1. Every human RPC in [api](api.md) has a `sock` command; this file is the 
 
 | Command | RPC | Args and flags | Output |
 |---|---|---|---|
-| `sock login` | `SignInWithApple` (`apple_client = WEB`) | `--label <text>` (default `sock CLI on <hostname>`, cut to 64), `--no-browser` (print the URL), `--port <n>` (listener port, default any) | `signed in as @<handle> on device <id>`; json: `Session` with `token` cleared. `NOT_REGISTERED`: "no sock account for this Apple ID; run sock register with an invite" |
-| `sock register` | `RegisterWithApple` (`apple_client = WEB`) | `--invite <code>` (required unless the server waives it for the operator's Apple ID, api.md `RegisterWithApple`), `--handle <handle>`, `--name <display name>`, `--accept-terms <version>` (required; the help prints the terms URL `https://joinsock.com/terms/`, the privacy policy `https://joinsock.com/privacy/` and the version this build ships, the same documents the app links in `SockKit/Legal.swift`), plus `--label`, `--no-browser`, `--port` | As `login` |
+| `sock login` | `StartTerminalSignIn`, then `FinishTerminalSignIn` at the interval the hub names until a result or the sign-in's expiry; for a new person `GetRegistrationPolicy` and `RegisterWithEmail` with the ticket ([terminal sign-in](terminal-sign-in.md)) | `--label <text>` (default `sock CLI on <hostname>`, cut to 64), `--no-browser` (do not try to open one). Registration off a terminal: `--handle`, `--name`, `--accept-terms <version>` and, under `invite_only`, `--invite <code>`; on a terminal each is prompted for when not given | Stderr: the page to open on any device, the code `XXXX-XXXX` on its own line, whether a browser opened, `sign-in received`. Stdout: `signed in as @<handle> on device <id>`; json: `Session` with `token` cleared. Timed out or `TERMINAL_SIGN_IN_INVALID`: "sign-in timed out; run sock login again". `NOT_REGISTERED` or `EMAIL_CODE_INVALID`: "no sock account for that sign-in; sign in with Google, Apple or an emailed code to create one" |
+| `sock register` | none | | Removed: "sock register is gone: sock login creates an account when you have none", exit non-zero |
 | `sock logout` | `SignOut` | none | `signed out`. Removes the token from the config file on success or `TOKEN_INVALID` |
 | `sock whoami` | `GetMe` | none (exists) | Account line; for a human also `terms accepted <v>, current <v>`; json: `GetMeResponse` |
 | `sock terms` | `GetMe` | none | `accepted <v>, current <v>` and the terms URL |
@@ -79,7 +79,7 @@ Pass 1. Every human RPC in [api](api.md) has a `sock` command; this file is the 
 
 ## Not mapped
 
-- `GetRegistrationPolicy`: read by `sock login` once [CLI sign-in through AuthKit](cli-sign-in-through-authkit.md) lands; no command of its own.
+- `GetRegistrationPolicy`: read by `sock login` before it prompts for an invite; no command of its own.
 - `RegisterPush`: registers an APNs token; a CLI has none.
 - `OpenHistoryTransfer`: the apps' phone-to-desktop history transfer; a CLI holds no history to send or import.
 - `GetHistoryTransferKey`: the apps' phone-to-desktop history transfer; a CLI holds no history to send or import.
@@ -90,11 +90,12 @@ Pass 1. Every human RPC in [api](api.md) has a `sock` command; this file is the 
 - `MarkRead`: reports a human's read position; the CLI has no read state, unread is an app concept.
 - `NotifyOwner`: puppet only; reached by `sock send` without `--conversation`, as today.
 - `OperatorService`: the operator is not a human; it has its own CLI and console.
-- `SignInWithEmail`: the apps' email sign-in; `sock login` keeps Sign in with Apple in this pass ([email sign-in, pass 2](email-sign-in-pass-2.md)).
-- `RegisterWithEmail`: the apps' email registration, likewise.
+- `SignInWithEmail`: the apps' email sign-in; `sock login` signs in through the hub's terminal sign-in instead ([terminal sign-in](terminal-sign-in.md)).
+- `SignInWithApple`: the apps' native Sign in with Apple; the CLI reaches Apple through AuthKit.
+- `RegisterWithApple`: the apps' native Apple registration, likewise.
 - `AddEmailSignIn`: the apps' Settings, likewise.
 - `SignInOperatorWithApple`: anonymous, but the console's sign-in, not a human's; the operator CLI keeps `sockd operator token mint`.
 
 ## Coverage
 
-Human RPCs in [api](api.md), each with a command above: `SignInWithApple`, `RegisterWithApple`, `SignOut`, `GetMe`, `AcceptTerms`, `StartCheckout`, `OpenBillingPortal`, `GetAccounts`, `LookupHandle`, `UpdateDisplayName`, `ChangeHandle`, `ListDevices`, `RevokeDevice`, `MintMachineKey`, `CreatePuppet`, `ListPuppets`, `MintPuppetToken`, `ErasePuppet`, `ExportIdentityData`, `EraseAccount`, `CreateDirect`, `CreateGroup`, `AddMember`, `RemoveMember`, `Leave`, `ListConversations`, `Send`, `Subscribe`, `FetchPending`, `Ack`, `SetActivity`, `ExportMessagingData`, `BlockAccount`, `UnblockAccount`, `ListBlockedAccounts`, `FileReport`. Excluded with a reason: `RegisterPush`, `MarkRead`, `SignInWithEmail`, `RegisterWithEmail`, `AddEmailSignIn`, `SignInOperatorWithApple`, `OpenHistoryTransfer`, `GetHistoryTransferKey`, `ClaimHistoryTransfer`, `UploadHistoryChunk`, `ReceiveHistory`, `CloseHistoryTransfer`.
+Human RPCs in [api](api.md), each with a command above: `StartTerminalSignIn`, `FinishTerminalSignIn`, `RegisterWithEmail`, `SignOut`, `GetMe`, `AcceptTerms`, `StartCheckout`, `OpenBillingPortal`, `GetAccounts`, `LookupHandle`, `UpdateDisplayName`, `ChangeHandle`, `ListDevices`, `RevokeDevice`, `MintMachineKey`, `CreatePuppet`, `ListPuppets`, `MintPuppetToken`, `ErasePuppet`, `ExportIdentityData`, `EraseAccount`, `CreateDirect`, `CreateGroup`, `AddMember`, `RemoveMember`, `Leave`, `ListConversations`, `Send`, `Subscribe`, `FetchPending`, `Ack`, `SetActivity`, `ExportMessagingData`, `BlockAccount`, `UnblockAccount`, `ListBlockedAccounts`, `FileReport`. Excluded with a reason: `RegisterPush`, `MarkRead`, `SignInWithEmail`, `SignInWithApple`, `RegisterWithApple`, `AddEmailSignIn`, `SignInOperatorWithApple`, `OpenHistoryTransfer`, `GetHistoryTransferKey`, `ClaimHistoryTransfer`, `UploadHistoryChunk`, `ReceiveHistory`, `CloseHistoryTransfer`.

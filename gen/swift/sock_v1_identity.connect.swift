@@ -75,6 +75,15 @@ public protocol Sock_V1_IdentityServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `getRegistrationPolicy`(request: Sock_V1_GetRegistrationPolicyRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_GetRegistrationPolicyResponse>
 
+    /// sock login: the terminal asks, a browser on any device signs in through
+    /// AuthKit with the code the terminal shows, the terminal collects the
+    /// session (docs/specs/terminal-sign-in.md). No listener on the terminal.
+    @available(iOS 13, *)
+    func `startTerminalSignIn`(request: Sock_V1_StartTerminalSignInRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_StartTerminalSignInResponse>
+
+    @available(iOS 13, *)
+    func `finishTerminalSignIn`(request: Sock_V1_FinishTerminalSignInRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_FinishTerminalSignInResponse>
+
     @available(iOS 13, *)
     func `getMe`(request: Sock_V1_GetMeRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_GetMeResponse>
 
@@ -237,6 +246,16 @@ public final class Sock_V1_IdentityServiceClient: Sock_V1_IdentityServiceClientI
     }
 
     @available(iOS 13, *)
+    public func `startTerminalSignIn`(request: Sock_V1_StartTerminalSignInRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_StartTerminalSignInResponse> {
+        return await self.client.unary(path: "/sock.v1.IdentityService/StartTerminalSignIn", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `finishTerminalSignIn`(request: Sock_V1_FinishTerminalSignInRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_FinishTerminalSignInResponse> {
+        return await self.client.unary(path: "/sock.v1.IdentityService/FinishTerminalSignIn", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
     public func `getMe`(request: Sock_V1_GetMeRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_GetMeResponse> {
         return await self.client.unary(path: "/sock.v1.IdentityService/GetMe", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -360,6 +379,8 @@ public final class Sock_V1_IdentityServiceClient: Sock_V1_IdentityServiceClientI
             public static let signInWithPasskey = Connect.MethodSpec(name: "SignInWithPasskey", service: "sock.v1.IdentityService", type: .unary)
             public static let signOut = Connect.MethodSpec(name: "SignOut", service: "sock.v1.IdentityService", type: .unary)
             public static let getRegistrationPolicy = Connect.MethodSpec(name: "GetRegistrationPolicy", service: "sock.v1.IdentityService", type: .unary)
+            public static let startTerminalSignIn = Connect.MethodSpec(name: "StartTerminalSignIn", service: "sock.v1.IdentityService", type: .unary)
+            public static let finishTerminalSignIn = Connect.MethodSpec(name: "FinishTerminalSignIn", service: "sock.v1.IdentityService", type: .unary)
             public static let getMe = Connect.MethodSpec(name: "GetMe", service: "sock.v1.IdentityService", type: .unary)
             public static let acceptTerms = Connect.MethodSpec(name: "AcceptTerms", service: "sock.v1.IdentityService", type: .unary)
             public static let getAccounts = Connect.MethodSpec(name: "GetAccounts", service: "sock.v1.IdentityService", type: .unary)

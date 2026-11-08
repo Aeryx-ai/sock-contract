@@ -83,6 +83,12 @@ const (
 	// IdentityServiceGetRegistrationPolicyProcedure is the fully-qualified name of the
 	// IdentityService's GetRegistrationPolicy RPC.
 	IdentityServiceGetRegistrationPolicyProcedure = "/sock.v1.IdentityService/GetRegistrationPolicy"
+	// IdentityServiceStartTerminalSignInProcedure is the fully-qualified name of the IdentityService's
+	// StartTerminalSignIn RPC.
+	IdentityServiceStartTerminalSignInProcedure = "/sock.v1.IdentityService/StartTerminalSignIn"
+	// IdentityServiceFinishTerminalSignInProcedure is the fully-qualified name of the IdentityService's
+	// FinishTerminalSignIn RPC.
+	IdentityServiceFinishTerminalSignInProcedure = "/sock.v1.IdentityService/FinishTerminalSignIn"
 	// IdentityServiceGetMeProcedure is the fully-qualified name of the IdentityService's GetMe RPC.
 	IdentityServiceGetMeProcedure = "/sock.v1.IdentityService/GetMe"
 	// IdentityServiceAcceptTermsProcedure is the fully-qualified name of the IdentityService's
@@ -177,6 +183,11 @@ type IdentityServiceClient interface {
 	SignOut(context.Context, *connect.Request[v1.SignOutRequest]) (*connect.Response[v1.SignOutResponse], error)
 	// Anonymous. Whether registering needs an invite (feature flags spec).
 	GetRegistrationPolicy(context.Context, *connect.Request[v1.GetRegistrationPolicyRequest]) (*connect.Response[v1.GetRegistrationPolicyResponse], error)
+	// sock login: the terminal asks, a browser on any device signs in through
+	// AuthKit with the code the terminal shows, the terminal collects the
+	// session (docs/specs/terminal-sign-in.md). No listener on the terminal.
+	StartTerminalSignIn(context.Context, *connect.Request[v1.StartTerminalSignInRequest]) (*connect.Response[v1.StartTerminalSignInResponse], error)
+	FinishTerminalSignIn(context.Context, *connect.Request[v1.FinishTerminalSignInRequest]) (*connect.Response[v1.FinishTerminalSignInResponse], error)
 	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
 	AcceptTerms(context.Context, *connect.Request[v1.AcceptTermsRequest]) (*connect.Response[v1.AcceptTermsResponse], error)
 	GetAccounts(context.Context, *connect.Request[v1.GetAccountsRequest]) (*connect.Response[v1.GetAccountsResponse], error)
@@ -315,6 +326,18 @@ func NewIdentityServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			httpClient,
 			baseURL+IdentityServiceGetRegistrationPolicyProcedure,
 			connect.WithSchema(identityServiceMethods.ByName("GetRegistrationPolicy")),
+			connect.WithClientOptions(opts...),
+		),
+		startTerminalSignIn: connect.NewClient[v1.StartTerminalSignInRequest, v1.StartTerminalSignInResponse](
+			httpClient,
+			baseURL+IdentityServiceStartTerminalSignInProcedure,
+			connect.WithSchema(identityServiceMethods.ByName("StartTerminalSignIn")),
+			connect.WithClientOptions(opts...),
+		),
+		finishTerminalSignIn: connect.NewClient[v1.FinishTerminalSignInRequest, v1.FinishTerminalSignInResponse](
+			httpClient,
+			baseURL+IdentityServiceFinishTerminalSignInProcedure,
+			connect.WithSchema(identityServiceMethods.ByName("FinishTerminalSignIn")),
 			connect.WithClientOptions(opts...),
 		),
 		getMe: connect.NewClient[v1.GetMeRequest, v1.GetMeResponse](
@@ -465,6 +488,8 @@ type identityServiceClient struct {
 	signInWithPasskey         *connect.Client[v1.SignInWithPasskeyRequest, v1.SignInWithPasskeyResponse]
 	signOut                   *connect.Client[v1.SignOutRequest, v1.SignOutResponse]
 	getRegistrationPolicy     *connect.Client[v1.GetRegistrationPolicyRequest, v1.GetRegistrationPolicyResponse]
+	startTerminalSignIn       *connect.Client[v1.StartTerminalSignInRequest, v1.StartTerminalSignInResponse]
+	finishTerminalSignIn      *connect.Client[v1.FinishTerminalSignInRequest, v1.FinishTerminalSignInResponse]
 	getMe                     *connect.Client[v1.GetMeRequest, v1.GetMeResponse]
 	acceptTerms               *connect.Client[v1.AcceptTermsRequest, v1.AcceptTermsResponse]
 	getAccounts               *connect.Client[v1.GetAccountsRequest, v1.GetAccountsResponse]
@@ -571,6 +596,16 @@ func (c *identityServiceClient) SignOut(ctx context.Context, req *connect.Reques
 // GetRegistrationPolicy calls sock.v1.IdentityService.GetRegistrationPolicy.
 func (c *identityServiceClient) GetRegistrationPolicy(ctx context.Context, req *connect.Request[v1.GetRegistrationPolicyRequest]) (*connect.Response[v1.GetRegistrationPolicyResponse], error) {
 	return c.getRegistrationPolicy.CallUnary(ctx, req)
+}
+
+// StartTerminalSignIn calls sock.v1.IdentityService.StartTerminalSignIn.
+func (c *identityServiceClient) StartTerminalSignIn(ctx context.Context, req *connect.Request[v1.StartTerminalSignInRequest]) (*connect.Response[v1.StartTerminalSignInResponse], error) {
+	return c.startTerminalSignIn.CallUnary(ctx, req)
+}
+
+// FinishTerminalSignIn calls sock.v1.IdentityService.FinishTerminalSignIn.
+func (c *identityServiceClient) FinishTerminalSignIn(ctx context.Context, req *connect.Request[v1.FinishTerminalSignInRequest]) (*connect.Response[v1.FinishTerminalSignInResponse], error) {
+	return c.finishTerminalSignIn.CallUnary(ctx, req)
 }
 
 // GetMe calls sock.v1.IdentityService.GetMe.
@@ -708,6 +743,11 @@ type IdentityServiceHandler interface {
 	SignOut(context.Context, *connect.Request[v1.SignOutRequest]) (*connect.Response[v1.SignOutResponse], error)
 	// Anonymous. Whether registering needs an invite (feature flags spec).
 	GetRegistrationPolicy(context.Context, *connect.Request[v1.GetRegistrationPolicyRequest]) (*connect.Response[v1.GetRegistrationPolicyResponse], error)
+	// sock login: the terminal asks, a browser on any device signs in through
+	// AuthKit with the code the terminal shows, the terminal collects the
+	// session (docs/specs/terminal-sign-in.md). No listener on the terminal.
+	StartTerminalSignIn(context.Context, *connect.Request[v1.StartTerminalSignInRequest]) (*connect.Response[v1.StartTerminalSignInResponse], error)
+	FinishTerminalSignIn(context.Context, *connect.Request[v1.FinishTerminalSignInRequest]) (*connect.Response[v1.FinishTerminalSignInResponse], error)
 	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
 	AcceptTerms(context.Context, *connect.Request[v1.AcceptTermsRequest]) (*connect.Response[v1.AcceptTermsResponse], error)
 	GetAccounts(context.Context, *connect.Request[v1.GetAccountsRequest]) (*connect.Response[v1.GetAccountsResponse], error)
@@ -842,6 +882,18 @@ func NewIdentityServiceHandler(svc IdentityServiceHandler, opts ...connect.Handl
 		IdentityServiceGetRegistrationPolicyProcedure,
 		svc.GetRegistrationPolicy,
 		connect.WithSchema(identityServiceMethods.ByName("GetRegistrationPolicy")),
+		connect.WithHandlerOptions(opts...),
+	)
+	identityServiceStartTerminalSignInHandler := connect.NewUnaryHandler(
+		IdentityServiceStartTerminalSignInProcedure,
+		svc.StartTerminalSignIn,
+		connect.WithSchema(identityServiceMethods.ByName("StartTerminalSignIn")),
+		connect.WithHandlerOptions(opts...),
+	)
+	identityServiceFinishTerminalSignInHandler := connect.NewUnaryHandler(
+		IdentityServiceFinishTerminalSignInProcedure,
+		svc.FinishTerminalSignIn,
+		connect.WithSchema(identityServiceMethods.ByName("FinishTerminalSignIn")),
 		connect.WithHandlerOptions(opts...),
 	)
 	identityServiceGetMeHandler := connect.NewUnaryHandler(
@@ -1006,6 +1058,10 @@ func NewIdentityServiceHandler(svc IdentityServiceHandler, opts ...connect.Handl
 			identityServiceSignOutHandler.ServeHTTP(w, r)
 		case IdentityServiceGetRegistrationPolicyProcedure:
 			identityServiceGetRegistrationPolicyHandler.ServeHTTP(w, r)
+		case IdentityServiceStartTerminalSignInProcedure:
+			identityServiceStartTerminalSignInHandler.ServeHTTP(w, r)
+		case IdentityServiceFinishTerminalSignInProcedure:
+			identityServiceFinishTerminalSignInHandler.ServeHTTP(w, r)
 		case IdentityServiceGetMeProcedure:
 			identityServiceGetMeHandler.ServeHTTP(w, r)
 		case IdentityServiceAcceptTermsProcedure:
@@ -1123,6 +1179,14 @@ func (UnimplementedIdentityServiceHandler) SignOut(context.Context, *connect.Req
 
 func (UnimplementedIdentityServiceHandler) GetRegistrationPolicy(context.Context, *connect.Request[v1.GetRegistrationPolicyRequest]) (*connect.Response[v1.GetRegistrationPolicyResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.GetRegistrationPolicy is not implemented"))
+}
+
+func (UnimplementedIdentityServiceHandler) StartTerminalSignIn(context.Context, *connect.Request[v1.StartTerminalSignInRequest]) (*connect.Response[v1.StartTerminalSignInResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.StartTerminalSignIn is not implemented"))
+}
+
+func (UnimplementedIdentityServiceHandler) FinishTerminalSignIn(context.Context, *connect.Request[v1.FinishTerminalSignInRequest]) (*connect.Response[v1.FinishTerminalSignInResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.FinishTerminalSignIn is not implemented"))
 }
 
 func (UnimplementedIdentityServiceHandler) GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {

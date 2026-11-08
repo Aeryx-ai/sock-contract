@@ -358,9 +358,47 @@ Revocation is not a field. Revoking or signing out deletes the device.
 |---|---|---|
 | `Account` | references | n to 1 |
 
+## TerminalSignIn
+
+Entity, aggregate root ([terminal sign-in](terminal-sign-in.md)). One `sock login` between `Start` and `Finish` or expiry: the terminal holds a secret, the person types a code in a browser on any device, the browser signs in through AuthKit, the terminal collects the result.
+
+### Fields
+
+| Field | Type | Meaning |
+|---|---|---|
+| `id` | UUID | In the terminal token. Made by `Start`, as a registration ticket's is |
+| `secretHash` | 32 bytes | SHA-256 of the terminal token's secret, shown once |
+| `userCode` | 8 letters of `BCDFGHJKLMNPQRSTVWXZ` | Shown as `XXXX-XXXX`; unique among live sign-ins |
+| `deviceLabel` | string | 1 to 64 characters; the label `Finish` issues the session with |
+| `createdAt`, `expiresAt` | Timestamp | 10 minutes apart |
+| `polledAt` | Timestamp | The last `Finish`; a call within the poll interval is refused |
+| `claim` | optional | The browser that entered the code: `browserHash` (SHA-256 of its cookie), `claimedAt` |
+| `approval` | optional, only with a claim | AuthKit's answer: `SignedInEmail` (WorkOS user, verified, method), `approvedAt` |
+
+### Behaviors
+
+- `Start(label)` (factory): a fresh secret and code; returns the sign-in and its token, once
+- `Claim(browserHash)`: binds the browser; refused once approved or expired; a later claim replaces an earlier one
+- `Approve(browserHash, signedIn)`: records the sign-in when the hash matches the claim's in constant time; refused without a claim, for another browser, once approved, or expired
+- `Finish(secret, now)`: pending without an approval; with one, `Device.Issue` or `RegistrationTicket.Issue` for the approval's user and the sign-in is deleted, in one transaction
+
+### Invariants
+
+- The token is shown once; the secret is never stored.
+- Finished at most once: `Finish` deletes the sign-in.
+- An approval exists only with a claim, from the claiming browser.
+- No two live sign-ins share a code.
+
+### Relationships
+
+| With | Kind | Cardinality |
+|---|---|---|
+| WorkOS user | names (not a row) | n to 1 |
+| `Device`, `RegistrationTicket` | `Finish` invokes their factories | 1 to 0 or 1 |
+
 ## Token
 
-Value object. `sock_st_<device id>_<secret>` for a human session, `sock_pt_<device id>_<secret>` for a puppet, `sock_ot_<operator token id>_<secret>` for the operator, `sock_rt_<refresh token id>_<secret>` for a connector grant's refresh token and `sock_ct_<connector service token id>_<secret>` for `sock-mcpd`. Secret is 32 random bytes, base64url without padding. The prefix lets secret scanners find leaked tokens and tells the server which table holds the hash; the id lets it find the hash without scanning. The constructor refuses any other prefix, an id that is not a UUID and a secret that does not decode to 32 bytes.
+Value object. `sock_st_<device id>_<secret>` for a human session, `sock_pt_<device id>_<secret>` for a puppet, `sock_ot_<operator token id>_<secret>` for the operator, `sock_rt_<refresh token id>_<secret>` for a connector grant's refresh token and `sock_ct_<connector service token id>_<secret>` for `sock-mcpd`; `sock_rg_<ticket id>_<secret>` is a registration ticket and `sock_tl_<sign-in id>_<secret>` a terminal sign-in's claim, the same shape, each parsed by its own aggregate. Secret is 32 random bytes, base64url without padding. The prefix lets secret scanners find leaked tokens and tells the server which table holds the hash; the id lets it find the hash without scanning. The constructor refuses any other prefix, an id that is not a UUID and a secret that does not decode to 32 bytes.
 
 ## OAuthClient
 

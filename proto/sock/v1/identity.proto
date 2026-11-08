@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package sock.v1;
 
+import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "sock/v1/types.proto";
 
@@ -38,6 +39,11 @@ service IdentityService {
   rpc SignOut(SignOutRequest) returns (SignOutResponse) {}
   // Anonymous. Whether registering needs an invite (feature flags spec).
   rpc GetRegistrationPolicy(GetRegistrationPolicyRequest) returns (GetRegistrationPolicyResponse) {}
+  // sock login: the terminal asks, a browser on any device signs in through
+  // AuthKit with the code the terminal shows, the terminal collects the
+  // session (docs/specs/terminal-sign-in.md). No listener on the terminal.
+  rpc StartTerminalSignIn(StartTerminalSignInRequest) returns (StartTerminalSignInResponse) {}
+  rpc FinishTerminalSignIn(FinishTerminalSignInRequest) returns (FinishTerminalSignInResponse) {}
 
   rpc GetMe(GetMeRequest) returns (GetMeResponse) {}
   rpc AcceptTerms(AcceptTermsRequest) returns (AcceptTermsResponse) {}
@@ -268,6 +274,47 @@ message SignInWithGoogleResponse {
     Session session = 1;
     RegistrationTicket registration = 2;
   }
+}
+
+message StartTerminalSignInRequest {
+  // Label for the device the sign-in will issue, 1 to 64 characters.
+  string device_label = 1;
+}
+message StartTerminalSignInResponse {
+  // sock_tl_<id>_<secret>: the terminal's claim on this sign-in. Returned
+  // once; the server keeps only a hash.
+  string terminal_sign_in = 1;
+  // The code the person enters in the browser: 8 letters, shown as
+  // XXXX-XXXX.
+  string user_code = 2;
+  // The hub page that takes the code, and the same page with the code
+  // filled in.
+  string verification_url = 3;
+  string verification_url_complete = 4;
+  // When the sign-in lapses unfinished.
+  google.protobuf.Timestamp expires_at = 5;
+  // How long the terminal waits between FinishTerminalSignIn calls.
+  google.protobuf.Duration poll_interval = 6;
+}
+
+message FinishTerminalSignInRequest {
+  // StartTerminalSignInResponse.terminal_sign_in.
+  string terminal_sign_in = 1;
+}
+message FinishTerminalSignInResponse {
+  oneof result {
+    // The browser signed in to a human: the terminal's session. The
+    // sign-in is spent.
+    Session session = 1;
+    // The browser signed in to a WorkOS user with no human: register with
+    // the ticket (RegisterWithEmail). The sign-in is spent.
+    RegistrationTicket registration = 2;
+    // Nobody has finished in the browser yet; call again after retry_after.
+    TerminalSignInPending pending = 3;
+  }
+}
+message TerminalSignInPending {
+  google.protobuf.Duration retry_after = 1;
 }
 
 message StartPasskeyRegistrationRequest {}

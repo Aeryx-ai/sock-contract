@@ -184,6 +184,10 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
   /// (SignInWithEmailPassword). One answer for an unknown address, a wrong
   /// password and a user with no password.
   case passwordInvalid // = 69
+
+  /// unauthenticated: the terminal sign-in is unknown, expired, already spent,
+  /// or the secret is wrong (FinishTerminalSignIn). Run sock login again.
+  case terminalSignInInvalid // = 70
   case UNRECOGNIZED(Int)
 
   public init() {
@@ -228,6 +232,7 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
     case 67: self = .registrationTicketInvalid
     case 68: self = .passkeyInvalid
     case 69: self = .passwordInvalid
+    case 70: self = .terminalSignInInvalid
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -270,6 +275,7 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
     case .registrationTicketInvalid: return 67
     case .passkeyInvalid: return 68
     case .passwordInvalid: return 69
+    case .terminalSignInInvalid: return 70
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -312,6 +318,7 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
     .registrationTicketInvalid,
     .passkeyInvalid,
     .passwordInvalid,
+    .terminalSignInInvalid,
   ]
 
 }
@@ -336,7 +343,7 @@ public nonisolated struct Sock_V1_ErrorInfo: Sendable {
 fileprivate nonisolated let _protobuf_package = "sock.v1"
 
 nonisolated extension Sock_V1_ErrorReason: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ERROR_REASON_UNSPECIFIED\0\u{1}ERROR_REASON_TOKEN_INVALID\0\u{1}ERROR_REASON_APPLE_TOKEN_INVALID\0\u{1}ERROR_REASON_EMAIL_CODE_INVALID\0\u{2}\u{7}ERROR_REASON_CALLER_NOT_ALLOWED\0\u{1}ERROR_REASON_NOT_A_MEMBER\0\u{1}ERROR_REASON_NOT_OWNER\0\u{1}ERROR_REASON_ACCOUNT_SUSPENDED\0\u{1}ERROR_REASON_HUMAN_CHECK_FAILED\0\u{1}ERROR_REASON_EMAIL_NOT_VERIFIED\0\u{2}\u{5}ERROR_REASON_FIELD_INVALID\0\u{2}\u{a}ERROR_REASON_NOT_REGISTERED\0\u{1}ERROR_REASON_NOT_FOUND\0\u{2}\u{9}ERROR_REASON_HANDLE_TAKEN\0\u{1}ERROR_REASON_ALREADY_REGISTERED\0\u{1}ERROR_REASON_PUPPET_NAME_TAKEN\0\u{2}\u{8}ERROR_REASON_INVITE_INVALID\0\u{1}ERROR_REASON_GROUP_FULL\0\u{1}ERROR_REASON_OWNER_NOT_MEMBER\0\u{1}ERROR_REASON_DIRECT_IMMUTABLE\0\u{1}ERROR_REASON_PEER_NOT_ALLOWED\0\u{1}ERROR_REASON_IDEMPOTENCY_MISMATCH\0\u{1}ERROR_REASON_TERMS_NOT_ACCEPTED\0\u{1}ERROR_REASON_REPORT_ALREADY_RESOLVED\0\u{1}ERROR_REASON_SUBSCRIPTION_REQUIRED\0\u{1}ERROR_REASON_SYSTEM_PUPPET\0\u{1}ERROR_REASON_RATE_LIMITED\0\u{1}ERROR_REASON_LIMIT_REACHED\0\u{1}ERROR_REASON_ALREADY_ISSUED\0\u{1}ERROR_REASON_EMAIL_ALREADY_ADDED\0\u{1}ERROR_REASON_NO_ACTIVE_PUPPET\0\u{1}ERROR_REASON_ALREADY_SUBSCRIBED\0\u{1}ERROR_REASON_NO_SUBSCRIPTION\0\u{1}ERROR_REASON_REGISTRATION_TICKET_INVALID\0\u{1}ERROR_REASON_PASSKEY_INVALID\0\u{1}ERROR_REASON_PASSWORD_INVALID\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ERROR_REASON_UNSPECIFIED\0\u{1}ERROR_REASON_TOKEN_INVALID\0\u{1}ERROR_REASON_APPLE_TOKEN_INVALID\0\u{1}ERROR_REASON_EMAIL_CODE_INVALID\0\u{2}\u{7}ERROR_REASON_CALLER_NOT_ALLOWED\0\u{1}ERROR_REASON_NOT_A_MEMBER\0\u{1}ERROR_REASON_NOT_OWNER\0\u{1}ERROR_REASON_ACCOUNT_SUSPENDED\0\u{1}ERROR_REASON_HUMAN_CHECK_FAILED\0\u{1}ERROR_REASON_EMAIL_NOT_VERIFIED\0\u{2}\u{5}ERROR_REASON_FIELD_INVALID\0\u{2}\u{a}ERROR_REASON_NOT_REGISTERED\0\u{1}ERROR_REASON_NOT_FOUND\0\u{2}\u{9}ERROR_REASON_HANDLE_TAKEN\0\u{1}ERROR_REASON_ALREADY_REGISTERED\0\u{1}ERROR_REASON_PUPPET_NAME_TAKEN\0\u{2}\u{8}ERROR_REASON_INVITE_INVALID\0\u{1}ERROR_REASON_GROUP_FULL\0\u{1}ERROR_REASON_OWNER_NOT_MEMBER\0\u{1}ERROR_REASON_DIRECT_IMMUTABLE\0\u{1}ERROR_REASON_PEER_NOT_ALLOWED\0\u{1}ERROR_REASON_IDEMPOTENCY_MISMATCH\0\u{1}ERROR_REASON_TERMS_NOT_ACCEPTED\0\u{1}ERROR_REASON_REPORT_ALREADY_RESOLVED\0\u{1}ERROR_REASON_SUBSCRIPTION_REQUIRED\0\u{1}ERROR_REASON_SYSTEM_PUPPET\0\u{1}ERROR_REASON_RATE_LIMITED\0\u{1}ERROR_REASON_LIMIT_REACHED\0\u{1}ERROR_REASON_ALREADY_ISSUED\0\u{1}ERROR_REASON_EMAIL_ALREADY_ADDED\0\u{1}ERROR_REASON_NO_ACTIVE_PUPPET\0\u{1}ERROR_REASON_ALREADY_SUBSCRIBED\0\u{1}ERROR_REASON_NO_SUBSCRIPTION\0\u{1}ERROR_REASON_REGISTRATION_TICKET_INVALID\0\u{1}ERROR_REASON_PASSKEY_INVALID\0\u{1}ERROR_REASON_PASSWORD_INVALID\0\u{1}ERROR_REASON_TERMINAL_SIGN_IN_INVALID\0")
 }
 
 nonisolated extension Sock_V1_ErrorInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
