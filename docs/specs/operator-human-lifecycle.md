@@ -33,7 +33,8 @@ New behaviors on the root, humans only:
 
 - `CreateEmailHuman(emailIdentity, handle, displayName)`: unchanged, now also reached by `CreateHuman`.
 - `ArchiveHuman()`: writes a `HumanArchive` if absent, revokes every device of the human and of its puppets as `Suspend` does, and queues a `BillingCancellation` if the human has a `BillingCustomer` and none is pending, as `Suspend` does. Refuses a human owning a system puppet (`SYSTEM_PUPPET`). A no-op when archived. Emits `AccountSuspensionChanged` when the effective suspension goes from false to true.
-- `UnarchiveHuman()`: deletes the `HumanArchive` if present. Devices are not restored; the human signs in again. A no-op when not archived. Emits `AccountSuspensionChanged` when the effective suspension goes from true to false (a standing report suspension keeps it true, so nothing is emitted then).
+- `UnarchiveHuman()`: deletes the `HumanArchive` if present. Devices are not restored; the human signs in again. A no-op when not archived. When the human is not otherwise suspended, drops a pending `BillingCancellation`, as `Reinstate` does, and emits `AccountSuspensionChanged` for the effective suspension going from true to false. A standing report suspension keeps it true: then nothing is emitted and the pending cancellation stands.
+- `Reinstate()` of an archived human deletes the suspension but keeps the pending `BillingCancellation` and emits nothing: the human is still effectively suspended.
 - `Suspend()` and `Reinstate()`: unchanged, except that their `AccountSuspensionChanged` follows the effective value, not the row.
 - `Erase()`: unchanged. An archived human is erasable; its `HumanArchive` goes with it.
 
@@ -191,7 +192,7 @@ Changes to the Users page. All writes are behind `full` scope as today.
 |---|---|---|---|
 | `CreateEmailHuman` (network) | `CreateHuman` | `HumanRegistered` | `accounts`, `humans`, `email_identities`, `operator_actions` and `operator_action_human_lifecycles` insert; `email_identity_deletions` on failure |
 | `ArchiveHuman` | `ArchiveHuman` | `AccountSuspensionChanged` on effective change, `DeviceRemoved` per session | `human_archives` insert, `devices` delete, `billing_cancellations` insert, `operator_actions` insert |
-| `UnarchiveHuman` | `UnarchiveHuman` | `AccountSuspensionChanged` on effective change | `human_archives` delete, `operator_actions` insert |
+| `UnarchiveHuman` | `UnarchiveHuman` | `AccountSuspensionChanged` on effective change | `human_archives` delete, `billing_cancellations` delete when not otherwise suspended, `operator_actions` insert |
 | `Erase` of an archived human | `EraseHuman`, unchanged | `AccountErased`, unchanged | cascade removes `human_archives` |
 | Archive refused for a system puppet's owner | `ArchiveHuman` `SYSTEM_PUPPET` | none | none: a rule on the aggregate, as `EraseHuman`'s |
 | Sign-in and Principal refusal for archived | all authenticated RPCs, sign-in RPCs | none | `human_archives` read |
