@@ -85,7 +85,7 @@ The operator RPC count in [api](api.md) rises by three and the terms exempt list
 
 Auth, sign-in and refresh: a human with a `HumanArchive` is refused as a suspended human is, `ACCOUNT_SUSPENDED`. Inferred, to confirm: no new `ErrorReason`, because every client already handles `ACCOUNT_SUSPENDED` and an archived person has nothing different to be told.
 
-Rate limits: `CreateHuman` takes from an operator create bucket of its own, 10 per hour per operator token, because each call creates a credential at a third party. `ArchiveHuman` and `UnarchiveHuman` use the existing operator write bucket.
+Rate limits: `CreateHuman` takes from an operator create bucket of its own, 10 per hour per operator token, because each call creates a credential at a third party. `ArchiveHuman` and `UnarchiveHuman` draw from no bucket: no operator write bucket exists, and `GrantPro` and `SetFeatureFlag` draw none either. The create bucket is the `operatorCreate` kind in `oauth_buckets`, burst 10, drawn after validation and before WorkOS, never refunded; its TTL is 1 hour so a sweep cannot reset a drained bucket.
 
 Proto, `operator.proto` (additive):
 
@@ -145,7 +145,6 @@ CREATE INDEX human_archives_archived_at_idx ON identity.human_archives (archived
 
 INSERT INTO identity.operator_action_kinds (name)
 VALUES ('createHuman'), ('archiveHuman'), ('unarchiveHuman');
-```
 
 CREATE TABLE identity.operator_action_human_lifecycles (
     action_id  bigint PRIMARY KEY REFERENCES identity.operator_actions (id) ON DELETE CASCADE,
