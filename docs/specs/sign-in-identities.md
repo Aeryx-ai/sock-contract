@@ -79,10 +79,10 @@ Settings, "Sign-in methods": Apple when `apple`; email with its address when `em
 | Threat | Mitigation |
 |---|---|
 | A stolen session binds the thief's inbox with `AddEmailSignIn` | Visible in `ListSignInIdentities` and removable with `RemoveEmailSignIn`. Prevention needs a fresh sign-in on add, the open question below |
-| A stolen session removes the human's own email sign-in, then adds the thief's | `RemoveEmailSignIn` needs a session issued in the last 10 minutes; a thief with an older session cannot, and one with a fresh session could already add an inbox to a human without email |
+| A stolen session removes the human's own email sign-in, then adds the thief's | `RemoveEmailSignIn` needs a session issued in the last 10 minutes. The one way a session makes a fresh one for itself, registering a passkey and signing in with it, needs a fresh session too (`StartPasskeyRegistration`, [Google and passkey sign-in](google-and-passkey-sign-in.md)), so a thief with an older session can do neither. A thief with a fresh session could already add an inbox to a human without email |
 | A stolen session reads the human's address | Accepted: the session already reads every message |
 
 ## Open questions
 
-- Step-up on `AddEmailSignIn` (and `StartPasskeyRegistration`): a fresh sign-in or a notice to other devices. sock-server `sock-server-alf`.
+- Step-up on `AddEmailSignIn`: a fresh sign-in, as `StartPasskeyRegistration` now needs, or a notice to other devices. Released app builds call it from Settings with whatever session they hold, so a fresh-sign-in rule needs their sign-in-again path first. sock-server `sock-server-alf`.
 - Revoking every other session when email sign-in is removed: no session records how it was issued, so the hub cannot tell an attacker's from the person's.

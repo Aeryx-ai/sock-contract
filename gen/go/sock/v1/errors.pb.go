@@ -158,7 +158,8 @@ const (
 	// so removing it would leave no way in (RemoveEmailSignIn).
 	ErrorReason_ERROR_REASON_LAST_SIGN_IN_IDENTITY ErrorReason = 71
 	// failed_precondition: the call needs a session issued in the last 10
-	// minutes (RemoveEmailSignIn). Sign in again, then retry.
+	// minutes (RemoveEmailSignIn, StartPasskeyRegistration). Sign in again,
+	// then retry.
 	ErrorReason_ERROR_REASON_RECENT_SIGN_IN_REQUIRED ErrorReason = 72
 )
 

@@ -194,7 +194,8 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
   case lastSignInIdentity // = 71
 
   /// failed_precondition: the call needs a session issued in the last 10
-  /// minutes (RemoveEmailSignIn). Sign in again, then retry.
+  /// minutes (RemoveEmailSignIn, StartPasskeyRegistration). Sign in again,
+  /// then retry.
   case recentSignInRequired // = 72
   case UNRECOGNIZED(Int)
 

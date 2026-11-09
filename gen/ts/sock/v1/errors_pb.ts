@@ -362,7 +362,8 @@ export enum ErrorReason {
 
   /**
    * failed_precondition: the call needs a session issued in the last 10
-   * minutes (RemoveEmailSignIn). Sign in again, then retry.
+   * minutes (RemoveEmailSignIn, StartPasskeyRegistration). Sign in again,
+   * then retry.
    *
    * @generated from enum value: ERROR_REASON_RECENT_SIGN_IN_REQUIRED = 72;
    */
