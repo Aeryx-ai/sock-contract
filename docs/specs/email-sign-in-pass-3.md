@@ -156,8 +156,8 @@ Changed: Anonymous, Human device.
 
 ### Rate limits
 
-- `StartEmailSignIn`: the anonymous network bucket, then an address bucket of 5 codes per hour per address, keyed by `HMAC-SHA-256(SOCK_EMAIL_LIMIT_KEY, address)`. The address bucket stops one person's inbox being flooded from many networks.
-- `VerifyEmailSignIn` and `SignInWithEmailPassword`: the anonymous network bucket, then the address bucket's verify half, shared by both: 10 attempts per 10 minutes per address. A million codes cannot be walked in 10 minutes, nor a password guessed quickly, from any number of networks.
+- `StartEmailSignIn`: the anonymous network bucket, then a send bucket per client network (burst 5, 20 an hour), then an address bucket of 5 codes per hour per address, keyed by `HMAC-SHA-256(SOCK_EMAIL_LIMIT_KEY, inbox)`. The inbox is the address as the limiter sees it: lowercased, the local part cut at its first `+` (unless nothing would be left), and on `gmail.com` and `googlemail.com` without dots and as `gmail.com`; WorkOS is sent the address as typed. The address bucket stops one person's inbox being flooded from many networks, whatever spelling reaches it; the network send bucket stops one network mailing many inboxes, or making WorkOS users, at the sign-in rate.
+- `VerifyEmailSignIn` and `SignInWithEmailPassword`: the anonymous network bucket, then the address bucket's verify half, keyed by the same inbox, shared by both: 10 attempts per 10 minutes per address. A million codes cannot be walked in 10 minutes, nor a password guessed quickly, from any number of networks.
 - `RegisterWithEmail` with a ticket: the anonymous network bucket, as today.
 
 Wire shape: pass 2's `code` and `code_verifier` stay top-level fields 1 and 2 of `RegisterWithEmailRequest` and `AddEmailSignInRequest`, which released builds send; moving them into a oneof would break those builds. The new proofs are new fields (`registration_ticket = 8`; `oneof proof { email_code = 3; google = 4 }`), and the hub refuses a request carrying neither or both kinds (`FIELD_INVALID`).
