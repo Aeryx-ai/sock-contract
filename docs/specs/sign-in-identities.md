@@ -23,7 +23,7 @@ Why: `AddEmailSignIn` binds a WorkOS user to the caller on a session alone. Anyo
 Entity, aggregate root.
 
 - `SignInIdentities()` (`ListSignInIdentities`, a read): whether the human has an Apple identity, and their email identity. The address is the adapter's read of the WorkOS user (`EmailSignIn.UserEmail`), made on each call; when WorkOS is not configured, does not answer or no longer holds the user, the identity is returned with no address rather than hidden, so a human always sees that it exists.
-- `RemoveEmailIdentity()` (`RemoveEmailSignIn`): deletes the human's email identity, and with it its `PasswordSignIn`. Refused when the human has none (`NOT_FOUND`) and when it is the human's only sign-in identity (`LAST_SIGN_IN_IDENTITY`); the human's row is locked as `AddEmailIdentity` locks it, so the two serialize. The WorkOS user is left at WorkOS: it holds no human afterwards, as a WorkOS user an unregistered email code makes does, and the person can add it again with a code. Sessions already issued stay until the human revokes them (`ListDevices`, `RevokeDevice`): no session records the identity it was issued through.
+- `RemoveEmailIdentity()` (`RemoveEmailSignIn`): deletes the human's email identity, and with it its `PasswordSignIn`. Refused unless the calling session was issued in the last 10 minutes (`RECENT_SIGN_IN_REQUIRED`): `AddEmailSignIn` refuses a human who already has email sign-in, so without this a stolen session could remove the human's own email sign-in and add the thief's. Refused when the human has none (`NOT_FOUND`) and when it is the human's only sign-in identity (`LAST_SIGN_IN_IDENTITY`); the human's row is locked as `AddEmailIdentity` locks it, so the two serialize. The WorkOS user is left at WorkOS: it holds no human afterwards, as a WorkOS user an unregistered email code makes does, and the person can add it again with a code. Sessions already issued stay until the human revokes them (`ListDevices`, `RevokeDevice`): no session records the identity it was issued through.
 
 Invariants, unchanged and enforced as before: a human holds at least one sign-in identity (the deferred `email_identity_keeps_one` trigger, `00025`), at most one of each kind, and an identity belongs to at most one human.
 
@@ -42,9 +42,9 @@ Unchanged. Human device reaches the two new RPCs; a puppet token and a machine k
 | RPC | Caller | Authn | Authz | Request | Response | Errors | Idempotency | Domain behavior |
 |---|---|---|---|---|---|---|---|---|
 | `ListSignInIdentities` | Human device | `sock_st_` session | Self. Terms-exempt (a read). 1 a minute per account, burst 5, in each replica's memory | empty | `apple` (bool), `email` (`EmailSignIn { address }`, unset when none; `address` empty when WorkOS could not be read) | `CALLER_NOT_ALLOWED`, `RATE_LIMITED` | Read | `Account.SignInIdentities()` |
-| `RemoveEmailSignIn` | Human device | `sock_st_` session | Self. Terms-exempt (a safety path): the human has an email identity and an Apple identity | empty | empty | `NOT_FOUND`, `LAST_SIGN_IN_IDENTITY`, `CALLER_NOT_ALLOWED` | Idempotent in effect: a retry after success is `NOT_FOUND` | `Account.RemoveEmailIdentity()` |
+| `RemoveEmailSignIn` | Human device | `sock_st_` session issued in the last 10 minutes (the device's `created_at`) | Self. Terms-exempt (a safety path): the human has an email identity and an Apple identity | empty | empty | `RECENT_SIGN_IN_REQUIRED` (checked first), `NOT_FOUND`, `LAST_SIGN_IN_IDENTITY`, `CALLER_NOT_ALLOWED` | Idempotent in effect: a retry after success is `NOT_FOUND` | `Account.RemoveEmailIdentity()` |
 
-`errors.proto` gains `ERROR_REASON_LAST_SIGN_IN_IDENTITY` (`failed_precondition`).
+`errors.proto` gains `ERROR_REASON_LAST_SIGN_IN_IDENTITY` and `ERROR_REASON_RECENT_SIGN_IN_REQUIRED` (both `failed_precondition`). The app answers `RECENT_SIGN_IN_REQUIRED` by signing in again (Apple or email) and retrying with the new session.
 
 The hub logs `AddEmailSignIn` and `RemoveEmailSignIn` at Info with the account id and the WorkOS user id, never the address.
 
@@ -58,7 +58,7 @@ No table changes. `RemoveEmailIdentity` is `DELETE FROM identity.email_identitie
 
 ## Apps
 
-Settings, "Sign-in methods": Apple when `apple`; email with its address when `email` is set ("Email sign-in (address unavailable)" when the address is empty), with Remove when `apple` is true too. After Remove, the devices list, so the person can revoke sessions they do not recognize. Each app's own pass; no app change ships with this spec.
+Settings, "Sign-in methods": Apple when `apple`; email with its address when `email` is set ("Email sign-in (address unavailable)" when the address is empty), with Remove when `apple` is true too. Remove signs the person in again first when the session is older than 10 minutes. After Remove, the devices list, so the person can revoke sessions they do not recognize. Each app's own pass; no app change ships with this spec.
 
 ## Cross-check
 
@@ -73,6 +73,14 @@ Settings, "Sign-in methods": Apple when `apple`; email with its address when `em
 - No event added.
 - No table added or changed.
 - Caller classes: Human device reaches both; none other.
+
+## Threats
+
+| Threat | Mitigation |
+|---|---|
+| A stolen session binds the thief's inbox with `AddEmailSignIn` | Visible in `ListSignInIdentities` and removable with `RemoveEmailSignIn`. Prevention needs a fresh sign-in on add, the open question below |
+| A stolen session removes the human's own email sign-in, then adds the thief's | `RemoveEmailSignIn` needs a session issued in the last 10 minutes; a thief with an older session cannot, and one with a fresh session could already add an inbox to a human without email |
+| A stolen session reads the human's address | Accepted: the session already reads every message |
 
 ## Open questions
 

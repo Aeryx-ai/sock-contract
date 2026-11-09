@@ -157,6 +157,9 @@ const (
 	// failed_precondition: email sign-in is the human's only sign-in identity,
 	// so removing it would leave no way in (RemoveEmailSignIn).
 	ErrorReason_ERROR_REASON_LAST_SIGN_IN_IDENTITY ErrorReason = 71
+	// failed_precondition: the call needs a session issued in the last 10
+	// minutes (RemoveEmailSignIn). Sign in again, then retry.
+	ErrorReason_ERROR_REASON_RECENT_SIGN_IN_REQUIRED ErrorReason = 72
 )
 
 // Enum value maps for ErrorReason.
@@ -200,6 +203,7 @@ var (
 		69: "ERROR_REASON_PASSWORD_INVALID",
 		70: "ERROR_REASON_TERMINAL_SIGN_IN_INVALID",
 		71: "ERROR_REASON_LAST_SIGN_IN_IDENTITY",
+		72: "ERROR_REASON_RECENT_SIGN_IN_REQUIRED",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED":                 0,
@@ -240,6 +244,7 @@ var (
 		"ERROR_REASON_PASSWORD_INVALID":            69,
 		"ERROR_REASON_TERMINAL_SIGN_IN_INVALID":    70,
 		"ERROR_REASON_LAST_SIGN_IN_IDENTITY":       71,
+		"ERROR_REASON_RECENT_SIGN_IN_REQUIRED":     72,
 	}
 )
 
@@ -323,7 +328,7 @@ const file_sock_v1_errors_proto_rawDesc = "" +
 	"\n" +
 	"\x14sock/v1/errors.proto\x12\asock.v1\"9\n" +
 	"\tErrorInfo\x12,\n" +
-	"\x06reason\x18\x01 \x01(\x0e2\x14.sock.v1.ErrorReasonR\x06reason*\xc4\n" +
+	"\x06reason\x18\x01 \x01(\x0e2\x14.sock.v1.ErrorReasonR\x06reason*\xee\n" +
 	"\n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x1e\n" +
@@ -364,7 +369,8 @@ const file_sock_v1_errors_proto_rawDesc = "" +
 	"\x1cERROR_REASON_PASSKEY_INVALID\x10D\x12!\n" +
 	"\x1dERROR_REASON_PASSWORD_INVALID\x10E\x12)\n" +
 	"%ERROR_REASON_TERMINAL_SIGN_IN_INVALID\x10F\x12&\n" +
-	"\"ERROR_REASON_LAST_SIGN_IN_IDENTITY\x10GB\x90\x01\n" +
+	"\"ERROR_REASON_LAST_SIGN_IN_IDENTITY\x10G\x12(\n" +
+	"$ERROR_REASON_RECENT_SIGN_IN_REQUIRED\x10HB\x90\x01\n" +
 	"\vcom.sock.v1B\vErrorsProtoP\x01Z7github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1\xa2\x02\x03SXX\xaa\x02\aSock.V1\xca\x02\aSock\\V1\xe2\x02\x13Sock\\V1\\GPBMetadata\xea\x02\bSock::V1b\x06proto3"
 
 var (
