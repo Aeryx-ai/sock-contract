@@ -26,7 +26,7 @@ Changes to [domain-model](domain-model.md). Unchanged objects are not repeated.
 
 #### AuthMethod (changed)
 
-Enumeration, from WorkOS's `authentication_method`: `Password`, `MagicAuth`, `GoogleOAuth`, `AppleOAuth` (new) and `Other`. `ProvesAddress` is true for `MagicAuth`, `GoogleOAuth` and `AppleOAuth`.
+Enumeration, from WorkOS's `authentication_method`: `Password`, `MagicAuth`, `GoogleOAuth`, `AppleOAuth` (new) and `Other`. `ProvesAddress` is true for `MagicAuth`, `GoogleOAuth` and `AppleOAuth`. `Other` signs in no one ([email sign-in, pass 3](email-sign-in-pass-3.md), PasswordSignIn).
 
 #### RegistrationTicket (changed)
 
