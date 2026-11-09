@@ -48,6 +48,12 @@ const (
 	// IdentityServiceAddEmailSignInProcedure is the fully-qualified name of the IdentityService's
 	// AddEmailSignIn RPC.
 	IdentityServiceAddEmailSignInProcedure = "/sock.v1.IdentityService/AddEmailSignIn"
+	// IdentityServiceListSignInIdentitiesProcedure is the fully-qualified name of the IdentityService's
+	// ListSignInIdentities RPC.
+	IdentityServiceListSignInIdentitiesProcedure = "/sock.v1.IdentityService/ListSignInIdentities"
+	// IdentityServiceRemoveEmailSignInProcedure is the fully-qualified name of the IdentityService's
+	// RemoveEmailSignIn RPC.
+	IdentityServiceRemoveEmailSignInProcedure = "/sock.v1.IdentityService/RemoveEmailSignIn"
 	// IdentityServiceStartEmailSignInProcedure is the fully-qualified name of the IdentityService's
 	// StartEmailSignIn RPC.
 	IdentityServiceStartEmailSignInProcedure = "/sock.v1.IdentityService/StartEmailSignIn"
@@ -163,6 +169,10 @@ type IdentityServiceClient interface {
 	// A signed-in human adds email sign-in: the session proves the person,
 	// AuthKit, an email code or Google the address.
 	AddEmailSignIn(context.Context, *connect.Request[v1.AddEmailSignInRequest]) (*connect.Response[v1.AddEmailSignInResponse], error)
+	// A signed-in human's sign-in identities, and email sign-in removed while
+	// another identity remains (docs/specs/sign-in-identities.md).
+	ListSignInIdentities(context.Context, *connect.Request[v1.ListSignInIdentitiesRequest]) (*connect.Response[v1.ListSignInIdentitiesResponse], error)
+	RemoveEmailSignIn(context.Context, *connect.Request[v1.RemoveEmailSignInRequest]) (*connect.Response[v1.RemoveEmailSignInResponse], error)
 	// Email as a six-digit code typed into the app (docs/specs/email-sign-in-pass-3.md).
 	StartEmailSignIn(context.Context, *connect.Request[v1.StartEmailSignInRequest]) (*connect.Response[v1.StartEmailSignInResponse], error)
 	VerifyEmailSignIn(context.Context, *connect.Request[v1.VerifyEmailSignInRequest]) (*connect.Response[v1.VerifyEmailSignInResponse], error)
@@ -254,6 +264,18 @@ func NewIdentityServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			httpClient,
 			baseURL+IdentityServiceAddEmailSignInProcedure,
 			connect.WithSchema(identityServiceMethods.ByName("AddEmailSignIn")),
+			connect.WithClientOptions(opts...),
+		),
+		listSignInIdentities: connect.NewClient[v1.ListSignInIdentitiesRequest, v1.ListSignInIdentitiesResponse](
+			httpClient,
+			baseURL+IdentityServiceListSignInIdentitiesProcedure,
+			connect.WithSchema(identityServiceMethods.ByName("ListSignInIdentities")),
+			connect.WithClientOptions(opts...),
+		),
+		removeEmailSignIn: connect.NewClient[v1.RemoveEmailSignInRequest, v1.RemoveEmailSignInResponse](
+			httpClient,
+			baseURL+IdentityServiceRemoveEmailSignInProcedure,
+			connect.WithSchema(identityServiceMethods.ByName("RemoveEmailSignIn")),
 			connect.WithClientOptions(opts...),
 		),
 		startEmailSignIn: connect.NewClient[v1.StartEmailSignInRequest, v1.StartEmailSignInResponse](
@@ -476,6 +498,8 @@ type identityServiceClient struct {
 	signInWithEmail           *connect.Client[v1.SignInWithEmailRequest, v1.SignInWithEmailResponse]
 	registerWithEmail         *connect.Client[v1.RegisterWithEmailRequest, v1.RegisterWithEmailResponse]
 	addEmailSignIn            *connect.Client[v1.AddEmailSignInRequest, v1.AddEmailSignInResponse]
+	listSignInIdentities      *connect.Client[v1.ListSignInIdentitiesRequest, v1.ListSignInIdentitiesResponse]
+	removeEmailSignIn         *connect.Client[v1.RemoveEmailSignInRequest, v1.RemoveEmailSignInResponse]
 	startEmailSignIn          *connect.Client[v1.StartEmailSignInRequest, v1.StartEmailSignInResponse]
 	verifyEmailSignIn         *connect.Client[v1.VerifyEmailSignInRequest, v1.VerifyEmailSignInResponse]
 	signInWithEmailPassword   *connect.Client[v1.SignInWithEmailPasswordRequest, v1.SignInWithEmailPasswordResponse]
@@ -536,6 +560,16 @@ func (c *identityServiceClient) RegisterWithEmail(ctx context.Context, req *conn
 // AddEmailSignIn calls sock.v1.IdentityService.AddEmailSignIn.
 func (c *identityServiceClient) AddEmailSignIn(ctx context.Context, req *connect.Request[v1.AddEmailSignInRequest]) (*connect.Response[v1.AddEmailSignInResponse], error) {
 	return c.addEmailSignIn.CallUnary(ctx, req)
+}
+
+// ListSignInIdentities calls sock.v1.IdentityService.ListSignInIdentities.
+func (c *identityServiceClient) ListSignInIdentities(ctx context.Context, req *connect.Request[v1.ListSignInIdentitiesRequest]) (*connect.Response[v1.ListSignInIdentitiesResponse], error) {
+	return c.listSignInIdentities.CallUnary(ctx, req)
+}
+
+// RemoveEmailSignIn calls sock.v1.IdentityService.RemoveEmailSignIn.
+func (c *identityServiceClient) RemoveEmailSignIn(ctx context.Context, req *connect.Request[v1.RemoveEmailSignInRequest]) (*connect.Response[v1.RemoveEmailSignInResponse], error) {
+	return c.removeEmailSignIn.CallUnary(ctx, req)
 }
 
 // StartEmailSignIn calls sock.v1.IdentityService.StartEmailSignIn.
@@ -723,6 +757,10 @@ type IdentityServiceHandler interface {
 	// A signed-in human adds email sign-in: the session proves the person,
 	// AuthKit, an email code or Google the address.
 	AddEmailSignIn(context.Context, *connect.Request[v1.AddEmailSignInRequest]) (*connect.Response[v1.AddEmailSignInResponse], error)
+	// A signed-in human's sign-in identities, and email sign-in removed while
+	// another identity remains (docs/specs/sign-in-identities.md).
+	ListSignInIdentities(context.Context, *connect.Request[v1.ListSignInIdentitiesRequest]) (*connect.Response[v1.ListSignInIdentitiesResponse], error)
+	RemoveEmailSignIn(context.Context, *connect.Request[v1.RemoveEmailSignInRequest]) (*connect.Response[v1.RemoveEmailSignInResponse], error)
 	// Email as a six-digit code typed into the app (docs/specs/email-sign-in-pass-3.md).
 	StartEmailSignIn(context.Context, *connect.Request[v1.StartEmailSignInRequest]) (*connect.Response[v1.StartEmailSignInResponse], error)
 	VerifyEmailSignIn(context.Context, *connect.Request[v1.VerifyEmailSignInRequest]) (*connect.Response[v1.VerifyEmailSignInResponse], error)
@@ -810,6 +848,18 @@ func NewIdentityServiceHandler(svc IdentityServiceHandler, opts ...connect.Handl
 		IdentityServiceAddEmailSignInProcedure,
 		svc.AddEmailSignIn,
 		connect.WithSchema(identityServiceMethods.ByName("AddEmailSignIn")),
+		connect.WithHandlerOptions(opts...),
+	)
+	identityServiceListSignInIdentitiesHandler := connect.NewUnaryHandler(
+		IdentityServiceListSignInIdentitiesProcedure,
+		svc.ListSignInIdentities,
+		connect.WithSchema(identityServiceMethods.ByName("ListSignInIdentities")),
+		connect.WithHandlerOptions(opts...),
+	)
+	identityServiceRemoveEmailSignInHandler := connect.NewUnaryHandler(
+		IdentityServiceRemoveEmailSignInProcedure,
+		svc.RemoveEmailSignIn,
+		connect.WithSchema(identityServiceMethods.ByName("RemoveEmailSignIn")),
 		connect.WithHandlerOptions(opts...),
 	)
 	identityServiceStartEmailSignInHandler := connect.NewUnaryHandler(
@@ -1034,6 +1084,10 @@ func NewIdentityServiceHandler(svc IdentityServiceHandler, opts ...connect.Handl
 			identityServiceRegisterWithEmailHandler.ServeHTTP(w, r)
 		case IdentityServiceAddEmailSignInProcedure:
 			identityServiceAddEmailSignInHandler.ServeHTTP(w, r)
+		case IdentityServiceListSignInIdentitiesProcedure:
+			identityServiceListSignInIdentitiesHandler.ServeHTTP(w, r)
+		case IdentityServiceRemoveEmailSignInProcedure:
+			identityServiceRemoveEmailSignInHandler.ServeHTTP(w, r)
 		case IdentityServiceStartEmailSignInProcedure:
 			identityServiceStartEmailSignInHandler.ServeHTTP(w, r)
 		case IdentityServiceVerifyEmailSignInProcedure:
@@ -1131,6 +1185,14 @@ func (UnimplementedIdentityServiceHandler) RegisterWithEmail(context.Context, *c
 
 func (UnimplementedIdentityServiceHandler) AddEmailSignIn(context.Context, *connect.Request[v1.AddEmailSignInRequest]) (*connect.Response[v1.AddEmailSignInResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.AddEmailSignIn is not implemented"))
+}
+
+func (UnimplementedIdentityServiceHandler) ListSignInIdentities(context.Context, *connect.Request[v1.ListSignInIdentitiesRequest]) (*connect.Response[v1.ListSignInIdentitiesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.ListSignInIdentities is not implemented"))
+}
+
+func (UnimplementedIdentityServiceHandler) RemoveEmailSignIn(context.Context, *connect.Request[v1.RemoveEmailSignInRequest]) (*connect.Response[v1.RemoveEmailSignInResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.RemoveEmailSignIn is not implemented"))
 }
 
 func (UnimplementedIdentityServiceHandler) StartEmailSignIn(context.Context, *connect.Request[v1.StartEmailSignInRequest]) (*connect.Response[v1.StartEmailSignInResponse], error) {

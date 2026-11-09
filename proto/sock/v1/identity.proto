@@ -19,6 +19,10 @@ service IdentityService {
   // A signed-in human adds email sign-in: the session proves the person,
   // AuthKit, an email code or Google the address.
   rpc AddEmailSignIn(AddEmailSignInRequest) returns (AddEmailSignInResponse) {}
+  // A signed-in human's sign-in identities, and email sign-in removed while
+  // another identity remains (docs/specs/sign-in-identities.md).
+  rpc ListSignInIdentities(ListSignInIdentitiesRequest) returns (ListSignInIdentitiesResponse) {}
+  rpc RemoveEmailSignIn(RemoveEmailSignInRequest) returns (RemoveEmailSignInResponse) {}
   // Email as a six-digit code typed into the app (docs/specs/email-sign-in-pass-3.md).
   rpc StartEmailSignIn(StartEmailSignInRequest) returns (StartEmailSignInResponse) {}
   rpc VerifyEmailSignIn(VerifyEmailSignInRequest) returns (VerifyEmailSignInResponse) {}
@@ -358,6 +362,26 @@ message Passkey {
   // (iCloud Keychain, 1Password); empty otherwise.
   string provider = 4;
 }
+
+message ListSignInIdentitiesRequest {}
+
+message ListSignInIdentitiesResponse {
+  // The human signs in with Apple (the app's or the web's Sign in with Apple).
+  bool apple = 1;
+  // The human's email sign-in; unset: none.
+  EmailSignIn email = 2;
+}
+
+// A human's email identity: the WorkOS user an emailed code, Google or a
+// trusted password signs in to.
+message EmailSignIn {
+  // The address WorkOS holds for the user, read when asked; the hub stores
+  // none. Empty: WorkOS could not be read just now.
+  string address = 1;
+}
+
+message RemoveEmailSignInRequest {}
+message RemoveEmailSignInResponse {}
 
 message ListPasskeysRequest {}
 

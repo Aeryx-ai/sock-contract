@@ -94,6 +94,8 @@ Pass 1. Every human RPC in [api](api.md) has a `sock` command; this file is the 
 - `SignInWithApple`: the apps' native Sign in with Apple; the CLI reaches Apple through AuthKit.
 - `RegisterWithApple`: the apps' native Apple registration, likewise.
 - `AddEmailSignIn`: the apps' Settings, likewise.
+- `ListSignInIdentities`: the apps' Settings, likewise ([sign-in identities](sign-in-identities.md)).
+- `RemoveEmailSignIn`: the apps' Settings, likewise.
 - `SignInOperatorWithApple`: anonymous, but the console's sign-in, not a human's; the operator CLI keeps `sockd operator token mint`.
 
 ## Coverage

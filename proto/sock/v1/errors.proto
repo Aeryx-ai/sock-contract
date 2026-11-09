@@ -155,4 +155,7 @@ enum ErrorReason {
   // unauthenticated: the terminal sign-in is unknown, expired, already spent,
   // or the secret is wrong (FinishTerminalSignIn). Run sock login again.
   ERROR_REASON_TERMINAL_SIGN_IN_INVALID = 70;
+  // failed_precondition: email sign-in is the human's only sign-in identity,
+  // so removing it would leave no way in (RemoveEmailSignIn).
+  ERROR_REASON_LAST_SIGN_IN_IDENTITY = 71;
 }

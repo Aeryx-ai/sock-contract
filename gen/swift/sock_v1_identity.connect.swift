@@ -31,6 +31,14 @@ public protocol Sock_V1_IdentityServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `addEmailSignIn`(request: Sock_V1_AddEmailSignInRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_AddEmailSignInResponse>
 
+    /// A signed-in human's sign-in identities, and email sign-in removed while
+    /// another identity remains (docs/specs/sign-in-identities.md).
+    @available(iOS 13, *)
+    func `listSignInIdentities`(request: Sock_V1_ListSignInIdentitiesRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_ListSignInIdentitiesResponse>
+
+    @available(iOS 13, *)
+    func `removeEmailSignIn`(request: Sock_V1_RemoveEmailSignInRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_RemoveEmailSignInResponse>
+
     /// Email as a six-digit code typed into the app (docs/specs/email-sign-in-pass-3.md).
     @available(iOS 13, *)
     func `startEmailSignIn`(request: Sock_V1_StartEmailSignInRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_StartEmailSignInResponse>
@@ -183,6 +191,16 @@ public final class Sock_V1_IdentityServiceClient: Sock_V1_IdentityServiceClientI
     @available(iOS 13, *)
     public func `addEmailSignIn`(request: Sock_V1_AddEmailSignInRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_AddEmailSignInResponse> {
         return await self.client.unary(path: "/sock.v1.IdentityService/AddEmailSignIn", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `listSignInIdentities`(request: Sock_V1_ListSignInIdentitiesRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_ListSignInIdentitiesResponse> {
+        return await self.client.unary(path: "/sock.v1.IdentityService/ListSignInIdentities", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `removeEmailSignIn`(request: Sock_V1_RemoveEmailSignInRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_RemoveEmailSignInResponse> {
+        return await self.client.unary(path: "/sock.v1.IdentityService/RemoveEmailSignIn", idempotencyLevel: .unknown, request: request, headers: headers)
     }
 
     @available(iOS 13, *)
@@ -367,6 +385,8 @@ public final class Sock_V1_IdentityServiceClient: Sock_V1_IdentityServiceClientI
             public static let signInWithEmail = Connect.MethodSpec(name: "SignInWithEmail", service: "sock.v1.IdentityService", type: .unary)
             public static let registerWithEmail = Connect.MethodSpec(name: "RegisterWithEmail", service: "sock.v1.IdentityService", type: .unary)
             public static let addEmailSignIn = Connect.MethodSpec(name: "AddEmailSignIn", service: "sock.v1.IdentityService", type: .unary)
+            public static let listSignInIdentities = Connect.MethodSpec(name: "ListSignInIdentities", service: "sock.v1.IdentityService", type: .unary)
+            public static let removeEmailSignIn = Connect.MethodSpec(name: "RemoveEmailSignIn", service: "sock.v1.IdentityService", type: .unary)
             public static let startEmailSignIn = Connect.MethodSpec(name: "StartEmailSignIn", service: "sock.v1.IdentityService", type: .unary)
             public static let verifyEmailSignIn = Connect.MethodSpec(name: "VerifyEmailSignIn", service: "sock.v1.IdentityService", type: .unary)
             public static let signInWithEmailPassword = Connect.MethodSpec(name: "SignInWithEmailPassword", service: "sock.v1.IdentityService", type: .unary)
