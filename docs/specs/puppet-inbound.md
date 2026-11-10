@@ -1,14 +1,14 @@
 # Puppet inbound: delivery leases and listening
 
-Pass 1, draft for approval. Context: Messaging. Builds on [domain-model](domain-model.md) (`Message`, `PuppetDelivery`, `Participant`), [api](api.md) (`Subscribe`, `FetchPending`, `Ack`) and [events](events.md).
+Pass 1, approved 2026-11-10. Context: Messaging. Builds on [domain-model](domain-model.md) (`Message`, `PuppetDelivery`, `Participant`), [api](api.md) (`Subscribe`, `FetchPending`, `Ack`) and [events](events.md).
 
-The guarantee: a message delivered to a puppet is taken by one live consumer of that puppet, or every human who can send to the puppet can see that nothing has listened for it since a stated time, at most 75 seconds after the last consumer stopped.
+The guarantee: a message delivered to a puppet is taken by one live consumer of that puppet, or the puppet's owner can see that nothing has listened for it since a stated time, at most 75 seconds after the last consumer stopped.
 
 What changes:
 
 - The hub leases a puppet delivery to the one consumer it hands it to: a `Subscribe` stream holds it while the stream lives, a `FetchPending` call for 5 minutes. No other consumer of the puppet is handed a leased delivery. Several consumers of one puppet become active and standby instead of each handling every message.
 - A consumer that cannot handle a message gives it back with `Release`, now or after a delay, instead of leaving it unacked on a live stream where nothing hands it out again.
-- The hub records when it last heard from each puppet's consumers. Humans in a conversation with the puppet get that time with the conversation and live on their streams, and show "no agent listening since 14:02" once it is older than 75 seconds.
+- The hub records when it last heard from each puppet's consumers. The owner gets that time with each conversation the puppet is in and live on their streams, and show "no agent listening since 14:02" once it is older than 75 seconds.
 
 Human deliveries (`DeviceDelivery`, `AccountDelivery`) are unchanged.
 
@@ -133,7 +133,7 @@ Unchanged from [api](api.md). Puppet: any of a puppet's tokens (`sock_pt_`, the 
 | `FetchPending` (changed) | Human, puppet | As today | As today | Human: as today. Puppet: only the free deliveries this call leased, oldest first | As today | Puppet: not a read. Calling again within 5 minutes without acking does not return the same messages; `Release` makes them free at once | Puppet: `Participant.Hear`, then `Message.Lease(puppet, callId, now + 5 min)` per free delivery up to `limit` |
 | `Ack` (changed) | Human, puppet | As today | As today | As today | As today | As today. A puppet's ack deletes the delivery whichever of its tokens or consumers holds the lease | `Message.Ack`; the lease and deferral go with the delivery |
 | `Release` (new) | Puppet | Own deliveries only: ids that are not the calling puppet's deliveries are ignored, as `Ack` ignores them | `message_ids` (1 to 500), `retry_after_seconds` (0 to 3600; 0 frees them now) | none | `FIELD_INVALID` (no ids, more than 500, a malformed id, `retry_after_seconds` out of range), `CALLER_NOT_ALLOWED` (a human, a machine key), `SUBSCRIPTION_REQUIRED` (as every puppet RPC) | Idempotent: releasing again rewrites the same deferral end relative to now; unknown or acked ids are ignored | `Message.Release(puppet, now + retry_after)` per id; emits `DeliveryReleased` when it freed any delivery now |
-| `ListConversations` (changed) | Human, puppet | As today | As today | Each `Conversation` gains `puppets_heard`: one `PuppetHeard` per puppet member that has a `ListenMark`, for human callers only. A puppet member without one is absent: never heard | As today | Read | none (read) |
+| `ListConversations` (changed) | Human, puppet | As today | As today | Each `Conversation` gains `puppets_heard`: one `PuppetHeard` per puppet member the caller owns that has a `ListenMark`, for human callers only. Other humans' puppets are never listed. An owned puppet member without one is absent: never heard | As today | Read | none (read) |
 
 `Release` is terms-exempt, as `Ack` is: it moves nothing to anyone. Rate limits: `Release` shares `Ack`'s bucket.
 
@@ -170,7 +170,7 @@ message PuppetHeard {
 
 | Event | Emitting aggregate | Transition | Payload | Consumers | Delivery | Published or internal | Cross-aggregate rule |
 |---|---|---|---|---|---|---|---|
-| `PuppetHeard` | Participant (puppet) | `Hear` when the puppet goes from not listening to listening. Never on a refresh of a listening puppet | `puppet_id` UUID, `last_heard_at` Timestamp | Stream wake: `pg_notify('puppet_heard', payload)` in the same transaction; each replica writes a `PuppetHeard` event to the open `Subscribe` streams of the human members of the puppet's conversations, shielded members excepted. Not an outbox row: `ListConversations` at stream open is the reconciliation | At most once, a hint | Internal; the stream event is the published form, additive | none: a stream write; who sees it is `RecipientPolicy`, as for `Activity` |
+| `PuppetHeard` | Participant (puppet) | `Hear` when the puppet goes from not listening to listening. Never on a refresh of a listening puppet | `puppet_id` UUID, `last_heard_at` Timestamp | Stream wake: `pg_notify('puppet_heard', payload)` in the same transaction; each replica writes a `PuppetHeard` event to the open `Subscribe` streams of the puppet's owner's human devices. Not an outbox row: `ListConversations` at stream open is the reconciliation | At most once, a hint | Internal; the stream event is the published form, additive | none: a stream write to the owner, as for `PuppetArchive` |
 | `DeliveryReleased` | Message | `Release` that freed at least one delivery now | `puppet_id` UUID | Stream wake: `pg_notify('deliveries_released', puppet_id)` in the same transaction; each replica re-reads free deliveries for that puppet's open streams | At most once; a lost wake delays the hand-out to the next heartbeat, at most 30 s | Internal | none |
 
 Going from listening to not listening emits nothing: it happens by time passing, and every client derives it from `lastHeardAt`. A lease expiring and a deferral passing emit nothing either: each puppet stream re-reads free deliveries at its heartbeat, so the hand-out waits at most 30 s.
@@ -239,7 +239,7 @@ The hand-out, per puppet, oldest first by `(conversation_id, seq)` as today: del
 - sock-mcp Claude and Codex inbound: an inbox or `turn/start` failure after its retries calls `Release` with 60; `NotLoaded` calls `Release(0)` and leaves the session to the next consumer.
 - sock-runner, sock-bridge, sock-http: unchanged; exit 1 reaches `Release` through `sock listen`.
 - sock-mcpd: a webhook that refuses releases with 60 instead of leaving the delivery pending.
-- Apple app, desktop and webui: in a conversation with a puppet, show "no agent listening since <time>" when its `last_heard_at` is 75 s or more old, and "no agent has connected yet" when it has none, above the composer, rechecked each heartbeat. Reconcile from `ListConversations` at stream open, then apply `PuppetHeard` events.
+- Apple app, desktop and webui: in a conversation with a puppet the human owns, show "no agent listening since <time>" when its `last_heard_at` is 75 s or more old, and "no agent has connected yet" when it has none, above the composer, rechecked each heartbeat. Reconcile from `ListConversations` at stream open, then apply `PuppetHeard` events.
 
 ## Rollout and compatibility
 
@@ -251,8 +251,7 @@ Additive on the wire. Server first; old clients keep working:
 
 ## Open questions
 
-- Inferred, to confirm: the 75 s listening window and stream lease, 2.5 heartbeats, so one lost heartbeat does not show a live agent as gone.
-- Inferred, to confirm: the 5-minute fetch lease. Long enough for an agent turn that fetched with `sock_fetch`; a crashed poller's messages wait that long.
-- Inferred, to confirm: who sees `last_heard_at`: every human member of a conversation with the puppet, as `Activity` reaches them, not the owner alone.
+- Decided: the 75 s listening window and stream lease (2.5 heartbeats, so one lost heartbeat does not show a live agent as gone) and the 5-minute fetch lease, to start.
+- Decided: only the owner sees `last_heard_at`. Another human in a group with the puppet sees nothing new.
 - Undecided: whether `ListPuppets` carries `last_heard_at` for the owner's puppets that are in no conversation yet. It would make Identity read a Messaging row.
 - Out of scope, recorded as decision A2 not taken: telling the human when a taken message got no reply within a time.
