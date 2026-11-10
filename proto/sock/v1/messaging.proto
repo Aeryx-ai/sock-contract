@@ -26,6 +26,9 @@ service MessagingService {
   rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {}
   rpc FetchPending(FetchPendingRequest) returns (FetchPendingResponse) {}
   rpc Ack(AckRequest) returns (AckResponse) {}
+  // Give puppet deliveries back unacked: free at once, or handed to no
+  // consumer before retry_after_seconds. Puppet tokens only.
+  rpc Release(ReleaseRequest) returns (ReleaseResponse) {}
   // Tell the other members the caller is working on a reply, or no longer is.
   // Ephemeral: never stored or pushed.
   rpc SetActivity(SetActivityRequest) returns (SetActivityResponse) {}
@@ -136,6 +139,11 @@ message SubscribeResponse {
     // hint: at most once, so clients reconcile with ListPuppets when a
     // stream opens. The owner's human streams only.
     PuppetArchive puppet_archive = 5;
+    // One of the caller's puppets has a consumer again after none for 75 s
+    // or more, or for the first time. A hint: at most once, so clients
+    // reconcile with ListConversations when a stream opens. The owner's
+    // human streams only.
+    PuppetHeard puppet_heard = 6;
   }
 }
 message Heartbeat {}
@@ -193,6 +201,14 @@ message AckRequest {
   repeated string message_ids = 1;
 }
 message AckResponse {}
+
+message ReleaseRequest {
+  // 1 to 500 message ids. Unknown, acked or other recipients' ids are ignored.
+  repeated string message_ids = 1;
+  // 0 to 3600. 0 frees them at once.
+  int32 retry_after_seconds = 2;
+}
+message ReleaseResponse {}
 
 message RegisterPushRequest {
   // APNs device token bytes. 1 to 100 bytes.

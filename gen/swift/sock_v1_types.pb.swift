@@ -334,9 +334,39 @@ public nonisolated struct Sock_V1_Conversation: Sendable {
   /// writable again when an active puppet returns.
   public var humansCanPost: Bool = false
 
+  /// When each puppet member the caller owns was last heard, for human
+  /// callers only. An owned puppet member that is absent was never heard.
+  public var puppetsHeard: [Sock_V1_PuppetHeard] = []
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
+}
+
+/// When the hub last heard from a consumer of a puppet: a Subscribe stream
+/// open or heartbeat, or a FetchPending. Clients show the puppet as not
+/// listening once last_heard_at is 75 s or more in the past.
+public nonisolated struct Sock_V1_PuppetHeard: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var puppetID: String = String()
+
+  public var lastHeardAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {_lastHeardAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_lastHeardAt = newValue}
+  }
+  /// Returns true if `lastHeardAt` has been explicitly set.
+  public var hasLastHeardAt: Bool {self._lastHeardAt != nil}
+  /// Clears the value of `lastHeardAt`. Subsequent reads from it will return its default value.
+  public mutating func clearLastHeardAt() {self._lastHeardAt = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _lastHeardAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
 public nonisolated struct Sock_V1_Message: Sendable {
@@ -662,7 +692,7 @@ nonisolated extension Sock_V1_Device: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 nonisolated extension Sock_V1_Conversation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Conversation"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}kind\0\u{3}member_ids\0\u{3}read_through_seq\0\u{3}humans_can_post\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}kind\0\u{3}member_ids\0\u{3}read_through_seq\0\u{3}humans_can_post\0\u{3}puppets_heard\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -675,6 +705,7 @@ nonisolated extension Sock_V1_Conversation: SwiftProtobuf.Message, SwiftProtobuf
       case 3: try { try decoder.decodeRepeatedStringField(value: &self.memberIds) }()
       case 4: try { try decoder.decodeSingularInt64Field(value: &self.readThroughSeq) }()
       case 5: try { try decoder.decodeSingularBoolField(value: &self.humansCanPost) }()
+      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.puppetsHeard) }()
       default: break
       }
     }
@@ -696,6 +727,9 @@ nonisolated extension Sock_V1_Conversation: SwiftProtobuf.Message, SwiftProtobuf
     if self.humansCanPost != false {
       try visitor.visitSingularBoolField(value: self.humansCanPost, fieldNumber: 5)
     }
+    if !self.puppetsHeard.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.puppetsHeard, fieldNumber: 6)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -705,6 +739,46 @@ nonisolated extension Sock_V1_Conversation: SwiftProtobuf.Message, SwiftProtobuf
     if lhs.memberIds != rhs.memberIds {return false}
     if lhs.readThroughSeq != rhs.readThroughSeq {return false}
     if lhs.humansCanPost != rhs.humansCanPost {return false}
+    if lhs.puppetsHeard != rhs.puppetsHeard {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_PuppetHeard: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PuppetHeard"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}puppet_id\0\u{3}last_heard_at\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.puppetID) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._lastHeardAt) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.puppetID.isEmpty {
+      try visitor.visitSingularStringField(value: self.puppetID, fieldNumber: 1)
+    }
+    try { if let v = self._lastHeardAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_PuppetHeard, rhs: Sock_V1_PuppetHeard) -> Bool {
+    if lhs.puppetID != rhs.puppetID {return false}
+    if lhs._lastHeardAt != rhs._lastHeardAt {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

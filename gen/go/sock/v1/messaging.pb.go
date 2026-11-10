@@ -954,6 +954,7 @@ type SubscribeResponse struct {
 	//	*SubscribeResponse_ReadMarker
 	//	*SubscribeResponse_Activity
 	//	*SubscribeResponse_PuppetArchive
+	//	*SubscribeResponse_PuppetHeard
 	Event         isSubscribeResponse_Event `protobuf_oneof:"event"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1041,6 +1042,15 @@ func (x *SubscribeResponse) GetPuppetArchive() *PuppetArchive {
 	return nil
 }
 
+func (x *SubscribeResponse) GetPuppetHeard() *PuppetHeard {
+	if x != nil {
+		if x, ok := x.Event.(*SubscribeResponse_PuppetHeard); ok {
+			return x.PuppetHeard
+		}
+	}
+	return nil
+}
+
 type isSubscribeResponse_Event interface {
 	isSubscribeResponse_Event()
 }
@@ -1076,6 +1086,14 @@ type SubscribeResponse_PuppetArchive struct {
 	PuppetArchive *PuppetArchive `protobuf:"bytes,5,opt,name=puppet_archive,json=puppetArchive,proto3,oneof"`
 }
 
+type SubscribeResponse_PuppetHeard struct {
+	// One of the caller's puppets has a consumer again after none for 75 s
+	// or more, or for the first time. A hint: at most once, so clients
+	// reconcile with ListConversations when a stream opens. The owner's
+	// human streams only.
+	PuppetHeard *PuppetHeard `protobuf:"bytes,6,opt,name=puppet_heard,json=puppetHeard,proto3,oneof"`
+}
+
 func (*SubscribeResponse_Message) isSubscribeResponse_Event() {}
 
 func (*SubscribeResponse_Heartbeat) isSubscribeResponse_Event() {}
@@ -1085,6 +1103,8 @@ func (*SubscribeResponse_ReadMarker) isSubscribeResponse_Event() {}
 func (*SubscribeResponse_Activity) isSubscribeResponse_Event() {}
 
 func (*SubscribeResponse_PuppetArchive) isSubscribeResponse_Event() {}
+
+func (*SubscribeResponse_PuppetHeard) isSubscribeResponse_Event() {}
 
 type Heartbeat struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -1569,6 +1589,96 @@ func (*AckResponse) Descriptor() ([]byte, []int) {
 	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{29}
 }
 
+type ReleaseRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 1 to 500 message ids. Unknown, acked or other recipients' ids are ignored.
+	MessageIds []string `protobuf:"bytes,1,rep,name=message_ids,json=messageIds,proto3" json:"message_ids,omitempty"`
+	// 0 to 3600. 0 frees them at once.
+	RetryAfterSeconds int32 `protobuf:"varint,2,opt,name=retry_after_seconds,json=retryAfterSeconds,proto3" json:"retry_after_seconds,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ReleaseRequest) Reset() {
+	*x = ReleaseRequest{}
+	mi := &file_sock_v1_messaging_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReleaseRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReleaseRequest) ProtoMessage() {}
+
+func (x *ReleaseRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_messaging_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReleaseRequest.ProtoReflect.Descriptor instead.
+func (*ReleaseRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *ReleaseRequest) GetMessageIds() []string {
+	if x != nil {
+		return x.MessageIds
+	}
+	return nil
+}
+
+func (x *ReleaseRequest) GetRetryAfterSeconds() int32 {
+	if x != nil {
+		return x.RetryAfterSeconds
+	}
+	return 0
+}
+
+type ReleaseResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReleaseResponse) Reset() {
+	*x = ReleaseResponse{}
+	mi := &file_sock_v1_messaging_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReleaseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReleaseResponse) ProtoMessage() {}
+
+func (x *ReleaseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_messaging_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReleaseResponse.ProtoReflect.Descriptor instead.
+func (*ReleaseResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{31}
+}
+
 type RegisterPushRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// APNs device token bytes. 1 to 100 bytes.
@@ -1581,7 +1691,7 @@ type RegisterPushRequest struct {
 
 func (x *RegisterPushRequest) Reset() {
 	*x = RegisterPushRequest{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[30]
+	mi := &file_sock_v1_messaging_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1593,7 +1703,7 @@ func (x *RegisterPushRequest) String() string {
 func (*RegisterPushRequest) ProtoMessage() {}
 
 func (x *RegisterPushRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[30]
+	mi := &file_sock_v1_messaging_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1606,7 +1716,7 @@ func (x *RegisterPushRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterPushRequest.ProtoReflect.Descriptor instead.
 func (*RegisterPushRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{30}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *RegisterPushRequest) GetApnsToken() []byte {
@@ -1631,7 +1741,7 @@ type RegisterPushResponse struct {
 
 func (x *RegisterPushResponse) Reset() {
 	*x = RegisterPushResponse{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[31]
+	mi := &file_sock_v1_messaging_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1643,7 +1753,7 @@ func (x *RegisterPushResponse) String() string {
 func (*RegisterPushResponse) ProtoMessage() {}
 
 func (x *RegisterPushResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[31]
+	mi := &file_sock_v1_messaging_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1656,7 +1766,7 @@ func (x *RegisterPushResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterPushResponse.ProtoReflect.Descriptor instead.
 func (*RegisterPushResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{31}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{33}
 }
 
 type ExportMessagingDataRequest struct {
@@ -1667,7 +1777,7 @@ type ExportMessagingDataRequest struct {
 
 func (x *ExportMessagingDataRequest) Reset() {
 	*x = ExportMessagingDataRequest{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[32]
+	mi := &file_sock_v1_messaging_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1679,7 +1789,7 @@ func (x *ExportMessagingDataRequest) String() string {
 func (*ExportMessagingDataRequest) ProtoMessage() {}
 
 func (x *ExportMessagingDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[32]
+	mi := &file_sock_v1_messaging_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1692,7 +1802,7 @@ func (x *ExportMessagingDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportMessagingDataRequest.ProtoReflect.Descriptor instead.
 func (*ExportMessagingDataRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{32}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{34}
 }
 
 // Messaging's half of the GDPR export. No message content: the server holds
@@ -1711,7 +1821,7 @@ type ExportMessagingDataResponse struct {
 
 func (x *ExportMessagingDataResponse) Reset() {
 	*x = ExportMessagingDataResponse{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[33]
+	mi := &file_sock_v1_messaging_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1723,7 +1833,7 @@ func (x *ExportMessagingDataResponse) String() string {
 func (*ExportMessagingDataResponse) ProtoMessage() {}
 
 func (x *ExportMessagingDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[33]
+	mi := &file_sock_v1_messaging_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1736,7 +1846,7 @@ func (x *ExportMessagingDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportMessagingDataResponse.ProtoReflect.Descriptor instead.
 func (*ExportMessagingDataResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{33}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *ExportMessagingDataResponse) GetConversations() []*Conversation {
@@ -1771,7 +1881,7 @@ type BlockAccountRequest struct {
 
 func (x *BlockAccountRequest) Reset() {
 	*x = BlockAccountRequest{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[34]
+	mi := &file_sock_v1_messaging_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1783,7 +1893,7 @@ func (x *BlockAccountRequest) String() string {
 func (*BlockAccountRequest) ProtoMessage() {}
 
 func (x *BlockAccountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[34]
+	mi := &file_sock_v1_messaging_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1796,7 +1906,7 @@ func (x *BlockAccountRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BlockAccountRequest.ProtoReflect.Descriptor instead.
 func (*BlockAccountRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{34}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *BlockAccountRequest) GetAccountId() string {
@@ -1814,7 +1924,7 @@ type BlockAccountResponse struct {
 
 func (x *BlockAccountResponse) Reset() {
 	*x = BlockAccountResponse{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[35]
+	mi := &file_sock_v1_messaging_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1826,7 +1936,7 @@ func (x *BlockAccountResponse) String() string {
 func (*BlockAccountResponse) ProtoMessage() {}
 
 func (x *BlockAccountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[35]
+	mi := &file_sock_v1_messaging_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1839,7 +1949,7 @@ func (x *BlockAccountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BlockAccountResponse.ProtoReflect.Descriptor instead.
 func (*BlockAccountResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{35}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{37}
 }
 
 type UnblockAccountRequest struct {
@@ -1851,7 +1961,7 @@ type UnblockAccountRequest struct {
 
 func (x *UnblockAccountRequest) Reset() {
 	*x = UnblockAccountRequest{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[36]
+	mi := &file_sock_v1_messaging_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1863,7 +1973,7 @@ func (x *UnblockAccountRequest) String() string {
 func (*UnblockAccountRequest) ProtoMessage() {}
 
 func (x *UnblockAccountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[36]
+	mi := &file_sock_v1_messaging_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1876,7 +1986,7 @@ func (x *UnblockAccountRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnblockAccountRequest.ProtoReflect.Descriptor instead.
 func (*UnblockAccountRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{36}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *UnblockAccountRequest) GetAccountId() string {
@@ -1894,7 +2004,7 @@ type UnblockAccountResponse struct {
 
 func (x *UnblockAccountResponse) Reset() {
 	*x = UnblockAccountResponse{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[37]
+	mi := &file_sock_v1_messaging_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1906,7 +2016,7 @@ func (x *UnblockAccountResponse) String() string {
 func (*UnblockAccountResponse) ProtoMessage() {}
 
 func (x *UnblockAccountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[37]
+	mi := &file_sock_v1_messaging_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1919,7 +2029,7 @@ func (x *UnblockAccountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnblockAccountResponse.ProtoReflect.Descriptor instead.
 func (*UnblockAccountResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{37}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{39}
 }
 
 type ListBlockedAccountsRequest struct {
@@ -1930,7 +2040,7 @@ type ListBlockedAccountsRequest struct {
 
 func (x *ListBlockedAccountsRequest) Reset() {
 	*x = ListBlockedAccountsRequest{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[38]
+	mi := &file_sock_v1_messaging_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1942,7 +2052,7 @@ func (x *ListBlockedAccountsRequest) String() string {
 func (*ListBlockedAccountsRequest) ProtoMessage() {}
 
 func (x *ListBlockedAccountsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[38]
+	mi := &file_sock_v1_messaging_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1955,7 +2065,7 @@ func (x *ListBlockedAccountsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBlockedAccountsRequest.ProtoReflect.Descriptor instead.
 func (*ListBlockedAccountsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{38}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{40}
 }
 
 type ListBlockedAccountsResponse struct {
@@ -1967,7 +2077,7 @@ type ListBlockedAccountsResponse struct {
 
 func (x *ListBlockedAccountsResponse) Reset() {
 	*x = ListBlockedAccountsResponse{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[39]
+	mi := &file_sock_v1_messaging_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1979,7 +2089,7 @@ func (x *ListBlockedAccountsResponse) String() string {
 func (*ListBlockedAccountsResponse) ProtoMessage() {}
 
 func (x *ListBlockedAccountsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[39]
+	mi := &file_sock_v1_messaging_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1992,7 +2102,7 @@ func (x *ListBlockedAccountsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBlockedAccountsResponse.ProtoReflect.Descriptor instead.
 func (*ListBlockedAccountsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{39}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *ListBlockedAccountsResponse) GetBlocked() []*BlockedAccount {
@@ -2012,7 +2122,7 @@ type BlockedAccount struct {
 
 func (x *BlockedAccount) Reset() {
 	*x = BlockedAccount{}
-	mi := &file_sock_v1_messaging_proto_msgTypes[40]
+	mi := &file_sock_v1_messaging_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2024,7 +2134,7 @@ func (x *BlockedAccount) String() string {
 func (*BlockedAccount) ProtoMessage() {}
 
 func (x *BlockedAccount) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_messaging_proto_msgTypes[40]
+	mi := &file_sock_v1_messaging_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2037,7 +2147,7 @@ func (x *BlockedAccount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BlockedAccount.ProtoReflect.Descriptor instead.
 func (*BlockedAccount) Descriptor() ([]byte, []int) {
-	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{40}
+	return file_sock_v1_messaging_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *BlockedAccount) GetAccountId() string {
@@ -2102,14 +2212,15 @@ const file_sock_v1_messaging_proto_rawDesc = "" +
 	"\x0fidempotency_key\x18\x02 \x01(\tR\x0eidempotencyKey\"A\n" +
 	"\x13NotifyOwnerResponse\x12*\n" +
 	"\amessage\x18\x01 \x01(\v2\x10.sock.v1.MessageR\amessage\"\x12\n" +
-	"\x10SubscribeRequest\"\xa8\x02\n" +
+	"\x10SubscribeRequest\"\xe3\x02\n" +
 	"\x11SubscribeResponse\x12,\n" +
 	"\amessage\x18\x01 \x01(\v2\x10.sock.v1.MessageH\x00R\amessage\x122\n" +
 	"\theartbeat\x18\x02 \x01(\v2\x12.sock.v1.HeartbeatH\x00R\theartbeat\x126\n" +
 	"\vread_marker\x18\x03 \x01(\v2\x13.sock.v1.ReadMarkerH\x00R\n" +
 	"readMarker\x12/\n" +
 	"\bactivity\x18\x04 \x01(\v2\x11.sock.v1.ActivityH\x00R\bactivity\x12?\n" +
-	"\x0epuppet_archive\x18\x05 \x01(\v2\x16.sock.v1.PuppetArchiveH\x00R\rpuppetArchiveB\a\n" +
+	"\x0epuppet_archive\x18\x05 \x01(\v2\x16.sock.v1.PuppetArchiveH\x00R\rpuppetArchive\x129\n" +
+	"\fpuppet_heard\x18\x06 \x01(\v2\x14.sock.v1.PuppetHeardH\x00R\vpuppetHeardB\a\n" +
 	"\x05event\"\v\n" +
 	"\tHeartbeat\"_\n" +
 	"\n" +
@@ -2140,7 +2251,12 @@ const file_sock_v1_messaging_proto_rawDesc = "" +
 	"AckRequest\x12\x1f\n" +
 	"\vmessage_ids\x18\x01 \x03(\tR\n" +
 	"messageIds\"\r\n" +
-	"\vAckResponse\"p\n" +
+	"\vAckResponse\"a\n" +
+	"\x0eReleaseRequest\x12\x1f\n" +
+	"\vmessage_ids\x18\x01 \x03(\tR\n" +
+	"messageIds\x12.\n" +
+	"\x13retry_after_seconds\x18\x02 \x01(\x05R\x11retryAfterSeconds\"\x11\n" +
+	"\x0fReleaseResponse\"p\n" +
 	"\x13RegisterPushRequest\x12\x1d\n" +
 	"\n" +
 	"apns_token\x18\x01 \x01(\fR\tapnsToken\x12:\n" +
@@ -2170,8 +2286,7 @@ const file_sock_v1_messaging_proto_rawDesc = "" +
 	"\rActivityState\x12\x1e\n" +
 	"\x1aACTIVITY_STATE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16ACTIVITY_STATE_WORKING\x10\x01\x12\x17\n" +
-	"\x13ACTIVITY_STATE_IDLE\x10\x022\xf2\n" +
-	"\n" +
+	"\x13ACTIVITY_STATE_IDLE\x10\x022\xb2\v\n" +
 	"\x10MessagingService\x12M\n" +
 	"\fCreateDirect\x12\x1c.sock.v1.CreateDirectRequest\x1a\x1d.sock.v1.CreateDirectResponse\"\x00\x12J\n" +
 	"\vCreateGroup\x12\x1b.sock.v1.CreateGroupRequest\x1a\x1c.sock.v1.CreateGroupResponse\"\x00\x12D\n" +
@@ -2184,7 +2299,8 @@ const file_sock_v1_messaging_proto_rawDesc = "" +
 	"\vNotifyOwner\x12\x1b.sock.v1.NotifyOwnerRequest\x1a\x1c.sock.v1.NotifyOwnerResponse\"\x00\x12F\n" +
 	"\tSubscribe\x12\x19.sock.v1.SubscribeRequest\x1a\x1a.sock.v1.SubscribeResponse\"\x000\x01\x12M\n" +
 	"\fFetchPending\x12\x1c.sock.v1.FetchPendingRequest\x1a\x1d.sock.v1.FetchPendingResponse\"\x00\x122\n" +
-	"\x03Ack\x12\x13.sock.v1.AckRequest\x1a\x14.sock.v1.AckResponse\"\x00\x12J\n" +
+	"\x03Ack\x12\x13.sock.v1.AckRequest\x1a\x14.sock.v1.AckResponse\"\x00\x12>\n" +
+	"\aRelease\x12\x17.sock.v1.ReleaseRequest\x1a\x18.sock.v1.ReleaseResponse\"\x00\x12J\n" +
 	"\vSetActivity\x12\x1b.sock.v1.SetActivityRequest\x1a\x1c.sock.v1.SetActivityResponse\"\x00\x12M\n" +
 	"\fRegisterPush\x12\x1c.sock.v1.RegisterPushRequest\x1a\x1d.sock.v1.RegisterPushResponse\"\x00\x12b\n" +
 	"\x13ExportMessagingData\x12#.sock.v1.ExportMessagingDataRequest\x1a$.sock.v1.ExportMessagingDataResponse\"\x00\x12M\n" +
@@ -2206,7 +2322,7 @@ func file_sock_v1_messaging_proto_rawDescGZIP() []byte {
 }
 
 var file_sock_v1_messaging_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_sock_v1_messaging_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
+var file_sock_v1_messaging_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
 var file_sock_v1_messaging_proto_goTypes = []any{
 	(ActivityState)(0),                  // 0: sock.v1.ActivityState
 	(*CreateDirectRequest)(nil),         // 1: sock.v1.CreateDirectRequest
@@ -2239,85 +2355,91 @@ var file_sock_v1_messaging_proto_goTypes = []any{
 	(*FetchPendingResponse)(nil),        // 28: sock.v1.FetchPendingResponse
 	(*AckRequest)(nil),                  // 29: sock.v1.AckRequest
 	(*AckResponse)(nil),                 // 30: sock.v1.AckResponse
-	(*RegisterPushRequest)(nil),         // 31: sock.v1.RegisterPushRequest
-	(*RegisterPushResponse)(nil),        // 32: sock.v1.RegisterPushResponse
-	(*ExportMessagingDataRequest)(nil),  // 33: sock.v1.ExportMessagingDataRequest
-	(*ExportMessagingDataResponse)(nil), // 34: sock.v1.ExportMessagingDataResponse
-	(*BlockAccountRequest)(nil),         // 35: sock.v1.BlockAccountRequest
-	(*BlockAccountResponse)(nil),        // 36: sock.v1.BlockAccountResponse
-	(*UnblockAccountRequest)(nil),       // 37: sock.v1.UnblockAccountRequest
-	(*UnblockAccountResponse)(nil),      // 38: sock.v1.UnblockAccountResponse
-	(*ListBlockedAccountsRequest)(nil),  // 39: sock.v1.ListBlockedAccountsRequest
-	(*ListBlockedAccountsResponse)(nil), // 40: sock.v1.ListBlockedAccountsResponse
-	(*BlockedAccount)(nil),              // 41: sock.v1.BlockedAccount
-	(*Conversation)(nil),                // 42: sock.v1.Conversation
-	(*Message)(nil),                     // 43: sock.v1.Message
-	(*timestamppb.Timestamp)(nil),       // 44: google.protobuf.Timestamp
-	(ApnsEnvironment)(0),                // 45: sock.v1.ApnsEnvironment
+	(*ReleaseRequest)(nil),              // 31: sock.v1.ReleaseRequest
+	(*ReleaseResponse)(nil),             // 32: sock.v1.ReleaseResponse
+	(*RegisterPushRequest)(nil),         // 33: sock.v1.RegisterPushRequest
+	(*RegisterPushResponse)(nil),        // 34: sock.v1.RegisterPushResponse
+	(*ExportMessagingDataRequest)(nil),  // 35: sock.v1.ExportMessagingDataRequest
+	(*ExportMessagingDataResponse)(nil), // 36: sock.v1.ExportMessagingDataResponse
+	(*BlockAccountRequest)(nil),         // 37: sock.v1.BlockAccountRequest
+	(*BlockAccountResponse)(nil),        // 38: sock.v1.BlockAccountResponse
+	(*UnblockAccountRequest)(nil),       // 39: sock.v1.UnblockAccountRequest
+	(*UnblockAccountResponse)(nil),      // 40: sock.v1.UnblockAccountResponse
+	(*ListBlockedAccountsRequest)(nil),  // 41: sock.v1.ListBlockedAccountsRequest
+	(*ListBlockedAccountsResponse)(nil), // 42: sock.v1.ListBlockedAccountsResponse
+	(*BlockedAccount)(nil),              // 43: sock.v1.BlockedAccount
+	(*Conversation)(nil),                // 44: sock.v1.Conversation
+	(*Message)(nil),                     // 45: sock.v1.Message
+	(*PuppetHeard)(nil),                 // 46: sock.v1.PuppetHeard
+	(*timestamppb.Timestamp)(nil),       // 47: google.protobuf.Timestamp
+	(ApnsEnvironment)(0),                // 48: sock.v1.ApnsEnvironment
 }
 var file_sock_v1_messaging_proto_depIdxs = []int32{
-	42, // 0: sock.v1.CreateDirectResponse.conversation:type_name -> sock.v1.Conversation
-	42, // 1: sock.v1.CreateGroupResponse.conversation:type_name -> sock.v1.Conversation
-	42, // 2: sock.v1.AddMemberResponse.conversation:type_name -> sock.v1.Conversation
-	42, // 3: sock.v1.RemoveMemberResponse.conversation:type_name -> sock.v1.Conversation
-	42, // 4: sock.v1.ListConversationsResponse.conversations:type_name -> sock.v1.Conversation
-	43, // 5: sock.v1.SendResponse.message:type_name -> sock.v1.Message
-	43, // 6: sock.v1.NotifyOwnerResponse.message:type_name -> sock.v1.Message
-	43, // 7: sock.v1.SubscribeResponse.message:type_name -> sock.v1.Message
+	44, // 0: sock.v1.CreateDirectResponse.conversation:type_name -> sock.v1.Conversation
+	44, // 1: sock.v1.CreateGroupResponse.conversation:type_name -> sock.v1.Conversation
+	44, // 2: sock.v1.AddMemberResponse.conversation:type_name -> sock.v1.Conversation
+	44, // 3: sock.v1.RemoveMemberResponse.conversation:type_name -> sock.v1.Conversation
+	44, // 4: sock.v1.ListConversationsResponse.conversations:type_name -> sock.v1.Conversation
+	45, // 5: sock.v1.SendResponse.message:type_name -> sock.v1.Message
+	45, // 6: sock.v1.NotifyOwnerResponse.message:type_name -> sock.v1.Message
+	45, // 7: sock.v1.SubscribeResponse.message:type_name -> sock.v1.Message
 	21, // 8: sock.v1.SubscribeResponse.heartbeat:type_name -> sock.v1.Heartbeat
 	22, // 9: sock.v1.SubscribeResponse.read_marker:type_name -> sock.v1.ReadMarker
 	25, // 10: sock.v1.SubscribeResponse.activity:type_name -> sock.v1.Activity
 	26, // 11: sock.v1.SubscribeResponse.puppet_archive:type_name -> sock.v1.PuppetArchive
-	0,  // 12: sock.v1.SetActivityRequest.state:type_name -> sock.v1.ActivityState
-	44, // 13: sock.v1.SetActivityResponse.expires_at:type_name -> google.protobuf.Timestamp
-	0,  // 14: sock.v1.Activity.state:type_name -> sock.v1.ActivityState
-	44, // 15: sock.v1.Activity.expires_at:type_name -> google.protobuf.Timestamp
-	43, // 16: sock.v1.FetchPendingResponse.messages:type_name -> sock.v1.Message
-	45, // 17: sock.v1.RegisterPushRequest.environment:type_name -> sock.v1.ApnsEnvironment
-	42, // 18: sock.v1.ExportMessagingDataResponse.conversations:type_name -> sock.v1.Conversation
-	41, // 19: sock.v1.ListBlockedAccountsResponse.blocked:type_name -> sock.v1.BlockedAccount
-	44, // 20: sock.v1.BlockedAccount.blocked_at:type_name -> google.protobuf.Timestamp
-	1,  // 21: sock.v1.MessagingService.CreateDirect:input_type -> sock.v1.CreateDirectRequest
-	3,  // 22: sock.v1.MessagingService.CreateGroup:input_type -> sock.v1.CreateGroupRequest
-	5,  // 23: sock.v1.MessagingService.AddMember:input_type -> sock.v1.AddMemberRequest
-	7,  // 24: sock.v1.MessagingService.RemoveMember:input_type -> sock.v1.RemoveMemberRequest
-	9,  // 25: sock.v1.MessagingService.Leave:input_type -> sock.v1.LeaveRequest
-	11, // 26: sock.v1.MessagingService.ListConversations:input_type -> sock.v1.ListConversationsRequest
-	13, // 27: sock.v1.MessagingService.MarkRead:input_type -> sock.v1.MarkReadRequest
-	15, // 28: sock.v1.MessagingService.Send:input_type -> sock.v1.SendRequest
-	17, // 29: sock.v1.MessagingService.NotifyOwner:input_type -> sock.v1.NotifyOwnerRequest
-	19, // 30: sock.v1.MessagingService.Subscribe:input_type -> sock.v1.SubscribeRequest
-	27, // 31: sock.v1.MessagingService.FetchPending:input_type -> sock.v1.FetchPendingRequest
-	29, // 32: sock.v1.MessagingService.Ack:input_type -> sock.v1.AckRequest
-	23, // 33: sock.v1.MessagingService.SetActivity:input_type -> sock.v1.SetActivityRequest
-	31, // 34: sock.v1.MessagingService.RegisterPush:input_type -> sock.v1.RegisterPushRequest
-	33, // 35: sock.v1.MessagingService.ExportMessagingData:input_type -> sock.v1.ExportMessagingDataRequest
-	35, // 36: sock.v1.MessagingService.BlockAccount:input_type -> sock.v1.BlockAccountRequest
-	37, // 37: sock.v1.MessagingService.UnblockAccount:input_type -> sock.v1.UnblockAccountRequest
-	39, // 38: sock.v1.MessagingService.ListBlockedAccounts:input_type -> sock.v1.ListBlockedAccountsRequest
-	2,  // 39: sock.v1.MessagingService.CreateDirect:output_type -> sock.v1.CreateDirectResponse
-	4,  // 40: sock.v1.MessagingService.CreateGroup:output_type -> sock.v1.CreateGroupResponse
-	6,  // 41: sock.v1.MessagingService.AddMember:output_type -> sock.v1.AddMemberResponse
-	8,  // 42: sock.v1.MessagingService.RemoveMember:output_type -> sock.v1.RemoveMemberResponse
-	10, // 43: sock.v1.MessagingService.Leave:output_type -> sock.v1.LeaveResponse
-	12, // 44: sock.v1.MessagingService.ListConversations:output_type -> sock.v1.ListConversationsResponse
-	14, // 45: sock.v1.MessagingService.MarkRead:output_type -> sock.v1.MarkReadResponse
-	16, // 46: sock.v1.MessagingService.Send:output_type -> sock.v1.SendResponse
-	18, // 47: sock.v1.MessagingService.NotifyOwner:output_type -> sock.v1.NotifyOwnerResponse
-	20, // 48: sock.v1.MessagingService.Subscribe:output_type -> sock.v1.SubscribeResponse
-	28, // 49: sock.v1.MessagingService.FetchPending:output_type -> sock.v1.FetchPendingResponse
-	30, // 50: sock.v1.MessagingService.Ack:output_type -> sock.v1.AckResponse
-	24, // 51: sock.v1.MessagingService.SetActivity:output_type -> sock.v1.SetActivityResponse
-	32, // 52: sock.v1.MessagingService.RegisterPush:output_type -> sock.v1.RegisterPushResponse
-	34, // 53: sock.v1.MessagingService.ExportMessagingData:output_type -> sock.v1.ExportMessagingDataResponse
-	36, // 54: sock.v1.MessagingService.BlockAccount:output_type -> sock.v1.BlockAccountResponse
-	38, // 55: sock.v1.MessagingService.UnblockAccount:output_type -> sock.v1.UnblockAccountResponse
-	40, // 56: sock.v1.MessagingService.ListBlockedAccounts:output_type -> sock.v1.ListBlockedAccountsResponse
-	39, // [39:57] is the sub-list for method output_type
-	21, // [21:39] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	46, // 12: sock.v1.SubscribeResponse.puppet_heard:type_name -> sock.v1.PuppetHeard
+	0,  // 13: sock.v1.SetActivityRequest.state:type_name -> sock.v1.ActivityState
+	47, // 14: sock.v1.SetActivityResponse.expires_at:type_name -> google.protobuf.Timestamp
+	0,  // 15: sock.v1.Activity.state:type_name -> sock.v1.ActivityState
+	47, // 16: sock.v1.Activity.expires_at:type_name -> google.protobuf.Timestamp
+	45, // 17: sock.v1.FetchPendingResponse.messages:type_name -> sock.v1.Message
+	48, // 18: sock.v1.RegisterPushRequest.environment:type_name -> sock.v1.ApnsEnvironment
+	44, // 19: sock.v1.ExportMessagingDataResponse.conversations:type_name -> sock.v1.Conversation
+	43, // 20: sock.v1.ListBlockedAccountsResponse.blocked:type_name -> sock.v1.BlockedAccount
+	47, // 21: sock.v1.BlockedAccount.blocked_at:type_name -> google.protobuf.Timestamp
+	1,  // 22: sock.v1.MessagingService.CreateDirect:input_type -> sock.v1.CreateDirectRequest
+	3,  // 23: sock.v1.MessagingService.CreateGroup:input_type -> sock.v1.CreateGroupRequest
+	5,  // 24: sock.v1.MessagingService.AddMember:input_type -> sock.v1.AddMemberRequest
+	7,  // 25: sock.v1.MessagingService.RemoveMember:input_type -> sock.v1.RemoveMemberRequest
+	9,  // 26: sock.v1.MessagingService.Leave:input_type -> sock.v1.LeaveRequest
+	11, // 27: sock.v1.MessagingService.ListConversations:input_type -> sock.v1.ListConversationsRequest
+	13, // 28: sock.v1.MessagingService.MarkRead:input_type -> sock.v1.MarkReadRequest
+	15, // 29: sock.v1.MessagingService.Send:input_type -> sock.v1.SendRequest
+	17, // 30: sock.v1.MessagingService.NotifyOwner:input_type -> sock.v1.NotifyOwnerRequest
+	19, // 31: sock.v1.MessagingService.Subscribe:input_type -> sock.v1.SubscribeRequest
+	27, // 32: sock.v1.MessagingService.FetchPending:input_type -> sock.v1.FetchPendingRequest
+	29, // 33: sock.v1.MessagingService.Ack:input_type -> sock.v1.AckRequest
+	31, // 34: sock.v1.MessagingService.Release:input_type -> sock.v1.ReleaseRequest
+	23, // 35: sock.v1.MessagingService.SetActivity:input_type -> sock.v1.SetActivityRequest
+	33, // 36: sock.v1.MessagingService.RegisterPush:input_type -> sock.v1.RegisterPushRequest
+	35, // 37: sock.v1.MessagingService.ExportMessagingData:input_type -> sock.v1.ExportMessagingDataRequest
+	37, // 38: sock.v1.MessagingService.BlockAccount:input_type -> sock.v1.BlockAccountRequest
+	39, // 39: sock.v1.MessagingService.UnblockAccount:input_type -> sock.v1.UnblockAccountRequest
+	41, // 40: sock.v1.MessagingService.ListBlockedAccounts:input_type -> sock.v1.ListBlockedAccountsRequest
+	2,  // 41: sock.v1.MessagingService.CreateDirect:output_type -> sock.v1.CreateDirectResponse
+	4,  // 42: sock.v1.MessagingService.CreateGroup:output_type -> sock.v1.CreateGroupResponse
+	6,  // 43: sock.v1.MessagingService.AddMember:output_type -> sock.v1.AddMemberResponse
+	8,  // 44: sock.v1.MessagingService.RemoveMember:output_type -> sock.v1.RemoveMemberResponse
+	10, // 45: sock.v1.MessagingService.Leave:output_type -> sock.v1.LeaveResponse
+	12, // 46: sock.v1.MessagingService.ListConversations:output_type -> sock.v1.ListConversationsResponse
+	14, // 47: sock.v1.MessagingService.MarkRead:output_type -> sock.v1.MarkReadResponse
+	16, // 48: sock.v1.MessagingService.Send:output_type -> sock.v1.SendResponse
+	18, // 49: sock.v1.MessagingService.NotifyOwner:output_type -> sock.v1.NotifyOwnerResponse
+	20, // 50: sock.v1.MessagingService.Subscribe:output_type -> sock.v1.SubscribeResponse
+	28, // 51: sock.v1.MessagingService.FetchPending:output_type -> sock.v1.FetchPendingResponse
+	30, // 52: sock.v1.MessagingService.Ack:output_type -> sock.v1.AckResponse
+	32, // 53: sock.v1.MessagingService.Release:output_type -> sock.v1.ReleaseResponse
+	24, // 54: sock.v1.MessagingService.SetActivity:output_type -> sock.v1.SetActivityResponse
+	34, // 55: sock.v1.MessagingService.RegisterPush:output_type -> sock.v1.RegisterPushResponse
+	36, // 56: sock.v1.MessagingService.ExportMessagingData:output_type -> sock.v1.ExportMessagingDataResponse
+	38, // 57: sock.v1.MessagingService.BlockAccount:output_type -> sock.v1.BlockAccountResponse
+	40, // 58: sock.v1.MessagingService.UnblockAccount:output_type -> sock.v1.UnblockAccountResponse
+	42, // 59: sock.v1.MessagingService.ListBlockedAccounts:output_type -> sock.v1.ListBlockedAccountsResponse
+	41, // [41:60] is the sub-list for method output_type
+	22, // [22:41] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_sock_v1_messaging_proto_init() }
@@ -2332,6 +2454,7 @@ func file_sock_v1_messaging_proto_init() {
 		(*SubscribeResponse_ReadMarker)(nil),
 		(*SubscribeResponse_Activity)(nil),
 		(*SubscribeResponse_PuppetArchive)(nil),
+		(*SubscribeResponse_PuppetHeard)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -2339,7 +2462,7 @@ func file_sock_v1_messaging_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sock_v1_messaging_proto_rawDesc), len(file_sock_v1_messaging_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   41,
+			NumMessages:   43,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

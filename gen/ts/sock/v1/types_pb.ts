@@ -12,7 +12,7 @@ import type { Message as Message$1 } from "@bufbuild/protobuf";
  * Describes the file sock/v1/types.proto.
  */
 export const file_sock_v1_types: GenFile = /*@__PURE__*/
-  fileDesc("ChNzb2NrL3YxL3R5cGVzLnByb3RvEgdzb2NrLnYxIncKB0FjY291bnQSCgoCaWQYASABKAkSFAoMZGlzcGxheV9uYW1lGAIgASgJEh8KBWh1bWFuGAMgASgLMg4uc29jay52MS5IdW1hbkgAEiEKBnB1cHBldBgEIAEoCzIPLnNvY2sudjEuUHVwcGV0SABCBgoEa2luZCIXCgVIdW1hbhIOCgZoYW5kbGUYASABKAkiXwoGUHVwcGV0EhAKCG93bmVyX2lkGAEgASgJEgwKBG5hbWUYAiABKAkSDgoGc3lzdGVtGAMgASgIEiUKCWNvbm5lY3RvchgEIAEoCzISLnNvY2sudjEuQ29ubmVjdG9yIkAKCUNvbm5lY3RvchITCgtjbGllbnRfbmFtZRgBIAEoCRIQCgh2ZXJpZmllZBgCIAEoCBIMCgRsaXZlGAMgASgIIooBCgZEZXZpY2USCgoCaWQYASABKAkSEgoKYWNjb3VudF9pZBgCIAEoCRINCgVsYWJlbBgDIAEoCRIuCgpjcmVhdGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIhCgRraW5kGAUgASgOMhMuc29jay52MS5EZXZpY2VLaW5kIooBCgxDb252ZXJzYXRpb24SCgoCaWQYASABKAkSJwoEa2luZBgCIAEoDjIZLnNvY2sudjEuQ29udmVyc2F0aW9uS2luZBISCgptZW1iZXJfaWRzGAMgAygJEhgKEHJlYWRfdGhyb3VnaF9zZXEYBCABKAMSFwoPaHVtYW5zX2Nhbl9wb3N0GAUgASgIIqkBCgdNZXNzYWdlEgoKAmlkGAEgASgJEhcKD2NvbnZlcnNhdGlvbl9pZBgCIAEoCRILCgNzZXEYAyABKAMSEQoJc2VuZGVyX2lkGAQgASgJEisKB3NlbnRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEg4KBHRleHQYCiABKAlIABIUCgxldmlkZW5jZV90YWcYBiABKAxCBgoEYm9keSp9CgpEZXZpY2VLaW5kEhsKF0RFVklDRV9LSU5EX1VOU1BFQ0lGSUVEEAASFwoTREVWSUNFX0tJTkRfU0VTU0lPThABEhwKGERFVklDRV9LSU5EX1BVUFBFVF9UT0tFThACEhsKF0RFVklDRV9LSU5EX01BQ0hJTkVfS0VZEAMqcAoQQ29udmVyc2F0aW9uS2luZBIhCh1DT05WRVJTQVRJT05fS0lORF9VTlNQRUNJRklFRBAAEhwKGENPTlZFUlNBVElPTl9LSU5EX0RJUkVDVBABEhsKF0NPTlZFUlNBVElPTl9LSU5EX0dST1VQEAIqcgoPQXBuc0Vudmlyb25tZW50EiAKHEFQTlNfRU5WSVJPTk1FTlRfVU5TUEVDSUZJRUQQABIcChhBUE5TX0VOVklST05NRU5UX1NBTkRCT1gQARIfChtBUE5TX0VOVklST05NRU5UX1BST0RVQ1RJT04QAkI5WjdnaXRodWIuY29tL2Flcnl4LWFpL3NvY2stY29udHJhY3QvZ2VuL2dvL3NvY2svdjE7c29ja3YxYgZwcm90bzM", [file_google_protobuf_timestamp]);
+  fileDesc("ChNzb2NrL3YxL3R5cGVzLnByb3RvEgdzb2NrLnYxIncKB0FjY291bnQSCgoCaWQYASABKAkSFAoMZGlzcGxheV9uYW1lGAIgASgJEh8KBWh1bWFuGAMgASgLMg4uc29jay52MS5IdW1hbkgAEiEKBnB1cHBldBgEIAEoCzIPLnNvY2sudjEuUHVwcGV0SABCBgoEa2luZCIXCgVIdW1hbhIOCgZoYW5kbGUYASABKAkiXwoGUHVwcGV0EhAKCG93bmVyX2lkGAEgASgJEgwKBG5hbWUYAiABKAkSDgoGc3lzdGVtGAMgASgIEiUKCWNvbm5lY3RvchgEIAEoCzISLnNvY2sudjEuQ29ubmVjdG9yIkAKCUNvbm5lY3RvchITCgtjbGllbnRfbmFtZRgBIAEoCRIQCgh2ZXJpZmllZBgCIAEoCBIMCgRsaXZlGAMgASgIIooBCgZEZXZpY2USCgoCaWQYASABKAkSEgoKYWNjb3VudF9pZBgCIAEoCRINCgVsYWJlbBgDIAEoCRIuCgpjcmVhdGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIhCgRraW5kGAUgASgOMhMuc29jay52MS5EZXZpY2VLaW5kIrcBCgxDb252ZXJzYXRpb24SCgoCaWQYASABKAkSJwoEa2luZBgCIAEoDjIZLnNvY2sudjEuQ29udmVyc2F0aW9uS2luZBISCgptZW1iZXJfaWRzGAMgAygJEhgKEHJlYWRfdGhyb3VnaF9zZXEYBCABKAMSFwoPaHVtYW5zX2Nhbl9wb3N0GAUgASgIEisKDXB1cHBldHNfaGVhcmQYBiADKAsyFC5zb2NrLnYxLlB1cHBldEhlYXJkIlMKC1B1cHBldEhlYXJkEhEKCXB1cHBldF9pZBgBIAEoCRIxCg1sYXN0X2hlYXJkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCKpAQoHTWVzc2FnZRIKCgJpZBgBIAEoCRIXCg9jb252ZXJzYXRpb25faWQYAiABKAkSCwoDc2VxGAMgASgDEhEKCXNlbmRlcl9pZBgEIAEoCRIrCgdzZW50X2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIOCgR0ZXh0GAogASgJSAASFAoMZXZpZGVuY2VfdGFnGAYgASgMQgYKBGJvZHkqfQoKRGV2aWNlS2luZBIbChdERVZJQ0VfS0lORF9VTlNQRUNJRklFRBAAEhcKE0RFVklDRV9LSU5EX1NFU1NJT04QARIcChhERVZJQ0VfS0lORF9QVVBQRVRfVE9LRU4QAhIbChdERVZJQ0VfS0lORF9NQUNISU5FX0tFWRADKnAKEENvbnZlcnNhdGlvbktpbmQSIQodQ09OVkVSU0FUSU9OX0tJTkRfVU5TUEVDSUZJRUQQABIcChhDT05WRVJTQVRJT05fS0lORF9ESVJFQ1QQARIbChdDT05WRVJTQVRJT05fS0lORF9HUk9VUBACKnIKD0FwbnNFbnZpcm9ubWVudBIgChxBUE5TX0VOVklST05NRU5UX1VOU1BFQ0lGSUVEEAASHAoYQVBOU19FTlZJUk9OTUVOVF9TQU5EQk9YEAESHwobQVBOU19FTlZJUk9OTUVOVF9QUk9EVUNUSU9OEAJCOVo3Z2l0aHViLmNvbS9hZXJ5eC1haS9zb2NrLWNvbnRyYWN0L2dlbi9nby9zb2NrL3YxO3NvY2t2MWIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * Account is a human or a puppet. Exactly one of the kind fields is set.
@@ -253,6 +253,14 @@ export type Conversation = Message$1<"sock.v1.Conversation"> & {
    * @generated from field: bool humans_can_post = 5;
    */
   humansCanPost: boolean;
+
+  /**
+   * When each puppet member the caller owns was last heard, for human
+   * callers only. An owned puppet member that is absent was never heard.
+   *
+   * @generated from field: repeated sock.v1.PuppetHeard puppets_heard = 6;
+   */
+  puppetsHeard: PuppetHeard[];
 };
 
 /**
@@ -261,6 +269,32 @@ export type Conversation = Message$1<"sock.v1.Conversation"> & {
  */
 export const ConversationSchema: GenMessage<Conversation> = /*@__PURE__*/
   messageDesc(file_sock_v1_types, 5);
+
+/**
+ * When the hub last heard from a consumer of a puppet: a Subscribe stream
+ * open or heartbeat, or a FetchPending. Clients show the puppet as not
+ * listening once last_heard_at is 75 s or more in the past.
+ *
+ * @generated from message sock.v1.PuppetHeard
+ */
+export type PuppetHeard = Message$1<"sock.v1.PuppetHeard"> & {
+  /**
+   * @generated from field: string puppet_id = 1;
+   */
+  puppetId: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp last_heard_at = 2;
+   */
+  lastHeardAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message sock.v1.PuppetHeard.
+ * Use `create(PuppetHeardSchema)` to create a new message.
+ */
+export const PuppetHeardSchema: GenMessage<PuppetHeard> = /*@__PURE__*/
+  messageDesc(file_sock_v1_types, 6);
 
 /**
  * @generated from message sock.v1.Message
@@ -326,7 +360,7 @@ export type Message = Message$1<"sock.v1.Message"> & {
  * Use `create(MessageSchema)` to create a new message.
  */
 export const MessageSchema: GenMessage<Message> = /*@__PURE__*/
-  messageDesc(file_sock_v1_types, 6);
+  messageDesc(file_sock_v1_types, 7);
 
 /**
  * DeviceKind says what a device is. The token prefix and the kind

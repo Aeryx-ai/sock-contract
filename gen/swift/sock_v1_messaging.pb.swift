@@ -424,6 +424,18 @@ public nonisolated struct Sock_V1_SubscribeResponse: Sendable {
     set {event = .puppetArchive(newValue)}
   }
 
+  /// One of the caller's puppets has a consumer again after none for 75 s
+  /// or more, or for the first time. A hint: at most once, so clients
+  /// reconcile with ListConversations when a stream opens. The owner's
+  /// human streams only.
+  public var puppetHeard: Sock_V1_PuppetHeard {
+    get {
+      if case .puppetHeard(let v)? = event {return v}
+      return Sock_V1_PuppetHeard()
+    }
+    set {event = .puppetHeard(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Event: Equatable, Sendable {
@@ -443,6 +455,11 @@ public nonisolated struct Sock_V1_SubscribeResponse: Sendable {
     /// hint: at most once, so clients reconcile with ListPuppets when a
     /// stream opens. The owner's human streams only.
     case puppetArchive(Sock_V1_PuppetArchive)
+    /// One of the caller's puppets has a consumer again after none for 75 s
+    /// or more, or for the first time. A hint: at most once, so clients
+    /// reconcile with ListConversations when a stream opens. The owner's
+    /// human streams only.
+    case puppetHeard(Sock_V1_PuppetHeard)
 
   }
 
@@ -597,6 +614,32 @@ public nonisolated struct Sock_V1_AckRequest: Sendable {
 }
 
 public nonisolated struct Sock_V1_AckResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_ReleaseRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// 1 to 500 message ids. Unknown, acked or other recipients' ids are ignored.
+  public var messageIds: [String] = []
+
+  /// 0 to 3600. 0 frees them at once.
+  public var retryAfterSeconds: Int32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_ReleaseResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1355,7 +1398,7 @@ nonisolated extension Sock_V1_SubscribeRequest: SwiftProtobuf.Message, SwiftProt
 
 nonisolated extension Sock_V1_SubscribeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SubscribeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}message\0\u{1}heartbeat\0\u{3}read_marker\0\u{1}activity\0\u{3}puppet_archive\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}message\0\u{1}heartbeat\0\u{3}read_marker\0\u{1}activity\0\u{3}puppet_archive\0\u{3}puppet_heard\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1428,6 +1471,19 @@ nonisolated extension Sock_V1_SubscribeResponse: SwiftProtobuf.Message, SwiftPro
           self.event = .puppetArchive(v)
         }
       }()
+      case 6: try {
+        var v: Sock_V1_PuppetHeard?
+        var hadOneofValue = false
+        if let current = self.event {
+          hadOneofValue = true
+          if case .puppetHeard(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.event = .puppetHeard(v)
+        }
+      }()
       default: break
       }
     }
@@ -1458,6 +1514,10 @@ nonisolated extension Sock_V1_SubscribeResponse: SwiftProtobuf.Message, SwiftPro
     case .puppetArchive?: try {
       guard case .puppetArchive(let v)? = self.event else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    }()
+    case .puppetHeard?: try {
+      guard case .puppetHeard(let v)? = self.event else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     }()
     case nil: break
     }
@@ -1782,6 +1842,60 @@ nonisolated extension Sock_V1_AckResponse: SwiftProtobuf.Message, SwiftProtobuf.
   }
 
   public static func ==(lhs: Sock_V1_AckResponse, rhs: Sock_V1_AckResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_ReleaseRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ReleaseRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}message_ids\0\u{3}retry_after_seconds\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedStringField(value: &self.messageIds) }()
+      case 2: try { try decoder.decodeSingularInt32Field(value: &self.retryAfterSeconds) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.messageIds.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.messageIds, fieldNumber: 1)
+    }
+    if self.retryAfterSeconds != 0 {
+      try visitor.visitSingularInt32Field(value: self.retryAfterSeconds, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_ReleaseRequest, rhs: Sock_V1_ReleaseRequest) -> Bool {
+    if lhs.messageIds != rhs.messageIds {return false}
+    if lhs.retryAfterSeconds != rhs.retryAfterSeconds {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_ReleaseResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ReleaseResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_ReleaseResponse, rhs: Sock_V1_ReleaseResponse) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

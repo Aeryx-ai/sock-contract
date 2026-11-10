@@ -51,6 +51,11 @@ public protocol Sock_V1_MessagingServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `ack`(request: Sock_V1_AckRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_AckResponse>
 
+    /// Give puppet deliveries back unacked: free at once, or handed to no
+    /// consumer before retry_after_seconds. Puppet tokens only.
+    @available(iOS 13, *)
+    func `release`(request: Sock_V1_ReleaseRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_ReleaseResponse>
+
     /// Tell the other members the caller is working on a reply, or no longer is.
     /// Ephemeral: never stored or pushed.
     @available(iOS 13, *)
@@ -141,6 +146,11 @@ public final class Sock_V1_MessagingServiceClient: Sock_V1_MessagingServiceClien
     }
 
     @available(iOS 13, *)
+    public func `release`(request: Sock_V1_ReleaseRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_ReleaseResponse> {
+        return await self.client.unary(path: "/sock.v1.MessagingService/Release", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
     public func `setActivity`(request: Sock_V1_SetActivityRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_SetActivityResponse> {
         return await self.client.unary(path: "/sock.v1.MessagingService/SetActivity", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -184,6 +194,7 @@ public final class Sock_V1_MessagingServiceClient: Sock_V1_MessagingServiceClien
             public static let subscribe = Connect.MethodSpec(name: "Subscribe", service: "sock.v1.MessagingService", type: .serverStream)
             public static let fetchPending = Connect.MethodSpec(name: "FetchPending", service: "sock.v1.MessagingService", type: .unary)
             public static let ack = Connect.MethodSpec(name: "Ack", service: "sock.v1.MessagingService", type: .unary)
+            public static let release = Connect.MethodSpec(name: "Release", service: "sock.v1.MessagingService", type: .unary)
             public static let setActivity = Connect.MethodSpec(name: "SetActivity", service: "sock.v1.MessagingService", type: .unary)
             public static let registerPush = Connect.MethodSpec(name: "RegisterPush", service: "sock.v1.MessagingService", type: .unary)
             public static let exportMessagingData = Connect.MethodSpec(name: "ExportMessagingData", service: "sock.v1.MessagingService", type: .unary)

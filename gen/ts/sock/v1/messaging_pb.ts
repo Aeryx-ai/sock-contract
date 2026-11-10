@@ -6,7 +6,7 @@ import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobu
 import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-import type { ApnsEnvironment, Conversation, Message as Message$1 } from "./types_pb";
+import type { ApnsEnvironment, Conversation, Message as Message$1, PuppetHeard } from "./types_pb";
 import { file_sock_v1_types } from "./types_pb";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sock/v1/messaging.proto.
  */
 export const file_sock_v1_messaging: GenFile = /*@__PURE__*/
-  fileDesc("Chdzb2NrL3YxL21lc3NhZ2luZy5wcm90bxIHc29jay52MSImChNDcmVhdGVEaXJlY3RSZXF1ZXN0Eg8KB3BlZXJfaWQYASABKAkiQwoUQ3JlYXRlRGlyZWN0UmVzcG9uc2USKwoMY29udmVyc2F0aW9uGAEgASgLMhUuc29jay52MS5Db252ZXJzYXRpb24iKAoSQ3JlYXRlR3JvdXBSZXF1ZXN0EhIKCm1lbWJlcl9pZHMYASADKAkiQgoTQ3JlYXRlR3JvdXBSZXNwb25zZRIrCgxjb252ZXJzYXRpb24YASABKAsyFS5zb2NrLnYxLkNvbnZlcnNhdGlvbiI/ChBBZGRNZW1iZXJSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRISCgphY2NvdW50X2lkGAIgASgJIkAKEUFkZE1lbWJlclJlc3BvbnNlEisKDGNvbnZlcnNhdGlvbhgBIAEoCzIVLnNvY2sudjEuQ29udmVyc2F0aW9uIkIKE1JlbW92ZU1lbWJlclJlcXVlc3QSFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEhIKCmFjY291bnRfaWQYAiABKAkiQwoUUmVtb3ZlTWVtYmVyUmVzcG9uc2USKwoMY29udmVyc2F0aW9uGAEgASgLMhUuc29jay52MS5Db252ZXJzYXRpb24iJwoMTGVhdmVSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCSIPCg1MZWF2ZVJlc3BvbnNlIhoKGExpc3RDb252ZXJzYXRpb25zUmVxdWVzdCJJChlMaXN0Q29udmVyc2F0aW9uc1Jlc3BvbnNlEiwKDWNvbnZlcnNhdGlvbnMYASADKAsyFS5zb2NrLnYxLkNvbnZlcnNhdGlvbiJECg9NYXJrUmVhZFJlcXVlc3QSFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEhgKEHJlYWRfdGhyb3VnaF9zZXEYAiABKAMiLAoQTWFya1JlYWRSZXNwb25zZRIYChByZWFkX3Rocm91Z2hfc2VxGAEgASgDIk0KC1NlbmRSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRIMCgR0ZXh0GAIgASgJEhcKD2lkZW1wb3RlbmN5X2tleRgDIAEoCSIxCgxTZW5kUmVzcG9uc2USIQoHbWVzc2FnZRgBIAEoCzIQLnNvY2sudjEuTWVzc2FnZSI7ChJOb3RpZnlPd25lclJlcXVlc3QSDAoEdGV4dBgBIAEoCRIXCg9pZGVtcG90ZW5jeV9rZXkYAiABKAkiOAoTTm90aWZ5T3duZXJSZXNwb25zZRIhCgdtZXNzYWdlGAEgASgLMhAuc29jay52MS5NZXNzYWdlIhIKEFN1YnNjcmliZVJlcXVlc3Qi7wEKEVN1YnNjcmliZVJlc3BvbnNlEiMKB21lc3NhZ2UYASABKAsyEC5zb2NrLnYxLk1lc3NhZ2VIABInCgloZWFydGJlYXQYAiABKAsyEi5zb2NrLnYxLkhlYXJ0YmVhdEgAEioKC3JlYWRfbWFya2VyGAMgASgLMhMuc29jay52MS5SZWFkTWFya2VySAASJQoIYWN0aXZpdHkYBCABKAsyES5zb2NrLnYxLkFjdGl2aXR5SAASMAoOcHVwcGV0X2FyY2hpdmUYBSABKAsyFi5zb2NrLnYxLlB1cHBldEFyY2hpdmVIAEIHCgVldmVudCILCglIZWFydGJlYXQiPwoKUmVhZE1hcmtlchIXCg9jb252ZXJzYXRpb25faWQYASABKAkSGAoQcmVhZF90aHJvdWdoX3NlcRgCIAEoAyJUChJTZXRBY3Rpdml0eVJlcXVlc3QSFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEiUKBXN0YXRlGAIgASgOMhYuc29jay52MS5BY3Rpdml0eVN0YXRlIkUKE1NldEFjdGl2aXR5UmVzcG9uc2USLgoKZXhwaXJlc19hdBgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAijgEKCEFjdGl2aXR5EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRISCgphY2NvdW50X2lkGAIgASgJEiUKBXN0YXRlGAMgASgOMhYuc29jay52MS5BY3Rpdml0eVN0YXRlEi4KCmV4cGlyZXNfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIjQKDVB1cHBldEFyY2hpdmUSEQoJcHVwcGV0X2lkGAEgASgJEhAKCGFyY2hpdmVkGAIgASgIIiQKE0ZldGNoUGVuZGluZ1JlcXVlc3QSDQoFbGltaXQYASABKAUiOgoURmV0Y2hQZW5kaW5nUmVzcG9uc2USIgoIbWVzc2FnZXMYASADKAsyEC5zb2NrLnYxLk1lc3NhZ2UiIQoKQWNrUmVxdWVzdBITCgttZXNzYWdlX2lkcxgBIAMoCSINCgtBY2tSZXNwb25zZSJYChNSZWdpc3RlclB1c2hSZXF1ZXN0EhIKCmFwbnNfdG9rZW4YASABKAwSLQoLZW52aXJvbm1lbnQYAiABKA4yGC5zb2NrLnYxLkFwbnNFbnZpcm9ubWVudCIWChRSZWdpc3RlclB1c2hSZXNwb25zZSIcChpFeHBvcnRNZXNzYWdpbmdEYXRhUmVxdWVzdCKMAQobRXhwb3J0TWVzc2FnaW5nRGF0YVJlc3BvbnNlEiwKDWNvbnZlcnNhdGlvbnMYASADKAsyFS5zb2NrLnYxLkNvbnZlcnNhdGlvbhIiChpwdXNoX3JlZ2lzdGVyZWRfZGV2aWNlX2lkcxgCIAMoCRIbChNibG9ja2VkX2FjY291bnRfaWRzGAMgAygJIikKE0Jsb2NrQWNjb3VudFJlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCSIWChRCbG9ja0FjY291bnRSZXNwb25zZSIrChVVbmJsb2NrQWNjb3VudFJlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCSIYChZVbmJsb2NrQWNjb3VudFJlc3BvbnNlIhwKGkxpc3RCbG9ja2VkQWNjb3VudHNSZXF1ZXN0IkcKG0xpc3RCbG9ja2VkQWNjb3VudHNSZXNwb25zZRIoCgdibG9ja2VkGAEgAygLMhcuc29jay52MS5CbG9ja2VkQWNjb3VudCJUCg5CbG9ja2VkQWNjb3VudBISCgphY2NvdW50X2lkGAEgASgJEi4KCmJsb2NrZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wKmQKDUFjdGl2aXR5U3RhdGUSHgoaQUNUSVZJVFlfU1RBVEVfVU5TUEVDSUZJRUQQABIaChZBQ1RJVklUWV9TVEFURV9XT1JLSU5HEAESFwoTQUNUSVZJVFlfU1RBVEVfSURMRRACMvIKChBNZXNzYWdpbmdTZXJ2aWNlEk0KDENyZWF0ZURpcmVjdBIcLnNvY2sudjEuQ3JlYXRlRGlyZWN0UmVxdWVzdBodLnNvY2sudjEuQ3JlYXRlRGlyZWN0UmVzcG9uc2UiABJKCgtDcmVhdGVHcm91cBIbLnNvY2sudjEuQ3JlYXRlR3JvdXBSZXF1ZXN0Ghwuc29jay52MS5DcmVhdGVHcm91cFJlc3BvbnNlIgASRAoJQWRkTWVtYmVyEhkuc29jay52MS5BZGRNZW1iZXJSZXF1ZXN0Ghouc29jay52MS5BZGRNZW1iZXJSZXNwb25zZSIAEk0KDFJlbW92ZU1lbWJlchIcLnNvY2sudjEuUmVtb3ZlTWVtYmVyUmVxdWVzdBodLnNvY2sudjEuUmVtb3ZlTWVtYmVyUmVzcG9uc2UiABI4CgVMZWF2ZRIVLnNvY2sudjEuTGVhdmVSZXF1ZXN0GhYuc29jay52MS5MZWF2ZVJlc3BvbnNlIgASXAoRTGlzdENvbnZlcnNhdGlvbnMSIS5zb2NrLnYxLkxpc3RDb252ZXJzYXRpb25zUmVxdWVzdBoiLnNvY2sudjEuTGlzdENvbnZlcnNhdGlvbnNSZXNwb25zZSIAEkEKCE1hcmtSZWFkEhguc29jay52MS5NYXJrUmVhZFJlcXVlc3QaGS5zb2NrLnYxLk1hcmtSZWFkUmVzcG9uc2UiABI1CgRTZW5kEhQuc29jay52MS5TZW5kUmVxdWVzdBoVLnNvY2sudjEuU2VuZFJlc3BvbnNlIgASSgoLTm90aWZ5T3duZXISGy5zb2NrLnYxLk5vdGlmeU93bmVyUmVxdWVzdBocLnNvY2sudjEuTm90aWZ5T3duZXJSZXNwb25zZSIAEkYKCVN1YnNjcmliZRIZLnNvY2sudjEuU3Vic2NyaWJlUmVxdWVzdBoaLnNvY2sudjEuU3Vic2NyaWJlUmVzcG9uc2UiADABEk0KDEZldGNoUGVuZGluZxIcLnNvY2sudjEuRmV0Y2hQZW5kaW5nUmVxdWVzdBodLnNvY2sudjEuRmV0Y2hQZW5kaW5nUmVzcG9uc2UiABIyCgNBY2sSEy5zb2NrLnYxLkFja1JlcXVlc3QaFC5zb2NrLnYxLkFja1Jlc3BvbnNlIgASSgoLU2V0QWN0aXZpdHkSGy5zb2NrLnYxLlNldEFjdGl2aXR5UmVxdWVzdBocLnNvY2sudjEuU2V0QWN0aXZpdHlSZXNwb25zZSIAEk0KDFJlZ2lzdGVyUHVzaBIcLnNvY2sudjEuUmVnaXN0ZXJQdXNoUmVxdWVzdBodLnNvY2sudjEuUmVnaXN0ZXJQdXNoUmVzcG9uc2UiABJiChNFeHBvcnRNZXNzYWdpbmdEYXRhEiMuc29jay52MS5FeHBvcnRNZXNzYWdpbmdEYXRhUmVxdWVzdBokLnNvY2sudjEuRXhwb3J0TWVzc2FnaW5nRGF0YVJlc3BvbnNlIgASTQoMQmxvY2tBY2NvdW50Ehwuc29jay52MS5CbG9ja0FjY291bnRSZXF1ZXN0Gh0uc29jay52MS5CbG9ja0FjY291bnRSZXNwb25zZSIAElMKDlVuYmxvY2tBY2NvdW50Eh4uc29jay52MS5VbmJsb2NrQWNjb3VudFJlcXVlc3QaHy5zb2NrLnYxLlVuYmxvY2tBY2NvdW50UmVzcG9uc2UiABJiChNMaXN0QmxvY2tlZEFjY291bnRzEiMuc29jay52MS5MaXN0QmxvY2tlZEFjY291bnRzUmVxdWVzdBokLnNvY2sudjEuTGlzdEJsb2NrZWRBY2NvdW50c1Jlc3BvbnNlIgBCOVo3Z2l0aHViLmNvbS9hZXJ5eC1haS9zb2NrLWNvbnRyYWN0L2dlbi9nby9zb2NrL3YxO3NvY2t2MWIGcHJvdG8z", [file_google_protobuf_timestamp, file_sock_v1_types]);
+  fileDesc("Chdzb2NrL3YxL21lc3NhZ2luZy5wcm90bxIHc29jay52MSImChNDcmVhdGVEaXJlY3RSZXF1ZXN0Eg8KB3BlZXJfaWQYASABKAkiQwoUQ3JlYXRlRGlyZWN0UmVzcG9uc2USKwoMY29udmVyc2F0aW9uGAEgASgLMhUuc29jay52MS5Db252ZXJzYXRpb24iKAoSQ3JlYXRlR3JvdXBSZXF1ZXN0EhIKCm1lbWJlcl9pZHMYASADKAkiQgoTQ3JlYXRlR3JvdXBSZXNwb25zZRIrCgxjb252ZXJzYXRpb24YASABKAsyFS5zb2NrLnYxLkNvbnZlcnNhdGlvbiI/ChBBZGRNZW1iZXJSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRISCgphY2NvdW50X2lkGAIgASgJIkAKEUFkZE1lbWJlclJlc3BvbnNlEisKDGNvbnZlcnNhdGlvbhgBIAEoCzIVLnNvY2sudjEuQ29udmVyc2F0aW9uIkIKE1JlbW92ZU1lbWJlclJlcXVlc3QSFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEhIKCmFjY291bnRfaWQYAiABKAkiQwoUUmVtb3ZlTWVtYmVyUmVzcG9uc2USKwoMY29udmVyc2F0aW9uGAEgASgLMhUuc29jay52MS5Db252ZXJzYXRpb24iJwoMTGVhdmVSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCSIPCg1MZWF2ZVJlc3BvbnNlIhoKGExpc3RDb252ZXJzYXRpb25zUmVxdWVzdCJJChlMaXN0Q29udmVyc2F0aW9uc1Jlc3BvbnNlEiwKDWNvbnZlcnNhdGlvbnMYASADKAsyFS5zb2NrLnYxLkNvbnZlcnNhdGlvbiJECg9NYXJrUmVhZFJlcXVlc3QSFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEhgKEHJlYWRfdGhyb3VnaF9zZXEYAiABKAMiLAoQTWFya1JlYWRSZXNwb25zZRIYChByZWFkX3Rocm91Z2hfc2VxGAEgASgDIk0KC1NlbmRSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRIMCgR0ZXh0GAIgASgJEhcKD2lkZW1wb3RlbmN5X2tleRgDIAEoCSIxCgxTZW5kUmVzcG9uc2USIQoHbWVzc2FnZRgBIAEoCzIQLnNvY2sudjEuTWVzc2FnZSI7ChJOb3RpZnlPd25lclJlcXVlc3QSDAoEdGV4dBgBIAEoCRIXCg9pZGVtcG90ZW5jeV9rZXkYAiABKAkiOAoTTm90aWZ5T3duZXJSZXNwb25zZRIhCgdtZXNzYWdlGAEgASgLMhAuc29jay52MS5NZXNzYWdlIhIKEFN1YnNjcmliZVJlcXVlc3QinQIKEVN1YnNjcmliZVJlc3BvbnNlEiMKB21lc3NhZ2UYASABKAsyEC5zb2NrLnYxLk1lc3NhZ2VIABInCgloZWFydGJlYXQYAiABKAsyEi5zb2NrLnYxLkhlYXJ0YmVhdEgAEioKC3JlYWRfbWFya2VyGAMgASgLMhMuc29jay52MS5SZWFkTWFya2VySAASJQoIYWN0aXZpdHkYBCABKAsyES5zb2NrLnYxLkFjdGl2aXR5SAASMAoOcHVwcGV0X2FyY2hpdmUYBSABKAsyFi5zb2NrLnYxLlB1cHBldEFyY2hpdmVIABIsCgxwdXBwZXRfaGVhcmQYBiABKAsyFC5zb2NrLnYxLlB1cHBldEhlYXJkSABCBwoFZXZlbnQiCwoJSGVhcnRiZWF0Ij8KClJlYWRNYXJrZXISFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEhgKEHJlYWRfdGhyb3VnaF9zZXEYAiABKAMiVAoSU2V0QWN0aXZpdHlSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRIlCgVzdGF0ZRgCIAEoDjIWLnNvY2sudjEuQWN0aXZpdHlTdGF0ZSJFChNTZXRBY3Rpdml0eVJlc3BvbnNlEi4KCmV4cGlyZXNfYXQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIo4BCghBY3Rpdml0eRIXCg9jb252ZXJzYXRpb25faWQYASABKAkSEgoKYWNjb3VudF9pZBgCIAEoCRIlCgVzdGF0ZRgDIAEoDjIWLnNvY2sudjEuQWN0aXZpdHlTdGF0ZRIuCgpleHBpcmVzX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCI0Cg1QdXBwZXRBcmNoaXZlEhEKCXB1cHBldF9pZBgBIAEoCRIQCghhcmNoaXZlZBgCIAEoCCIkChNGZXRjaFBlbmRpbmdSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFIjoKFEZldGNoUGVuZGluZ1Jlc3BvbnNlEiIKCG1lc3NhZ2VzGAEgAygLMhAuc29jay52MS5NZXNzYWdlIiEKCkFja1JlcXVlc3QSEwoLbWVzc2FnZV9pZHMYASADKAkiDQoLQWNrUmVzcG9uc2UiQgoOUmVsZWFzZVJlcXVlc3QSEwoLbWVzc2FnZV9pZHMYASADKAkSGwoTcmV0cnlfYWZ0ZXJfc2Vjb25kcxgCIAEoBSIRCg9SZWxlYXNlUmVzcG9uc2UiWAoTUmVnaXN0ZXJQdXNoUmVxdWVzdBISCgphcG5zX3Rva2VuGAEgASgMEi0KC2Vudmlyb25tZW50GAIgASgOMhguc29jay52MS5BcG5zRW52aXJvbm1lbnQiFgoUUmVnaXN0ZXJQdXNoUmVzcG9uc2UiHAoaRXhwb3J0TWVzc2FnaW5nRGF0YVJlcXVlc3QijAEKG0V4cG9ydE1lc3NhZ2luZ0RhdGFSZXNwb25zZRIsCg1jb252ZXJzYXRpb25zGAEgAygLMhUuc29jay52MS5Db252ZXJzYXRpb24SIgoacHVzaF9yZWdpc3RlcmVkX2RldmljZV9pZHMYAiADKAkSGwoTYmxvY2tlZF9hY2NvdW50X2lkcxgDIAMoCSIpChNCbG9ja0FjY291bnRSZXF1ZXN0EhIKCmFjY291bnRfaWQYASABKAkiFgoUQmxvY2tBY2NvdW50UmVzcG9uc2UiKwoVVW5ibG9ja0FjY291bnRSZXF1ZXN0EhIKCmFjY291bnRfaWQYASABKAkiGAoWVW5ibG9ja0FjY291bnRSZXNwb25zZSIcChpMaXN0QmxvY2tlZEFjY291bnRzUmVxdWVzdCJHChtMaXN0QmxvY2tlZEFjY291bnRzUmVzcG9uc2USKAoHYmxvY2tlZBgBIAMoCzIXLnNvY2sudjEuQmxvY2tlZEFjY291bnQiVAoOQmxvY2tlZEFjY291bnQSEgoKYWNjb3VudF9pZBgBIAEoCRIuCgpibG9ja2VkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCpkCg1BY3Rpdml0eVN0YXRlEh4KGkFDVElWSVRZX1NUQVRFX1VOU1BFQ0lGSUVEEAASGgoWQUNUSVZJVFlfU1RBVEVfV09SS0lORxABEhcKE0FDVElWSVRZX1NUQVRFX0lETEUQAjKyCwoQTWVzc2FnaW5nU2VydmljZRJNCgxDcmVhdGVEaXJlY3QSHC5zb2NrLnYxLkNyZWF0ZURpcmVjdFJlcXVlc3QaHS5zb2NrLnYxLkNyZWF0ZURpcmVjdFJlc3BvbnNlIgASSgoLQ3JlYXRlR3JvdXASGy5zb2NrLnYxLkNyZWF0ZUdyb3VwUmVxdWVzdBocLnNvY2sudjEuQ3JlYXRlR3JvdXBSZXNwb25zZSIAEkQKCUFkZE1lbWJlchIZLnNvY2sudjEuQWRkTWVtYmVyUmVxdWVzdBoaLnNvY2sudjEuQWRkTWVtYmVyUmVzcG9uc2UiABJNCgxSZW1vdmVNZW1iZXISHC5zb2NrLnYxLlJlbW92ZU1lbWJlclJlcXVlc3QaHS5zb2NrLnYxLlJlbW92ZU1lbWJlclJlc3BvbnNlIgASOAoFTGVhdmUSFS5zb2NrLnYxLkxlYXZlUmVxdWVzdBoWLnNvY2sudjEuTGVhdmVSZXNwb25zZSIAElwKEUxpc3RDb252ZXJzYXRpb25zEiEuc29jay52MS5MaXN0Q29udmVyc2F0aW9uc1JlcXVlc3QaIi5zb2NrLnYxLkxpc3RDb252ZXJzYXRpb25zUmVzcG9uc2UiABJBCghNYXJrUmVhZBIYLnNvY2sudjEuTWFya1JlYWRSZXF1ZXN0Ghkuc29jay52MS5NYXJrUmVhZFJlc3BvbnNlIgASNQoEU2VuZBIULnNvY2sudjEuU2VuZFJlcXVlc3QaFS5zb2NrLnYxLlNlbmRSZXNwb25zZSIAEkoKC05vdGlmeU93bmVyEhsuc29jay52MS5Ob3RpZnlPd25lclJlcXVlc3QaHC5zb2NrLnYxLk5vdGlmeU93bmVyUmVzcG9uc2UiABJGCglTdWJzY3JpYmUSGS5zb2NrLnYxLlN1YnNjcmliZVJlcXVlc3QaGi5zb2NrLnYxLlN1YnNjcmliZVJlc3BvbnNlIgAwARJNCgxGZXRjaFBlbmRpbmcSHC5zb2NrLnYxLkZldGNoUGVuZGluZ1JlcXVlc3QaHS5zb2NrLnYxLkZldGNoUGVuZGluZ1Jlc3BvbnNlIgASMgoDQWNrEhMuc29jay52MS5BY2tSZXF1ZXN0GhQuc29jay52MS5BY2tSZXNwb25zZSIAEj4KB1JlbGVhc2USFy5zb2NrLnYxLlJlbGVhc2VSZXF1ZXN0Ghguc29jay52MS5SZWxlYXNlUmVzcG9uc2UiABJKCgtTZXRBY3Rpdml0eRIbLnNvY2sudjEuU2V0QWN0aXZpdHlSZXF1ZXN0Ghwuc29jay52MS5TZXRBY3Rpdml0eVJlc3BvbnNlIgASTQoMUmVnaXN0ZXJQdXNoEhwuc29jay52MS5SZWdpc3RlclB1c2hSZXF1ZXN0Gh0uc29jay52MS5SZWdpc3RlclB1c2hSZXNwb25zZSIAEmIKE0V4cG9ydE1lc3NhZ2luZ0RhdGESIy5zb2NrLnYxLkV4cG9ydE1lc3NhZ2luZ0RhdGFSZXF1ZXN0GiQuc29jay52MS5FeHBvcnRNZXNzYWdpbmdEYXRhUmVzcG9uc2UiABJNCgxCbG9ja0FjY291bnQSHC5zb2NrLnYxLkJsb2NrQWNjb3VudFJlcXVlc3QaHS5zb2NrLnYxLkJsb2NrQWNjb3VudFJlc3BvbnNlIgASUwoOVW5ibG9ja0FjY291bnQSHi5zb2NrLnYxLlVuYmxvY2tBY2NvdW50UmVxdWVzdBofLnNvY2sudjEuVW5ibG9ja0FjY291bnRSZXNwb25zZSIAEmIKE0xpc3RCbG9ja2VkQWNjb3VudHMSIy5zb2NrLnYxLkxpc3RCbG9ja2VkQWNjb3VudHNSZXF1ZXN0GiQuc29jay52MS5MaXN0QmxvY2tlZEFjY291bnRzUmVzcG9uc2UiAEI5WjdnaXRodWIuY29tL2Flcnl4LWFpL3NvY2stY29udHJhY3QvZ2VuL2dvL3NvY2svdjE7c29ja3YxYgZwcm90bzM", [file_google_protobuf_timestamp, file_sock_v1_types]);
 
 /**
  * @generated from message sock.v1.CreateDirectRequest
@@ -431,6 +431,17 @@ export type SubscribeResponse = Message<"sock.v1.SubscribeResponse"> & {
      */
     value: PuppetArchive;
     case: "puppetArchive";
+  } | {
+    /**
+     * One of the caller's puppets has a consumer again after none for 75 s
+     * or more, or for the first time. A hint: at most once, so clients
+     * reconcile with ListConversations when a stream opens. The owner's
+     * human streams only.
+     *
+     * @generated from field: sock.v1.PuppetHeard puppet_heard = 6;
+     */
+    value: PuppetHeard;
+    case: "puppetHeard";
   } | { case: undefined; value?: undefined };
 };
 
@@ -654,6 +665,45 @@ export const AckResponseSchema: GenMessage<AckResponse> = /*@__PURE__*/
   messageDesc(file_sock_v1_messaging, 29);
 
 /**
+ * @generated from message sock.v1.ReleaseRequest
+ */
+export type ReleaseRequest = Message<"sock.v1.ReleaseRequest"> & {
+  /**
+   * 1 to 500 message ids. Unknown, acked or other recipients' ids are ignored.
+   *
+   * @generated from field: repeated string message_ids = 1;
+   */
+  messageIds: string[];
+
+  /**
+   * 0 to 3600. 0 frees them at once.
+   *
+   * @generated from field: int32 retry_after_seconds = 2;
+   */
+  retryAfterSeconds: number;
+};
+
+/**
+ * Describes the message sock.v1.ReleaseRequest.
+ * Use `create(ReleaseRequestSchema)` to create a new message.
+ */
+export const ReleaseRequestSchema: GenMessage<ReleaseRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 30);
+
+/**
+ * @generated from message sock.v1.ReleaseResponse
+ */
+export type ReleaseResponse = Message<"sock.v1.ReleaseResponse"> & {
+};
+
+/**
+ * Describes the message sock.v1.ReleaseResponse.
+ * Use `create(ReleaseResponseSchema)` to create a new message.
+ */
+export const ReleaseResponseSchema: GenMessage<ReleaseResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 31);
+
+/**
  * @generated from message sock.v1.RegisterPushRequest
  */
 export type RegisterPushRequest = Message<"sock.v1.RegisterPushRequest"> & {
@@ -677,7 +727,7 @@ export type RegisterPushRequest = Message<"sock.v1.RegisterPushRequest"> & {
  * Use `create(RegisterPushRequestSchema)` to create a new message.
  */
 export const RegisterPushRequestSchema: GenMessage<RegisterPushRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 30);
+  messageDesc(file_sock_v1_messaging, 32);
 
 /**
  * @generated from message sock.v1.RegisterPushResponse
@@ -690,7 +740,7 @@ export type RegisterPushResponse = Message<"sock.v1.RegisterPushResponse"> & {
  * Use `create(RegisterPushResponseSchema)` to create a new message.
  */
 export const RegisterPushResponseSchema: GenMessage<RegisterPushResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 31);
+  messageDesc(file_sock_v1_messaging, 33);
 
 /**
  * @generated from message sock.v1.ExportMessagingDataRequest
@@ -703,7 +753,7 @@ export type ExportMessagingDataRequest = Message<"sock.v1.ExportMessagingDataReq
  * Use `create(ExportMessagingDataRequestSchema)` to create a new message.
  */
 export const ExportMessagingDataRequestSchema: GenMessage<ExportMessagingDataRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 32);
+  messageDesc(file_sock_v1_messaging, 34);
 
 /**
  * Messaging's half of the GDPR export. No message content: the server holds
@@ -738,7 +788,7 @@ export type ExportMessagingDataResponse = Message<"sock.v1.ExportMessagingDataRe
  * Use `create(ExportMessagingDataResponseSchema)` to create a new message.
  */
 export const ExportMessagingDataResponseSchema: GenMessage<ExportMessagingDataResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 33);
+  messageDesc(file_sock_v1_messaging, 35);
 
 /**
  * @generated from message sock.v1.BlockAccountRequest
@@ -758,7 +808,7 @@ export type BlockAccountRequest = Message<"sock.v1.BlockAccountRequest"> & {
  * Use `create(BlockAccountRequestSchema)` to create a new message.
  */
 export const BlockAccountRequestSchema: GenMessage<BlockAccountRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 34);
+  messageDesc(file_sock_v1_messaging, 36);
 
 /**
  * @generated from message sock.v1.BlockAccountResponse
@@ -771,7 +821,7 @@ export type BlockAccountResponse = Message<"sock.v1.BlockAccountResponse"> & {
  * Use `create(BlockAccountResponseSchema)` to create a new message.
  */
 export const BlockAccountResponseSchema: GenMessage<BlockAccountResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 35);
+  messageDesc(file_sock_v1_messaging, 37);
 
 /**
  * @generated from message sock.v1.UnblockAccountRequest
@@ -788,7 +838,7 @@ export type UnblockAccountRequest = Message<"sock.v1.UnblockAccountRequest"> & {
  * Use `create(UnblockAccountRequestSchema)` to create a new message.
  */
 export const UnblockAccountRequestSchema: GenMessage<UnblockAccountRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 36);
+  messageDesc(file_sock_v1_messaging, 38);
 
 /**
  * @generated from message sock.v1.UnblockAccountResponse
@@ -801,7 +851,7 @@ export type UnblockAccountResponse = Message<"sock.v1.UnblockAccountResponse"> &
  * Use `create(UnblockAccountResponseSchema)` to create a new message.
  */
 export const UnblockAccountResponseSchema: GenMessage<UnblockAccountResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 37);
+  messageDesc(file_sock_v1_messaging, 39);
 
 /**
  * @generated from message sock.v1.ListBlockedAccountsRequest
@@ -814,7 +864,7 @@ export type ListBlockedAccountsRequest = Message<"sock.v1.ListBlockedAccountsReq
  * Use `create(ListBlockedAccountsRequestSchema)` to create a new message.
  */
 export const ListBlockedAccountsRequestSchema: GenMessage<ListBlockedAccountsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 38);
+  messageDesc(file_sock_v1_messaging, 40);
 
 /**
  * @generated from message sock.v1.ListBlockedAccountsResponse
@@ -831,7 +881,7 @@ export type ListBlockedAccountsResponse = Message<"sock.v1.ListBlockedAccountsRe
  * Use `create(ListBlockedAccountsResponseSchema)` to create a new message.
  */
 export const ListBlockedAccountsResponseSchema: GenMessage<ListBlockedAccountsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 39);
+  messageDesc(file_sock_v1_messaging, 41);
 
 /**
  * @generated from message sock.v1.BlockedAccount
@@ -853,7 +903,7 @@ export type BlockedAccount = Message<"sock.v1.BlockedAccount"> & {
  * Use `create(BlockedAccountSchema)` to create a new message.
  */
 export const BlockedAccountSchema: GenMessage<BlockedAccount> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 40);
+  messageDesc(file_sock_v1_messaging, 42);
 
 /**
  * @generated from enum sock.v1.ActivityState
@@ -988,6 +1038,17 @@ export const MessagingService: GenService<{
     methodKind: "unary";
     input: typeof AckRequestSchema;
     output: typeof AckResponseSchema;
+  },
+  /**
+   * Give puppet deliveries back unacked: free at once, or handed to no
+   * consumer before retry_after_seconds. Puppet tokens only.
+   *
+   * @generated from rpc sock.v1.MessagingService.Release
+   */
+  release: {
+    methodKind: "unary";
+    input: typeof ReleaseRequestSchema;
+    output: typeof ReleaseResponseSchema;
   },
   /**
    * Tell the other members the caller is working on a reply, or no longer is.

@@ -108,6 +108,17 @@ message Conversation {
   // conversation is read-only for humans (NO_ACTIVE_PUPPET); it becomes
   // writable again when an active puppet returns.
   bool humans_can_post = 5;
+  // When each puppet member the caller owns was last heard, for human
+  // callers only. An owned puppet member that is absent was never heard.
+  repeated PuppetHeard puppets_heard = 6;
+}
+
+// When the hub last heard from a consumer of a puppet: a Subscribe stream
+// open or heartbeat, or a FetchPending. Clients show the puppet as not
+// listening once last_heard_at is 75 s or more in the past.
+message PuppetHeard {
+  string puppet_id = 1;
+  google.protobuf.Timestamp last_heard_at = 2;
 }
 
 message Message {

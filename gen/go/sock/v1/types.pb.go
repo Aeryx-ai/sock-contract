@@ -574,6 +574,9 @@ type Conversation struct {
 	// conversation is read-only for humans (NO_ACTIVE_PUPPET); it becomes
 	// writable again when an active puppet returns.
 	HumansCanPost bool `protobuf:"varint,5,opt,name=humans_can_post,json=humansCanPost,proto3" json:"humans_can_post,omitempty"`
+	// When each puppet member the caller owns was last heard, for human
+	// callers only. An owned puppet member that is absent was never heard.
+	PuppetsHeard  []*PuppetHeard `protobuf:"bytes,6,rep,name=puppets_heard,json=puppetsHeard,proto3" json:"puppets_heard,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -643,6 +646,68 @@ func (x *Conversation) GetHumansCanPost() bool {
 	return false
 }
 
+func (x *Conversation) GetPuppetsHeard() []*PuppetHeard {
+	if x != nil {
+		return x.PuppetsHeard
+	}
+	return nil
+}
+
+// When the hub last heard from a consumer of a puppet: a Subscribe stream
+// open or heartbeat, or a FetchPending. Clients show the puppet as not
+// listening once last_heard_at is 75 s or more in the past.
+type PuppetHeard struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PuppetId      string                 `protobuf:"bytes,1,opt,name=puppet_id,json=puppetId,proto3" json:"puppet_id,omitempty"`
+	LastHeardAt   *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_heard_at,json=lastHeardAt,proto3" json:"last_heard_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PuppetHeard) Reset() {
+	*x = PuppetHeard{}
+	mi := &file_sock_v1_types_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PuppetHeard) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PuppetHeard) ProtoMessage() {}
+
+func (x *PuppetHeard) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_types_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PuppetHeard.ProtoReflect.Descriptor instead.
+func (*PuppetHeard) Descriptor() ([]byte, []int) {
+	return file_sock_v1_types_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *PuppetHeard) GetPuppetId() string {
+	if x != nil {
+		return x.PuppetId
+	}
+	return ""
+}
+
+func (x *PuppetHeard) GetLastHeardAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastHeardAt
+	}
+	return nil
+}
+
 type Message struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Server-assigned UUID.
@@ -668,7 +733,7 @@ type Message struct {
 
 func (x *Message) Reset() {
 	*x = Message{}
-	mi := &file_sock_v1_types_proto_msgTypes[6]
+	mi := &file_sock_v1_types_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -680,7 +745,7 @@ func (x *Message) String() string {
 func (*Message) ProtoMessage() {}
 
 func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_types_proto_msgTypes[6]
+	mi := &file_sock_v1_types_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -693,7 +758,7 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
 func (*Message) Descriptor() ([]byte, []int) {
-	return file_sock_v1_types_proto_rawDescGZIP(), []int{6}
+	return file_sock_v1_types_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Message) GetId() string {
@@ -795,14 +860,18 @@ const file_sock_v1_types_proto_rawDesc = "" +
 	"\x05label\x18\x03 \x01(\tR\x05label\x129\n" +
 	"\n" +
 	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12'\n" +
-	"\x04kind\x18\x05 \x01(\x0e2\x13.sock.v1.DeviceKindR\x04kind\"\xbe\x01\n" +
+	"\x04kind\x18\x05 \x01(\x0e2\x13.sock.v1.DeviceKindR\x04kind\"\xf9\x01\n" +
 	"\fConversation\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12-\n" +
 	"\x04kind\x18\x02 \x01(\x0e2\x19.sock.v1.ConversationKindR\x04kind\x12\x1d\n" +
 	"\n" +
 	"member_ids\x18\x03 \x03(\tR\tmemberIds\x12(\n" +
 	"\x10read_through_seq\x18\x04 \x01(\x03R\x0ereadThroughSeq\x12&\n" +
-	"\x0fhumans_can_post\x18\x05 \x01(\bR\rhumansCanPost\"\xe7\x01\n" +
+	"\x0fhumans_can_post\x18\x05 \x01(\bR\rhumansCanPost\x129\n" +
+	"\rpuppets_heard\x18\x06 \x03(\v2\x14.sock.v1.PuppetHeardR\fpuppetsHeard\"j\n" +
+	"\vPuppetHeard\x12\x1b\n" +
+	"\tpuppet_id\x18\x01 \x01(\tR\bpuppetId\x12>\n" +
+	"\rlast_heard_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\vlastHeardAt\"\xe7\x01\n" +
 	"\aMessage\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12'\n" +
 	"\x0fconversation_id\x18\x02 \x01(\tR\x0econversationId\x12\x10\n" +
@@ -843,7 +912,7 @@ func file_sock_v1_types_proto_rawDescGZIP() []byte {
 }
 
 var file_sock_v1_types_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_sock_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_sock_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_sock_v1_types_proto_goTypes = []any{
 	(DeviceKind)(0),               // 0: sock.v1.DeviceKind
 	(ConversationKind)(0),         // 1: sock.v1.ConversationKind
@@ -854,22 +923,25 @@ var file_sock_v1_types_proto_goTypes = []any{
 	(*Connector)(nil),             // 6: sock.v1.Connector
 	(*Device)(nil),                // 7: sock.v1.Device
 	(*Conversation)(nil),          // 8: sock.v1.Conversation
-	(*Message)(nil),               // 9: sock.v1.Message
-	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
+	(*PuppetHeard)(nil),           // 9: sock.v1.PuppetHeard
+	(*Message)(nil),               // 10: sock.v1.Message
+	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
 }
 var file_sock_v1_types_proto_depIdxs = []int32{
 	4,  // 0: sock.v1.Account.human:type_name -> sock.v1.Human
 	5,  // 1: sock.v1.Account.puppet:type_name -> sock.v1.Puppet
 	6,  // 2: sock.v1.Puppet.connector:type_name -> sock.v1.Connector
-	10, // 3: sock.v1.Device.created_at:type_name -> google.protobuf.Timestamp
+	11, // 3: sock.v1.Device.created_at:type_name -> google.protobuf.Timestamp
 	0,  // 4: sock.v1.Device.kind:type_name -> sock.v1.DeviceKind
 	1,  // 5: sock.v1.Conversation.kind:type_name -> sock.v1.ConversationKind
-	10, // 6: sock.v1.Message.sent_at:type_name -> google.protobuf.Timestamp
-	7,  // [7:7] is the sub-list for method output_type
-	7,  // [7:7] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	9,  // 6: sock.v1.Conversation.puppets_heard:type_name -> sock.v1.PuppetHeard
+	11, // 7: sock.v1.PuppetHeard.last_heard_at:type_name -> google.protobuf.Timestamp
+	11, // 8: sock.v1.Message.sent_at:type_name -> google.protobuf.Timestamp
+	9,  // [9:9] is the sub-list for method output_type
+	9,  // [9:9] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_sock_v1_types_proto_init() }
@@ -881,7 +953,7 @@ func file_sock_v1_types_proto_init() {
 		(*Account_Human)(nil),
 		(*Account_Puppet)(nil),
 	}
-	file_sock_v1_types_proto_msgTypes[6].OneofWrappers = []any{
+	file_sock_v1_types_proto_msgTypes[7].OneofWrappers = []any{
 		(*Message_Text)(nil),
 	}
 	type x struct{}
@@ -890,7 +962,7 @@ func file_sock_v1_types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sock_v1_types_proto_rawDesc), len(file_sock_v1_types_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   7,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

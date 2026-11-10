@@ -66,6 +66,9 @@ const (
 	MessagingServiceFetchPendingProcedure = "/sock.v1.MessagingService/FetchPending"
 	// MessagingServiceAckProcedure is the fully-qualified name of the MessagingService's Ack RPC.
 	MessagingServiceAckProcedure = "/sock.v1.MessagingService/Ack"
+	// MessagingServiceReleaseProcedure is the fully-qualified name of the MessagingService's Release
+	// RPC.
+	MessagingServiceReleaseProcedure = "/sock.v1.MessagingService/Release"
 	// MessagingServiceSetActivityProcedure is the fully-qualified name of the MessagingService's
 	// SetActivity RPC.
 	MessagingServiceSetActivityProcedure = "/sock.v1.MessagingService/SetActivity"
@@ -101,6 +104,9 @@ type MessagingServiceClient interface {
 	Subscribe(context.Context, *connect.Request[v1.SubscribeRequest]) (*connect.ServerStreamForClient[v1.SubscribeResponse], error)
 	FetchPending(context.Context, *connect.Request[v1.FetchPendingRequest]) (*connect.Response[v1.FetchPendingResponse], error)
 	Ack(context.Context, *connect.Request[v1.AckRequest]) (*connect.Response[v1.AckResponse], error)
+	// Give puppet deliveries back unacked: free at once, or handed to no
+	// consumer before retry_after_seconds. Puppet tokens only.
+	Release(context.Context, *connect.Request[v1.ReleaseRequest]) (*connect.Response[v1.ReleaseResponse], error)
 	// Tell the other members the caller is working on a reply, or no longer is.
 	// Ephemeral: never stored or pushed.
 	SetActivity(context.Context, *connect.Request[v1.SetActivityRequest]) (*connect.Response[v1.SetActivityResponse], error)
@@ -194,6 +200,12 @@ func NewMessagingServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(messagingServiceMethods.ByName("Ack")),
 			connect.WithClientOptions(opts...),
 		),
+		release: connect.NewClient[v1.ReleaseRequest, v1.ReleaseResponse](
+			httpClient,
+			baseURL+MessagingServiceReleaseProcedure,
+			connect.WithSchema(messagingServiceMethods.ByName("Release")),
+			connect.WithClientOptions(opts...),
+		),
 		setActivity: connect.NewClient[v1.SetActivityRequest, v1.SetActivityResponse](
 			httpClient,
 			baseURL+MessagingServiceSetActivityProcedure,
@@ -247,6 +259,7 @@ type messagingServiceClient struct {
 	subscribe           *connect.Client[v1.SubscribeRequest, v1.SubscribeResponse]
 	fetchPending        *connect.Client[v1.FetchPendingRequest, v1.FetchPendingResponse]
 	ack                 *connect.Client[v1.AckRequest, v1.AckResponse]
+	release             *connect.Client[v1.ReleaseRequest, v1.ReleaseResponse]
 	setActivity         *connect.Client[v1.SetActivityRequest, v1.SetActivityResponse]
 	registerPush        *connect.Client[v1.RegisterPushRequest, v1.RegisterPushResponse]
 	exportMessagingData *connect.Client[v1.ExportMessagingDataRequest, v1.ExportMessagingDataResponse]
@@ -315,6 +328,11 @@ func (c *messagingServiceClient) Ack(ctx context.Context, req *connect.Request[v
 	return c.ack.CallUnary(ctx, req)
 }
 
+// Release calls sock.v1.MessagingService.Release.
+func (c *messagingServiceClient) Release(ctx context.Context, req *connect.Request[v1.ReleaseRequest]) (*connect.Response[v1.ReleaseResponse], error) {
+	return c.release.CallUnary(ctx, req)
+}
+
 // SetActivity calls sock.v1.MessagingService.SetActivity.
 func (c *messagingServiceClient) SetActivity(ctx context.Context, req *connect.Request[v1.SetActivityRequest]) (*connect.Response[v1.SetActivityResponse], error) {
 	return c.setActivity.CallUnary(ctx, req)
@@ -360,6 +378,9 @@ type MessagingServiceHandler interface {
 	Subscribe(context.Context, *connect.Request[v1.SubscribeRequest], *connect.ServerStream[v1.SubscribeResponse]) error
 	FetchPending(context.Context, *connect.Request[v1.FetchPendingRequest]) (*connect.Response[v1.FetchPendingResponse], error)
 	Ack(context.Context, *connect.Request[v1.AckRequest]) (*connect.Response[v1.AckResponse], error)
+	// Give puppet deliveries back unacked: free at once, or handed to no
+	// consumer before retry_after_seconds. Puppet tokens only.
+	Release(context.Context, *connect.Request[v1.ReleaseRequest]) (*connect.Response[v1.ReleaseResponse], error)
 	// Tell the other members the caller is working on a reply, or no longer is.
 	// Ephemeral: never stored or pushed.
 	SetActivity(context.Context, *connect.Request[v1.SetActivityRequest]) (*connect.Response[v1.SetActivityResponse], error)
@@ -449,6 +470,12 @@ func NewMessagingServiceHandler(svc MessagingServiceHandler, opts ...connect.Han
 		connect.WithSchema(messagingServiceMethods.ByName("Ack")),
 		connect.WithHandlerOptions(opts...),
 	)
+	messagingServiceReleaseHandler := connect.NewUnaryHandler(
+		MessagingServiceReleaseProcedure,
+		svc.Release,
+		connect.WithSchema(messagingServiceMethods.ByName("Release")),
+		connect.WithHandlerOptions(opts...),
+	)
 	messagingServiceSetActivityHandler := connect.NewUnaryHandler(
 		MessagingServiceSetActivityProcedure,
 		svc.SetActivity,
@@ -511,6 +538,8 @@ func NewMessagingServiceHandler(svc MessagingServiceHandler, opts ...connect.Han
 			messagingServiceFetchPendingHandler.ServeHTTP(w, r)
 		case MessagingServiceAckProcedure:
 			messagingServiceAckHandler.ServeHTTP(w, r)
+		case MessagingServiceReleaseProcedure:
+			messagingServiceReleaseHandler.ServeHTTP(w, r)
 		case MessagingServiceSetActivityProcedure:
 			messagingServiceSetActivityHandler.ServeHTTP(w, r)
 		case MessagingServiceRegisterPushProcedure:
@@ -578,6 +607,10 @@ func (UnimplementedMessagingServiceHandler) FetchPending(context.Context, *conne
 
 func (UnimplementedMessagingServiceHandler) Ack(context.Context, *connect.Request[v1.AckRequest]) (*connect.Response[v1.AckResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.MessagingService.Ack is not implemented"))
+}
+
+func (UnimplementedMessagingServiceHandler) Release(context.Context, *connect.Request[v1.ReleaseRequest]) (*connect.Response[v1.ReleaseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.MessagingService.Release is not implemented"))
 }
 
 func (UnimplementedMessagingServiceHandler) SetActivity(context.Context, *connect.Request[v1.SetActivityRequest]) (*connect.Response[v1.SetActivityResponse], error) {
