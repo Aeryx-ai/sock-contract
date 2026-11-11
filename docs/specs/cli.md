@@ -77,6 +77,16 @@ Pass 1. Every human RPC in [api](api.md) has a `sock` command; this file is the 
 | `sock export` | `ExportIdentityData`, `ExportMessagingData` | none | Always JSON, one object `{"identity": ExportIdentityDataResponse, "messaging": ExportMessagingDataResponse}` |
 | `sock account erase` | `EraseAccount` | on a terminal, type the handle to confirm; off one, `--confirm <handle>` | `erased`; removes the token from the config file |
 
+## Agent service
+
+Local only: these commands call no RPC. The service they install runs `sock listen --as-puppet --project <dir> --exec <runner>`, which resolves the project's puppet each time it starts; the unit holds no credential. The runner and the skill are sock-integrations' (`runner/sock-runner`, `runner/lib.sh`, `agents/skills/sock/SKILL.md`), embedded in the CLI at a recorded commit.
+
+| Command | RPC | Args and flags | Output |
+|---|---|---|---|
+| `sock agent install` | none | `--project <dir>` (default the working directory). Settings from `SOCK_RUNNER_AGENT` (default `claude`), `SOCK_RUNNER_PERMISSION` (default `default`) and, when set, `SOCK_RUNNER_SESSION`, `SOCK_RUNNER_MODEL`, `SOCK_RUNNER_TIMEOUT` and `SOCK_RUNNER_ALLOW_BYPASS`, passed through the runner's own check first. Paths and settings limited to `A-Za-z0-9._/@+-` (and `:` in values) | Idempotent. Writes the runner to `${XDG_DATA_HOME:-~/.local/share}/sock/runner/<cli version>/`; writes and loads the project's unit under the label `sock-runner-service` uses (macOS `~/Library/LaunchAgents/ai.aeryx.sock-runner.<id>.plist`, `launchctl bootout` then `bootstrap gui/<uid>`; Linux `${XDG_CONFIG_HOME:-~/.config}/systemd/user/sock-runner-<id>.service`, `daemon-reload`, `enable --now`, `restart`), `<id>` the first 16 hex of the SHA-256 of the project's physical path; on Linux `loginctl enable-linger <user>`, or when that fails the command to run; writes `~/.agents/skills/sock/SKILL.md` unless the file there is one sock did not write, which it leaves and says so. Prints the label, unit, runner and `listen.log` paths and the command that checks the unit |
+| `sock agent uninstall` | none | `--project <dir>` | Stops and removes the project's unit; leaves the runner files and the skill. `removed <label>` |
+| `sock agent status` | none | `--project <dir>` | `<label> loaded` or `not loaded`, the unit and `listen.log` paths; `<label> not installed: run sock agent install` |
+
 ## Not mapped
 
 - `GetRegistrationPolicy`: read by `sock login` before it prompts for an invite; no command of its own.
