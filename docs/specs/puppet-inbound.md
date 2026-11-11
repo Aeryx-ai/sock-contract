@@ -135,7 +135,7 @@ Unchanged from [api](api.md). Puppet: any of a puppet's tokens (`sock_pt_`, the 
 | `Release` (new) | Puppet | Own deliveries only: ids that are not the calling puppet's deliveries are ignored, as `Ack` ignores them | `message_ids` (1 to 500), `retry_after_seconds` (0 to 3600; 0 frees them now) | none | `FIELD_INVALID` (no ids, more than 500, a malformed id, `retry_after_seconds` out of range), `CALLER_NOT_ALLOWED` (a human, a machine key), `SUBSCRIPTION_REQUIRED` (as every puppet RPC) | Idempotent: releasing again rewrites the same deferral end relative to now; unknown or acked ids are ignored | `Message.Release(puppet, now + retry_after)` per id; emits `DeliveryReleased` when it freed any delivery now |
 | `ListConversations` (changed) | Human, puppet | As today | As today | Each `Conversation` gains `puppets_heard`: one `PuppetHeard` per puppet member the caller owns that has a `ListenMark`, for human callers only. Other humans' puppets are never listed. An owned puppet member without one is absent: never heard | As today | Read | none (read) |
 
-`Release` is terms-exempt, as `Ack` is: it moves nothing to anyone. Rate limits: `Release` shares `Ack`'s bucket.
+`Release` is terms-exempt and draws from no bucket, as `Ack`: it moves nothing to anyone.
 
 ### Proto delta (additive)
 
@@ -235,10 +235,10 @@ The hand-out, per puppet, oldest first by `(conversation_id, seq)` as today: del
 ## Consumers
 
 - `sock listen` (cli): after the last exec attempt fails, `Release` with `retry_after_seconds` 60, then go on to the next message. Fixes `sock-cli-5ga`. Closes its stream on exit so its leases free at once.
-- go-sdk `Client.Listen`: a handler failure calls `Release(0)` for that message instead of ending the stream attempt.
-- sock-mcp Claude and Codex inbound: an inbox or `turn/start` failure after its retries calls `Release` with 60; `NotLoaded` calls `Release(0)` and leaves the session to the next consumer.
+- go-sdk `Client.Listen`: unchanged. A handler failure already ends the stream attempt, which frees its leases, and the message comes back first after the reconnect backoff.
+- sock-mcp Claude and Codex inbound: an inbox or `turn/start` failure after its retries calls `Release` with 60; so does `NotLoaded`. No consumer calls `Release(0)` on a stream it keeps: the release wakes that stream, which takes the message straight back.
 - sock-runner, sock-bridge, sock-http: unchanged; exit 1 reaches `Release` through `sock listen`.
-- sock-mcpd: a webhook that refuses releases with 60 instead of leaving the delivery pending.
+- sock-mcpd: unchanged. A refusing webhook ends the stream attempt, which frees its leases, and keeps the fan-out in order ([connector](https://github.com/aeryx-ai/sock-integrations/blob/main/docs/specs/connector.md)).
 - Apple app, desktop and webui: in a conversation with a puppet the human owns, show "no agent listening since <time>" when its `last_heard_at` is 75 s or more old, and "no agent has connected yet" when it has none, above the composer, rechecked each heartbeat. Reconcile from `ListConversations` at stream open, then apply `PuppetHeard` events.
 
 ## Rollout and compatibility
