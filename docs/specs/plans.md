@@ -1,6 +1,6 @@
 # Plans: Basic free forever, Pro for more
 
-Pass 2, draft for approval. Contexts: Identity, Messaging. Changes [Sock Pro billing](sock-pro-billing.md) and [domain-model](domain-model.md); unchanged objects are not repeated.
+Pass 3, draft for approval. Contexts: Identity, Messaging. Changes [Sock Pro billing](sock-pro-billing.md) and [domain-model](domain-model.md); unchanged objects are not repeated.
 
 What changes:
 
@@ -44,7 +44,7 @@ Value object, one constant per plan, in the hub's domain package. Constructor re
 | `groupMembers` | int | 20 | 100 |
 | `puppetSendsPerMinute` | int | 60 | 300 |
 
-Owner-direct limits (ADR 50) scale with `puppetSendsPerMinute` by the same factor as today: *open* whether they rise on Pro.
+Owner-direct limits (ADR 50) are the same on both plans: they protect the owner's attention, not the hub's capacity.
 
 #### Account (changed behaviors and invariants)
 
@@ -194,9 +194,12 @@ No other table changes. Every new fact is derived.
 - Rank is by creation. Resuming an older Claude Code session can waitlist the running session's puppet; accepted.
 - The word is waitlisted: inactive read too close to active puppet; standby, queued, pending and blocked already mean something in the contract.
 
+## Decided in pass 3
+
+- Owner-direct limits are the same on both plans.
+- A suspended puppet keeps its slot; the owner frees it by erasing the puppet.
+- A connector puppet (ADR 11) counts toward the puppet limit like any other, with no separate Pro gate.
+
 ## Open questions
 
-- Whether owner-direct limits rise on Pro.
-- Whether a suspended puppet takes a slot. Drafted: yes, it stays unarchived.
-- Hosted agents (connectors): drafted as counting toward the puppet limit on both plans, with no separate Pro gate.
 - Server-side history: its own spec, after this one.
