@@ -6,7 +6,7 @@ What changes:
 
 - Every human has a plan: Basic, free forever, or Pro, while any Pro source is active. Pro is still sold through Stripe and granted by the operator.
 - Basic owns up to 5 working puppets, groups up to 20 members and today's send rates. Pro raises those limits.
-- When a human has more unarchived puppets than their plan allows, the oldest ones by creation keep working and the rest are inactive: their tokens are refused and they count for nothing in a conversation, until the owner archives or erases one, or gets Pro.
+- When a human has more unarchived puppets than their plan allows, the oldest ones by creation keep working and the rest are waitlisted: their tokens are refused and they count for nothing in a conversation, until the owner archives or erases one, or gets Pro.
 - The 7-day trial and its reminder email are gone. Basic is the trial.
 - Humans are not metered. Machine keys, tokens per puppet and sessions keep their caps of 10 on both plans.
 - Server-side history is a Pro capability with its own spec; nothing here builds it.
@@ -20,8 +20,8 @@ What changes:
 | Pro (Sock Pro) | The paid plan. Unchanged sources: a subscription or an operator grant | Derived from stored sources |
 | Plan limits | The numbers a plan allows: puppets, group members, puppet send rate | Constants in the hub, per plan |
 | Puppet rank | A puppet's position among its owner's unarchived, non-system puppets, oldest first by account id (account ids are UUIDv7, so creation order) | Derived |
-| Inactive puppet | An unarchived puppet whose rank is at or past its owner's plan's puppet limit. Not the opposite of active puppet: an archived or suspended puppet is not active either, but only this one is inactive | Derived at each check |
-| Covered puppet | A puppet that is not inactive | Derived |
+| Waitlisted puppet | An unarchived puppet whose rank is at or past its owner's plan's puppet limit, waiting for an older one to be archived or erased, or for the owner to get Pro | Derived at each check |
+| Covered puppet | A puppet that is not waitlisted | Derived |
 | Active puppet (changed) | A system puppet, or a covered puppet not archived, neither it nor its owner suspended | Derived at post time in Messaging |
 
 Removed: Trial, Trial reminder.
@@ -55,7 +55,7 @@ Changed behaviors:
 - `AdmitPuppet()` (humans, replaces `PassProGate()` on `CreatePuppet` and consent's Allow): refuses `LIMIT_REACHED` when the human already has `Plan().puppets` unarchived non-system puppets. Starts nothing.
 - `Covers(puppet)` (humans, replaces `PassProGate()` on `MintPuppetToken`, `IssueConnectorPuppetToken` and every call made with a puppet token): true for a system puppet, otherwise when the puppet's rank is below `Plan().puppets`. An archived puppet has no rank and is not covered; archived puppets already refuse their tokens' sends. Refusal is `SUBSCRIPTION_REQUIRED`.
 - `MintMachineKey`: no longer gated by plan.
-- `UnarchivePuppet`: never refused for the plan. The unarchived puppet takes its creation rank back, which can make a newer one inactive.
+- `UnarchivePuppet`: never refused for the plan. The unarchived puppet takes its creation rank back, which can waitlist a newer one.
 
 Removed: `PassProGate()`, the `ProTrial` and `TrialReminder` objects, `trial_available`.
 
@@ -68,18 +68,18 @@ New invariant:
 ```mermaid
 stateDiagram-v2
     [*] --> covered: CreatePuppet (AdmitPuppet passes)
-    covered --> inactive: owner's plan shrinks, or an older puppet is unarchived
-    inactive --> covered: owner gets Pro, or an older puppet is archived or erased
+    covered --> waitlisted: owner's plan shrinks, or an older puppet is unarchived
+    waitlisted --> covered: owner gets Pro, or an older puppet is archived or erased
     covered --> archived: ArchivePuppet
-    inactive --> archived: ArchivePuppet
+    waitlisted --> archived: ArchivePuppet
     archived --> covered: UnarchivePuppet, rank below the limit
-    archived --> inactive: UnarchivePuppet, rank at or past the limit
+    archived --> waitlisted: UnarchivePuppet, rank at or past the limit
     covered --> [*]: ErasePuppet
-    inactive --> [*]: ErasePuppet
+    waitlisted --> [*]: ErasePuppet
     archived --> [*]: ErasePuppet
 ```
 
-`covered` and `inactive` are derived, not stored; `archived` is the existing archive row. Anything not drawn is refused.
+`covered` and `waitlisted` are derived, not stored; `archived` is the existing archive row. Anything not drawn is refused.
 
 ### Messaging
 
@@ -113,7 +113,7 @@ erDiagram
 
 | Variable | Meaning |
 |---|---|
-| `SOCK_PRO_REQUIRED` | Changed: off, every human is on Pro (beta: no puppet goes inactive, no limit changes). `true`: plans apply |
+| `SOCK_PRO_REQUIRED` | Changed: off, every human is on Pro (beta: no puppet is waitlisted, no limit changes). `true`: plans apply |
 
 Removed: `SOCK_BILLING_MAIL_FROM` (the reminder was its only sender).
 
@@ -123,7 +123,7 @@ Unchanged. No class gains or loses an endpoint.
 
 ## API
 
-`SUBSCRIPTION_REQUIRED` now means the puppet is inactive: its owner's plan does not cover it. `LIMIT_REACHED` gains `CreatePuppet` and consent past the plan's puppet limit; its message names the limit. `GROUP_FULL` now means the group is at its plan's member limit.
+`SUBSCRIPTION_REQUIRED` now means the puppet is waitlisted: its owner's plan does not cover it. `LIMIT_REACHED` gains `CreatePuppet` and consent past the plan's puppet limit; its message names the limit. `GROUP_FULL` now means the group is at its plan's member limit.
 
 ### Identity RPCs (IdentityService)
 
@@ -131,11 +131,11 @@ Unchanged. No class gains or loses an endpoint.
 |---|---|---|---|---|---|---|---|---|
 | `GetMe` (changed) | Human, puppet | As today | Self | none | Adds `plan` `Plan` (`PLAN_BASIC`, `PLAN_PRO`) and `limits` `PlanLimits{puppets, group_members, puppet_sends_per_minute}`, the human's or the puppet owner's. `trial_available` is always false and `PRO_SOURCE_TRIAL` never sent (kept for wire compatibility) | none | Read | none: reads `Account.Plan()` |
 | `CreatePuppet` (changed) | Human, machine key | As today | As today, the Pro clause now `Account.AdmitPuppet()` | As today | As today | Adds `LIMIT_REACHED`; `SUBSCRIPTION_REQUIRED` no longer returned | As today | `Account.AdmitPuppet()`, then as today |
-| `ListPuppets` (changed) | Human, machine key | As today | As today | As today | Each `Puppet` gains `inactive` bool | As today | Read | none: reads `Account.Covers` per puppet |
-| `MintPuppetToken`, `IssueConnectorPuppetToken` (changed) | As today | As today | As today, the Pro clause now `Account.Covers(puppet)` | As today | As today | `SUBSCRIPTION_REQUIRED` when inactive | As today | `Account.Covers(puppet)`, then as today |
+| `ListPuppets` (changed) | Human, machine key | As today | As today | As today | Each `Puppet` gains `waitlisted` bool | As today | Read | none: reads `Account.Covers` per puppet |
+| `MintPuppetToken`, `IssueConnectorPuppetToken` (changed) | As today | As today | As today, the Pro clause now `Account.Covers(puppet)` | As today | As today | `SUBSCRIPTION_REQUIRED` when waitlisted | As today | `Account.Covers(puppet)`, then as today |
 | `MintMachineKey` (changed) | Human | As today | As today, no plan clause | As today | As today | `SUBSCRIPTION_REQUIRED` no longer returned | As today | As today |
-| `UnarchivePuppet` (changed) | Human, machine key | As today | As today | As today | As today | As today | As today | As today; may make a newer puppet inactive, emits `PuppetArchiveChanged` as today |
-| Every RPC called with a puppet token (changed) | Puppet | `sock_pt_` | The auth interceptor's Pro clause becomes `Account.Covers(puppet)`. An open `Subscribe` re-checks at each heartbeat and ends `SUBSCRIPTION_REQUIRED` once inactive | As today | As today | `SUBSCRIPTION_REQUIRED` when inactive | As today | `Account.Covers(puppet)` |
+| `UnarchivePuppet` (changed) | Human, machine key | As today | As today | As today | As today | As today | As today | As today; may waitlist a newer puppet, emits `PuppetArchiveChanged` as today |
+| Every RPC called with a puppet token (changed) | Puppet | `sock_pt_` | The auth interceptor's Pro clause becomes `Account.Covers(puppet)`. An open `Subscribe` re-checks at each heartbeat and ends `SUBSCRIPTION_REQUIRED` once waitlisted | As today | As today | `SUBSCRIPTION_REQUIRED` when waitlisted | As today | `Account.Covers(puppet)` |
 
 OAuth consent's Allow (ADR 11), when it creates a puppet: `Account.AdmitPuppet()`, refusing with the consent page's limit message.
 
@@ -173,8 +173,8 @@ No other table changes. Every new fact is derived.
 
 ## Apps, CLI and website
 
-- Apps' Settings show the plan and its limits from `GetMe`, and inactive puppets in the puppet list with "Inactive: Basic covers your 5 oldest puppets". `inactive` comes from `ListPuppets`, which apps call at stream open and after a `PuppetArchive` event; a plan change mid-stream shows at the next open.
-- The CLI's `sock puppets list` marks inactive puppets; `SUBSCRIPTION_REQUIRED` reads "this puppet is inactive: archive another or get Sock Pro".
+- Apps' Settings show the plan and its limits from `GetMe`, and waitlisted puppets in the puppet list with "Waitlisted: Basic covers your 5 oldest puppets". `waitlisted` comes from `ListPuppets`, which apps call at stream open and after a `PuppetArchive` event; a plan change mid-stream shows at the next open.
+- The CLI's `sock puppets list` marks waitlisted puppets; `SUBSCRIPTION_REQUIRED` reads "this puppet is waitlisted: archive another or get Sock Pro".
 - Website: concepts doc's Sock Pro section rewritten for plans; a pricing section on `/download` or its own page.
 - Terms and privacy: the privacy policy drops the trial and Apple purchase rows; the terms gain plans when Pro is enforced.
 
@@ -183,7 +183,7 @@ No other table changes. Every new fact is derived.
 | Transition | API | Event | DDL |
 |---|---|---|---|
 | Puppet created | `CreatePuppet`, consent | `PuppetCreated` (existing) | `identity.puppets` |
-| Puppet inactive or covered | Read through `Covers` on every puppet-token call and `ListPuppets` | none: derived, recorded here | Indexes above |
+| Puppet waitlisted or covered | Read through `Covers` on every puppet-token call and `ListPuppets` | none: derived, recorded here | Indexes above |
 | Plan changes | `StartCheckout`, webhook, `GrantPro`, `RevokeProGrant` (existing) | `ProEntitlementChanged` | Existing source tables |
 | Group past its limit | `CreateGroup`, `AddMember` | none: refusal only | none: count of members |
 
@@ -191,8 +191,8 @@ No other table changes. Every new fact is derived.
 
 - Pro: 50 puppets, 100 group members, 300 puppet sends a minute. Price unchanged, $14.99 a month or $149.99 a year.
 - A group's limit is Pro's while any human member has Pro, for now.
-- Rank is by creation. Resuming an older Claude Code session can make the running session's puppet inactive; accepted.
-- The word is inactive.
+- Rank is by creation. Resuming an older Claude Code session can waitlist the running session's puppet; accepted.
+- The word is waitlisted: waitlisted read too close to active puppet; standby, queued, pending and blocked already mean something in the contract.
 
 ## Open questions
 
