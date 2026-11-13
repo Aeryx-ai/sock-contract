@@ -192,7 +192,7 @@ No other table changes. Every new fact is derived.
 - Pro: 50 puppets, 100 group members, 300 puppet sends a minute. Price unchanged, $14.99 a month or $149.99 a year.
 - A group's limit is Pro's while any human member has Pro, for now.
 - Rank is by creation. Resuming an older Claude Code session can waitlist the running session's puppet; accepted.
-- The word is waitlisted: waitlisted read too close to active puppet; standby, queued, pending and blocked already mean something in the contract.
+- The word is waitlisted: inactive read too close to active puppet; standby, queued, pending and blocked already mean something in the contract.
 
 ## Open questions
 
