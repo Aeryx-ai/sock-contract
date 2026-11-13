@@ -1,6 +1,6 @@
 # Plans: Basic free forever, Pro for more
 
-Pass 3, draft for approval. Contexts: Identity, Messaging. Changes [Sock Pro billing](sock-pro-billing.md) and [domain-model](domain-model.md); unchanged objects are not repeated.
+Pass 3, approved. Contexts: Identity, Messaging. Changes [Sock Pro billing](sock-pro-billing.md) and [domain-model](domain-model.md); unchanged objects are not repeated.
 
 What changes:
 
