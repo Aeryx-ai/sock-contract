@@ -53,7 +53,7 @@ Changed behaviors:
 - `Plan()` (humans): `pro` while `ProActiveUntil()` is after now, `basic` otherwise, whatever `SOCK_PRO_REQUIRED` says. Its group and send limits always apply; its puppet limit only while `SOCK_PRO_REQUIRED` is `true`.
 - `ProActiveUntil()` (humans): the latest of every subscription's `activeUntil` and every unrevoked grant's `endsAt`. The trial term is gone.
 - `AdmitPuppet()` (humans, replaces `PassProGate()` on `CreatePuppet` and consent's Allow): refuses `LIMIT_REACHED` when the human already has `Plan().puppets` unarchived non-system puppets. Starts nothing.
-- `Covers(puppet)` (humans, replaces `PassProGate()` on `MintPuppetToken`, `IssueConnectorPuppetToken` and every call made with a puppet token): true for a system puppet, otherwise when the puppet's rank is below `Plan().puppets`. An archived puppet has no rank and is not covered; archived puppets already refuse their tokens' sends. Refusal is `SUBSCRIPTION_REQUIRED`.
+- `Covers(puppet)` (humans, replaces `PassProGate()` on `MintPuppetToken`, `IssueConnectorPuppetToken` and every call made with a puppet token): true for a system puppet, otherwise when the puppet's rank is below `Plan().puppets`. An archived puppet has no rank and is not covered: archiving revokes no token, so without this a Basic owner could archive five working puppets and make five more. Refusal is `SUBSCRIPTION_REQUIRED`; unarchiving restores it by rank.
 - `MintMachineKey`: no longer gated by plan.
 - `UnarchivePuppet`: never refused for the plan. The unarchived puppet takes its creation rank back, which can waitlist a newer one.
 
