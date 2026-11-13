@@ -92,7 +92,8 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
   /// failed_precondition: invite code unknown, used or expired.
   case inviteInvalid // = 50
 
-  /// failed_precondition: group is at its member cap.
+  /// failed_precondition: group is at its member limit: Pro's while any human
+  /// member has Pro, Basic's otherwise (PlanLimits.group_members).
   case groupFull // = 51
 
   /// failed_precondition: puppet cannot join a conversation its owner is not in.
@@ -117,13 +118,11 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
   /// different outcome. Resolving again with the same outcome succeeds.
   case reportAlreadyResolved // = 57
 
-  /// failed_precondition: Sock Pro is required and the human (or the calling
-  /// puppet's owner) has none active: the trial is spent and no subscription
-  /// or grant is active. Sent only while the server enforces Sock Pro, for
-  /// every call with a puppet token (the moderation and support puppets
-  /// excepted) and for CreatePuppet, MintPuppetToken, MintMachineKey and
-  /// IssueConnectorPuppetToken, which start the human's one trial instead
-  /// when it was never started. GetMe's pro says what is active.
+  /// failed_precondition: the puppet is waitlisted: past its owner's plan's
+  /// puppet limit (Puppet.waitlisted). Sent only while the server enforces
+  /// Sock Pro, for every call with the puppet's token and for MintPuppetToken
+  /// and IssueConnectorPuppetToken naming it. Archive or erase an older
+  /// puppet, or get Sock Pro.
   case subscriptionRequired // = 58
 
   /// failed_precondition: the puppet is a system puppet (Puppet.system), run
@@ -138,7 +137,9 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
   /// reporter exceeded. Retry-After header set.
   case rateLimited // = 60
 
-  /// failed_precondition: a limit is reached. MintMachineKey at 10 live
+  /// failed_precondition: a limit is reached. CreatePuppet, and an agent
+  /// platform's consent that creates a puppet, at the plan's puppet limit
+  /// (PlanLimits.puppets): archive or erase one, or get Sock Pro. MintMachineKey at 10 live
   /// machine keys per human: revoke one first. MintPuppetToken for the support
   /// puppet at 10 live tokens: revoke one first. Any other
   /// puppet at 10 live tokens is never refused: its oldest token other than
@@ -159,7 +160,7 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
 
   /// failed_precondition: a human posts only into a conversation with an
   /// active puppet: the moderation or support puppet, or a puppet that is not
-  /// archived whose owner is not suspended and has Sock Pro (Send, CreateGroup).
+  /// archived or waitlisted whose owner is not suspended (Send, CreateGroup).
   /// Conversation.humans_can_post says so before a send.
   case noActivePuppet // = 64
 

@@ -107,7 +107,7 @@ message ProGrant {
   google.protobuf.Timestamp revoked_at = 4;
 }
 
-// ProTrial is a human's one trial.
+// ProTrial is a human's one trial. No longer started: the trial is gone.
 message ProTrial {
   google.protobuf.Timestamp started_at = 1;
   // started_at + 7 days.
@@ -266,7 +266,7 @@ message GetHumanResponse {
   bool terms_current = 5;
   // What keeps Sock Pro active longest.
   ProStatus pro = 6;
-  // Unset: the human never started a trial.
+  // Always unset: the trial is gone.
   ProTrial trial = 7;
   // Every Stripe subscription of the human's, as last fetched.
   repeated ProSubscriptionSummary subscriptions = 8;

@@ -342,7 +342,12 @@ type Puppet struct {
 	// and only for its owner (ListPuppets, ExportIdentityData);
 	// unset in every other response, so a platform name never reaches
 	// anyone else. Clients label erasing it "Disconnect <client_name>".
-	Connector     *Connector `protobuf:"bytes,4,opt,name=connector,proto3" json:"connector,omitempty"`
+	Connector *Connector `protobuf:"bytes,4,opt,name=connector,proto3" json:"connector,omitempty"`
+	// Past the owner's plan's puppet limit: its tokens are refused
+	// SUBSCRIPTION_REQUIRED and it does not let humans post, until an older
+	// puppet is archived or erased or the owner gets Pro. Set only for its
+	// owner (ListPuppets); false in every other response.
+	Waitlisted    bool `protobuf:"varint,5,opt,name=waitlisted,proto3" json:"waitlisted,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -403,6 +408,13 @@ func (x *Puppet) GetConnector() *Connector {
 		return x.Connector
 	}
 	return nil
+}
+
+func (x *Puppet) GetWaitlisted() bool {
+	if x != nil {
+		return x.Waitlisted
+	}
+	return false
 }
 
 // The agent platform behind a connector puppet.
@@ -842,12 +854,15 @@ const file_sock_v1_types_proto_rawDesc = "" +
 	"\x06puppet\x18\x04 \x01(\v2\x0f.sock.v1.PuppetH\x00R\x06puppetB\x06\n" +
 	"\x04kind\"\x1f\n" +
 	"\x05Human\x12\x16\n" +
-	"\x06handle\x18\x01 \x01(\tR\x06handle\"\x81\x01\n" +
+	"\x06handle\x18\x01 \x01(\tR\x06handle\"\xa1\x01\n" +
 	"\x06Puppet\x12\x19\n" +
 	"\bowner_id\x18\x01 \x01(\tR\aownerId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
 	"\x06system\x18\x03 \x01(\bR\x06system\x120\n" +
-	"\tconnector\x18\x04 \x01(\v2\x12.sock.v1.ConnectorR\tconnector\"\\\n" +
+	"\tconnector\x18\x04 \x01(\v2\x12.sock.v1.ConnectorR\tconnector\x12\x1e\n" +
+	"\n" +
+	"waitlisted\x18\x05 \x01(\bR\n" +
+	"waitlisted\"\\\n" +
 	"\tConnector\x12\x1f\n" +
 	"\vclient_name\x18\x01 \x01(\tR\n" +
 	"clientName\x12\x1a\n" +

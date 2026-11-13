@@ -452,16 +452,46 @@ message GetMeResponse {
   // What keeps Sock Pro active for this human, or a puppet's owner, longest:
   // whether or not the server enforces Sock Pro.
   ProStatus pro = 6;
-  // The human never had a trial: the first CreatePuppet, MintPuppetToken,
-  // MintMachineKey or connector issue starts its 7 days. False for a puppet.
+  // Always false: the trial is gone, Basic is free forever
+  // (docs/specs/plans.md). Kept for wire compatibility.
   bool trial_available = 7;
+  // The human's plan, or a puppet owner's: Pro while any source in pro is
+  // active, Basic otherwise, whether or not the server enforces Sock Pro.
+  // pro_active can be true on Basic: the server is not enforcing.
+  Plan plan = 8;
+  // What plan allows.
+  PlanLimits limits = 9;
+}
+
+// Plan is what a human's account allows. Not ProPlan, which is a Sock Pro
+// price.
+enum Plan {
+  PLAN_UNSPECIFIED = 0;
+  // Free forever.
+  PLAN_BASIC = 1;
+  // Sock Pro: a subscription or an operator grant is active.
+  PLAN_PRO = 2;
+}
+
+// PlanLimits are the numbers a plan allows. Basic: 5, 20, 60. Pro: 50, 100,
+// 300.
+message PlanLimits {
+  // Unarchived non-system puppets that work. Past it, while the server
+  // enforces Sock Pro, the newest are waitlisted (Puppet.waitlisted) and
+  // CreatePuppet is LIMIT_REACHED.
+  int32 puppets = 1;
+  // Members of a group: Pro's while any human member has Pro. Past it,
+  // CreateGroup and AddMember are GROUP_FULL.
+  int32 group_members = 2;
+  // Messages each puppet sends a minute.
+  int32 puppet_sends_per_minute = 3;
 }
 
 // ProSource is one reason Sock Pro is active.
 enum ProSource {
   // No source is active.
   PRO_SOURCE_UNSPECIFIED = 0;
-  // The human's one 7-day trial.
+  // Never sent: the trial is gone. Kept for wire compatibility.
   PRO_SOURCE_TRIAL = 1;
   // A Stripe subscription.
   PRO_SOURCE_SUBSCRIPTION = 2;

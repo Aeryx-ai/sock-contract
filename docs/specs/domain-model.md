@@ -69,12 +69,14 @@ Erasure is not a field. An erased account is deleted outright (minimal retention
 - `RecordAppleGrant(refreshToken, client)` (humans): replaces the stored `AppleGrant`, queuing the old one for revocation as the client it was issued to
 - `Suspend()`: records a `Suspension`, revokes every device of the account and of its puppets, and queues a `BillingCancellation` for a human's `BillingCustomer`, since a suspended human cannot sign in to cancel. `Reinstate()` drops one not yet done. Emits `AccountSuspensionChanged` when it writes the suspension
 - `Reinstate()`: deletes the `Suspension`; idempotent (`ReinstateAccount`, `sockd accounts reinstate`). Emits `AccountSuspensionChanged` when it deletes one
-- `PassProGate()` (humans): the Sock Pro gate's check, run by every gated human action (`CreatePuppet`, `MintPuppetToken`, `MintMachineKey`, consent's Allow, `IssueConnectorPuppetToken` for the grant's owner). Passes when Pro is active. Otherwise, when the human has never had a trial, starts one (`ProTrial` now to now + 7 days, and its `TrialReminder`) and passes. Otherwise refuses `SUBSCRIPTION_REQUIRED`. While `SOCK_PRO_REQUIRED` is off it passes and starts nothing
+- `Plan()` (humans): `pro` while `ProActiveUntil()` is after now, `basic` otherwise ([plans](plans.md)). Its `PlanLimits`: Basic 5 puppets, 20 group members, 60 puppet sends a minute; Pro 50, 100, 300
+- `AdmitPuppet()` (humans, `CreatePuppet` and consent's Allow): refuses `LIMIT_REACHED` when the human already has `Plan().puppets` unarchived non-system puppets. While `SOCK_PRO_REQUIRED` is off it passes
+- `Covers(puppet)` (humans, `MintPuppetToken`, `IssueConnectorPuppetToken` and every call with a puppet token): true for a system puppet, otherwise when fewer than `Plan().puppets` of the owner's unarchived non-system puppets have an older account id. A puppet not covered is waitlisted, refused `SUBSCRIPTION_REQUIRED`. While `SOCK_PRO_REQUIRED` is off every puppet is covered
 - `BindBillingCustomer(customerId)` (humans, `StartCheckout` the first time): records the human's `BillingCustomer`. Refuses a second one
 - `ApplySubscription(snapshot)` (humans, the Stripe webhook): records what one fetch of a subscription says, `ProSubscription.activeUntil` from the snapshot. Writes the latest fetch, whatever was stored: the snapshot is Stripe's current state, not an increment
 - `GrantPro(endsAt)` (humans, `GrantPro`): adds a `ProGrant`. Refuses `endsAt` not after now or more than 10 years ahead
 - `RevokeProGrant(grantId)` (humans, `RevokeProGrant`): records a `ProGrantRevocation`. Idempotent for a grant already revoked
-- `ProActiveUntil()` (humans): the latest of the trial's `endsAt`, every subscription's `activeUntil` and every unrevoked grant's `endsAt`. Sock Pro is active, for the human and through them for their puppets, while it is after now
+- `ProActiveUntil()` (humans): the latest of every subscription's `activeUntil` and every unrevoked grant's `endsAt`. Sock Pro is active, for the human and through them for their puppets, while it is after now
 - `Erase()` (`EraseAccount`, `ErasePuppet`, and the operator's `EraseHuman` for a human owning no system puppet): deletes the account, its devices and, for a human, every puppet it owns; requests revocation of its `AppleGrant` if one exists; queues a `BillingCustomerDeletion` for its `BillingCustomer` if one exists; deletes every `OperatorAction` targeting any of them
 
 ### Invariants
@@ -85,7 +87,7 @@ Erasure is not a field. An erased account is deleted outright (minimal retention
 - A suspended account authenticates nothing: no device survives `Suspend`, and sign-in is refused while the suspension exists.
 - A human registers only by accepting the current terms version.
 - A human registers by redeeming an invite, by the operator's waiver, or while registration is open ([feature flags](feature-flags.md)).
-- At most one trial per human, ever. Erasing the human erases it, and a new account is a new human.
+- A human's covered puppets are their oldest `Plan().puppets` unarchived non-system puppets; the rest are waitlisted. Derived at each check, never stored.
 - At most one billing customer per human, and a billing customer belongs to one human.
 - A subscription belongs to the human whose billing customer Stripe names on it. The hub never reads an account id from Stripe metadata.
 - Every change to `ProActiveUntil()` emits `ProEntitlementChanged` in the same transaction.
@@ -100,25 +102,20 @@ Erasure is not a field. An erased account is deleted outright (minimal retention
 | `TermsAcceptance` | has-a (humans) | 1 to n, n ≥ 1 for humans registered after pass 2 |
 | `Suspension` | has-a | 1 to 0..1 |
 | `AppleGrant` | has-a (humans) | 1 to 0..1 |
-| `ProTrial` | has-a (humans) | 1 to 0..1 |
 | `BillingCustomer` | has-a (humans) | 1 to 0..1 |
 | `ProSubscription` | has-a (humans), through `BillingCustomer` | 1 to n, n ≥ 0 |
 | `ProGrant` | has-a (humans) | 1 to n, n ≥ 0 |
 
-### Sock Pro states
+### Plan states
 
 ```mermaid
 stateDiagram-v2
-    [*] --> none: human registered
-    none --> trial: PassProGate() with no trial
-    trial --> active: subscribe or grant
-    trial --> lapsed: endsAt passes
-    none --> active: subscribe or grant before any gate
-    lapsed --> active: subscribe or grant
-    active --> lapsed: every source ends or is revoked
+    [*] --> basic: human registered
+    basic --> pro: subscribe or grant
+    pro --> basic: every source ends or is revoked
 ```
 
-Derived from the sources, not stored. Anything not drawn is refused: `lapsed` never returns to `trial`.
+Derived from the sources, not stored. A puppet's `covered` and `waitlisted` states are in [plans](plans.md).
 
 ## TermsAcceptance
 
@@ -152,28 +149,6 @@ Value object, owned by `Account` (humans). The refresh token Apple issued for th
 | `issuedAt` | Timestamp | When the authorization code was exchanged |
 
 Every sign-in replaces it with the newest grant, from either client. Accounts that signed in only before pass 2 have none.
-
-## ProTrial
-
-Value object, owned by `Account` (humans), 0 or 1. The human's one free 7-day Sock Pro period, no card ([Sock Pro billing](sock-pro-billing.md)).
-
-| Field | Type | Meaning |
-|---|---|---|
-| `startedAt` | Timestamp | When `PassProGate` started it |
-| `endsAt` | Timestamp | `startedAt` + 7 days |
-
-Kept after it ends: its existence is what refuses a second trial.
-
-## TrialReminder
-
-Value object, owned by `ProTrial`, a queue row. Deleted once handled.
-
-| Field | Type | Meaning |
-|---|---|---|
-| `availableAt` | Timestamp | When the worker may next lease it: 2 days before `endsAt` at first, pushed out by each lease and by backoff |
-| `attempts` | int | Leases taken |
-
-Handling: when the human's `ProActiveUntil()` is after the trial's `endsAt` (they subscribed or were granted Pro), or the human has no email identity, the row is deleted and nothing is sent. Otherwise the worker reads the address from WorkOS (the email identity's user) and sends "Your Sock Pro trial ends in 2 days" from `SOCK_BILLING_MAIL_FROM` (an address on `joinsock.com`) through Cloudflare Email Service, with `SOCK_CLOUDFLARE_ACCOUNT_ID` and `SOCK_CLOUDFLARE_EMAIL_TOKEN`, then deletes the row. `SOCK_BILLING_MAIL_FROM` unset: reminders wait in their queue. A timeout, 5xx or throttle from either service backs off (1 s doubling to 1 h, or `Retry-After`); a refusal for good (a bounce, a deleted WorkOS user) deletes the row and logs.
 
 ## BillingCustomer
 
@@ -491,7 +466,7 @@ Revocation is not a field. A revoked grant is named by a `ConnectorGrantRevocati
 
 ### Behaviors
 
-- `Consent(request, consentToken, human, puppetName | keptPuppet)` (factory, one transaction): consumes the request, refuses a suspended human, `Account.CreatePuppet(puppetName)` for the human (Sock Pro gate and the 100-puppet limit apply and refuse the consent) or adopts the kept puppet of a revoked grant for the same client (deleting that grant row), creates the grant and its first `AuthorizationCode`
+- `Consent(request, consentToken, human, puppetName | keptPuppet)` (factory, one transaction): consumes the request, refuses a suspended human, `Account.CreatePuppet(puppetName)` for the human (`Account.AdmitPuppet()` applies and refuses the consent at the plan's puppet limit) or adopts the kept puppet of a revoked grant for the same client (deleting that grant row), creates the grant and its first `AuthorizationCode`
 - `Redeem(code, codeVerifier, redirectUri, resource, clientId)`: refuses an owner under suspension, a code older than 60 seconds or whose challenge is not `S256(codeVerifier)`, or whose redirect URI, resource or client differ; records the `AuthorizationCodeRedemption`, and a code already redeemed calls `Revoke(codeReplay)`; issues an access token and a `RefreshToken`
 - `Refresh(refreshToken, clientId)`: refuses a client other than the grant's and an owner under suspension; a live token is rotated (a `RefreshTokenRotation` names the successor) and an access token issued; a rotated token whose successor was never used, presented within 60 s of its first rotation, is a retry, so the successor is voided (a tombstone, `refresh_token_voids`) and the token rotated again, keeping its first `rotatedAt`; a rotated token whose successor was itself used, or that is presented past the 60 s, is reuse and calls `Revoke(refreshReuse)`, as does presenting a voided successor (the puppet is kept); an unknown token is `invalid_grant`
 - `IssueAccessToken()`: ES256 JWT, `iss` the hub, `aud` = `resource`, `sub` = `id`, `scope` `sock`, `jti`, `exp` one hour out
@@ -854,7 +829,7 @@ Value in Messaging, one row: the `created_at` of the last Identity outbox event 
 Domain service, consulted by `Conversation.Post` and the membership factories. Answers, inside the posting transaction:
 
 - whether a recipient is shielded from a sender: the recipient (or, for a puppet recipient, its owner) has blocked the sender, or has blocked the human who owns a puppet sender.
-- whether a conversation has an active puppet: some puppet member is the moderation or support puppet, or is not archived, neither it nor its owner is suspended, and the owner's `ProEntitlement.activeUntil` is after now (always true while `SOCK_PRO_REQUIRED` is off). The store answers it as it loads each puppet member, marking the `Participant` active, so `Conversation` decides from its members alone. `ListConversations` reads the same answer as `humans_can_post`.
+- whether a conversation has an active puppet: some puppet member is the moderation or support puppet, or is not archived, neither it nor its owner is suspended, and it is covered by its owner's plan: fewer than the plan's puppet limit of the owner's unarchived non-system puppets have an older account id, the plan Pro while the owner's `ProEntitlement.activeUntil` is after now (always covered while `SOCK_PRO_REQUIRED` is off; [plans](plans.md)). The store answers it as it loads each puppet member, marking the `Participant` active, so `Conversation` decides from its members alone. `ListConversations` reads the same answer as `humans_can_post`.
 
 ## Endpoint
 
@@ -915,7 +890,7 @@ Entity, aggregate root. Where messages go, and the issuer of their order.
 ### Invariants
 
 - Direct: exactly 2 members, fixed for life. At most one direct conversation per pair of participants.
-- Group: 1 to 20 members. Removing the last member deletes the conversation.
+- Group: 1 to the group's member limit: 100 (Pro's) while any human member's `ProEntitlement.activeUntil` is after now, 20 (Basic's) otherwise. Adds past it are refused `GROUP_FULL`; members are never removed for it. Removing the last member deletes the conversation.
 - A puppet is a member only while its owner is, except the support puppet in a direct, where its owner is not a member. Removing or erasing the owner removes the owner's puppets.
 - Only members post, add or remove. Any member may add; a member may remove only a puppet they own (`RemoveMember`) and removes themselves with `Leave`; the group has no admin in v1.
 - `nextSeq` only increases; seqs are gapless per conversation.
@@ -1210,7 +1185,9 @@ Domain service. Reacts to `ReportFiled`: reads the reporter's and subject's hand
 
 `ProPlan`: `monthly` ($14.99), `yearly` ($149.99), tax included.
 
-`ProSource`: `trial`, `subscription`, `grant`. Which source keeps a human's Pro active longest, as `GetMe` and `GetHuman` report it; none when no source is active.
+`Plan`: `basic`, `pro`. What a human's account allows ([plans](plans.md)).
+
+`ProSource`: `subscription`, `grant` (`trial` remains on the wire, never sent). Which source keeps a human's Pro active longest, as `GetMe` and `GetHuman` report it; none when no source is active.
 
 `DeviceRemovalCause`: `signOut`, `revoked`, `evicted`, `suspended`.
 
@@ -1226,8 +1203,6 @@ erDiagram
     ACCOUNT ||--o{ TERMS_ACCEPTANCE : "agreed to"
     ACCOUNT ||--o| SUSPENSION : "barred by"
     ACCOUNT ||--o| APPLE_GRANT : "granted"
-    ACCOUNT ||--o| PRO_TRIAL : "trialed"
-    PRO_TRIAL ||--o| TRIAL_REMINDER : "reminded by"
     ACCOUNT ||--o| BILLING_CUSTOMER : "billed as"
     BILLING_CUSTOMER ||--o{ PRO_SUBSCRIPTION : "subscribed"
     ACCOUNT ||--o{ PRO_GRANT : "granted Pro"
@@ -1283,7 +1258,9 @@ classDiagram
       +ChangeHandle(handle)
       +AcceptTerms(version)
       +RecordAppleGrant(token, client)
-      +PassProGate()
+      +Plan() Plan
+      +AdmitPuppet()
+      +Covers(puppet) bool
       +BindBillingCustomer(customerId)
       +ApplySubscription(snapshot)
       +GrantPro(endsAt)

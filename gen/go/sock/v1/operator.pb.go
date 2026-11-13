@@ -737,7 +737,7 @@ func (x *ProGrant) GetRevokedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-// ProTrial is a human's one trial.
+// ProTrial is a human's one trial. No longer started: the trial is gone.
 type ProTrial struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	StartedAt *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=started_at,json=startedAt,proto3" json:"started_at,omitempty"`
@@ -2048,7 +2048,7 @@ type GetHumanResponse struct {
 	TermsCurrent bool `protobuf:"varint,5,opt,name=terms_current,json=termsCurrent,proto3" json:"terms_current,omitempty"`
 	// What keeps Sock Pro active longest.
 	Pro *ProStatus `protobuf:"bytes,6,opt,name=pro,proto3" json:"pro,omitempty"`
-	// Unset: the human never started a trial.
+	// Always unset: the trial is gone.
 	Trial *ProTrial `protobuf:"bytes,7,opt,name=trial,proto3" json:"trial,omitempty"`
 	// Every Stripe subscription of the human's, as last fetched.
 	Subscriptions []*ProSubscriptionSummary `protobuf:"bytes,8,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`

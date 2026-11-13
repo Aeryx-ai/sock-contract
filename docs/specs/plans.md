@@ -50,7 +50,7 @@ Owner-direct limits (ADR 50) are the same on both plans: they protect the owner'
 
 Changed behaviors:
 
-- `Plan()` (humans): `pro` while `ProActiveUntil()` is after now, or while `SOCK_PRO_REQUIRED` is off; `basic` otherwise.
+- `Plan()` (humans): `pro` while `ProActiveUntil()` is after now, `basic` otherwise, whatever `SOCK_PRO_REQUIRED` says. Its group and send limits always apply; its puppet limit only while `SOCK_PRO_REQUIRED` is `true`.
 - `ProActiveUntil()` (humans): the latest of every subscription's `activeUntil` and every unrevoked grant's `endsAt`. The trial term is gone.
 - `AdmitPuppet()` (humans, replaces `PassProGate()` on `CreatePuppet` and consent's Allow): refuses `LIMIT_REACHED` when the human already has `Plan().puppets` unarchived non-system puppets. Starts nothing.
 - `Covers(puppet)` (humans, replaces `PassProGate()` on `MintPuppetToken`, `IssueConnectorPuppetToken` and every call made with a puppet token): true for a system puppet, otherwise when the puppet's rank is below `Plan().puppets`. An archived puppet has no rank and is not covered; archived puppets already refuse their tokens' sends. Refusal is `SUBSCRIPTION_REQUIRED`.
@@ -113,7 +113,7 @@ erDiagram
 
 | Variable | Meaning |
 |---|---|
-| `SOCK_PRO_REQUIRED` | Changed: off, every human is on Pro (beta: no puppet is waitlisted, no limit changes). `true`: plans apply |
+| `SOCK_PRO_REQUIRED` | Changed: off, the puppet limit is not enforced (no puppet is waitlisted, `CreatePuppet` never refuses for it); plans and their group and send limits still apply, and Basic's are today's. `true`: the puppet limit applies too |
 
 Removed: `SOCK_BILLING_MAIL_FROM` (the reminder was its only sender).
 

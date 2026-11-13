@@ -241,6 +241,12 @@ public nonisolated struct Sock_V1_Puppet: Sendable {
   /// Clears the value of `connector`. Subsequent reads from it will return its default value.
   public mutating func clearConnector() {self._connector = nil}
 
+  /// Past the owner's plan's puppet limit: its tokens are refused
+  /// SUBSCRIPTION_REQUIRED and it does not let humans post, until an older
+  /// puppet is archived or erased or the owner gets Pro. Set only for its
+  /// owner (ListPuppets); false in every other response.
+  public var waitlisted: Bool = false
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -549,7 +555,7 @@ nonisolated extension Sock_V1_Human: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 nonisolated extension Sock_V1_Puppet: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Puppet"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}owner_id\0\u{1}name\0\u{1}system\0\u{1}connector\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}owner_id\0\u{1}name\0\u{1}system\0\u{1}connector\0\u{1}waitlisted\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -561,6 +567,7 @@ nonisolated extension Sock_V1_Puppet: SwiftProtobuf.Message, SwiftProtobuf._Mess
       case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
       case 3: try { try decoder.decodeSingularBoolField(value: &self.system) }()
       case 4: try { try decoder.decodeSingularMessageField(value: &self._connector) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.waitlisted) }()
       default: break
       }
     }
@@ -583,6 +590,9 @@ nonisolated extension Sock_V1_Puppet: SwiftProtobuf.Message, SwiftProtobuf._Mess
     try { if let v = self._connector {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     } }()
+    if self.waitlisted != false {
+      try visitor.visitSingularBoolField(value: self.waitlisted, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -591,6 +601,7 @@ nonisolated extension Sock_V1_Puppet: SwiftProtobuf.Message, SwiftProtobuf._Mess
     if lhs.name != rhs.name {return false}
     if lhs.system != rhs.system {return false}
     if lhs._connector != rhs._connector {return false}
+    if lhs.waitlisted != rhs.waitlisted {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

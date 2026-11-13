@@ -75,6 +75,50 @@ public nonisolated enum Sock_V1_AppleClient: SwiftProtobuf.Enum, Swift.CaseItera
 
 }
 
+/// Plan is what a human's account allows. Not ProPlan, which is a Sock Pro
+/// price.
+public nonisolated enum Sock_V1_Plan: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unspecified // = 0
+
+  /// Free forever.
+  case basic // = 1
+
+  /// Sock Pro: a subscription or an operator grant is active.
+  case pro // = 2
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unspecified
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .basic
+    case 2: self = .pro
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .basic: return 1
+    case .pro: return 2
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Sock_V1_Plan] = [
+    .unspecified,
+    .basic,
+    .pro,
+  ]
+
+}
+
 /// ProSource is one reason Sock Pro is active.
 public nonisolated enum Sock_V1_ProSource: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
@@ -82,7 +126,7 @@ public nonisolated enum Sock_V1_ProSource: SwiftProtobuf.Enum, Swift.CaseIterabl
   /// No source is active.
   case unspecified // = 0
 
-  /// The human's one 7-day trial.
+  /// Never sent: the trial is gone. Kept for wire compatibility.
   case trial // = 1
 
   /// A Stripe subscription.
@@ -1206,57 +1250,113 @@ public nonisolated struct Sock_V1_GetMeRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct Sock_V1_GetMeResponse: Sendable {
+public nonisolated struct Sock_V1_GetMeResponse: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   public var account: Sock_V1_Account {
-    get {_account ?? Sock_V1_Account()}
-    set {_account = newValue}
+    get {_storage._account ?? Sock_V1_Account()}
+    set {_uniqueStorage()._account = newValue}
   }
   /// Returns true if `account` has been explicitly set.
-  public var hasAccount: Bool {self._account != nil}
+  public var hasAccount: Bool {_storage._account != nil}
   /// Clears the value of `account`. Subsequent reads from it will return its default value.
-  public mutating func clearAccount() {self._account = nil}
+  public mutating func clearAccount() {_uniqueStorage()._account = nil}
 
   /// The latest terms version this human accepted. Empty: never accepted
   /// (registered before terms existed) or a puppet, whose terms are its owner's.
-  public var acceptedTermsVersion: String = String()
+  public var acceptedTermsVersion: String {
+    get {_storage._acceptedTermsVersion}
+    set {_uniqueStorage()._acceptedTermsVersion = newValue}
+  }
 
   /// The version the server currently requires.
-  public var currentTermsVersion: String = String()
+  public var currentTermsVersion: String {
+    get {_storage._currentTermsVersion}
+    set {_uniqueStorage()._currentTermsVersion = newValue}
+  }
 
   /// Sock Pro is active for this human, or for a puppet's owner: true while
   /// the server does not enforce Sock Pro, otherwise true while any source in
   /// pro is active.
-  public var proActive: Bool = false
+  public var proActive: Bool {
+    get {_storage._proActive}
+    set {_uniqueStorage()._proActive = newValue}
+  }
 
   /// The support puppet's account id: open a direct with it to send
   /// feedback. Empty: this server has no support desk, so offer none.
-  public var supportAccountID: String = String()
+  public var supportAccountID: String {
+    get {_storage._supportAccountID}
+    set {_uniqueStorage()._supportAccountID = newValue}
+  }
 
   /// What keeps Sock Pro active for this human, or a puppet's owner, longest:
   /// whether or not the server enforces Sock Pro.
   public var pro: Sock_V1_ProStatus {
-    get {_pro ?? Sock_V1_ProStatus()}
-    set {_pro = newValue}
+    get {_storage._pro ?? Sock_V1_ProStatus()}
+    set {_uniqueStorage()._pro = newValue}
   }
   /// Returns true if `pro` has been explicitly set.
-  public var hasPro: Bool {self._pro != nil}
+  public var hasPro: Bool {_storage._pro != nil}
   /// Clears the value of `pro`. Subsequent reads from it will return its default value.
-  public mutating func clearPro() {self._pro = nil}
+  public mutating func clearPro() {_uniqueStorage()._pro = nil}
 
-  /// The human never had a trial: the first CreatePuppet, MintPuppetToken,
-  /// MintMachineKey or connector issue starts its 7 days. False for a puppet.
-  public var trialAvailable: Bool = false
+  /// Always false: the trial is gone, Basic is free forever
+  /// (docs/specs/plans.md). Kept for wire compatibility.
+  public var trialAvailable: Bool {
+    get {_storage._trialAvailable}
+    set {_uniqueStorage()._trialAvailable = newValue}
+  }
+
+  /// The human's plan, or a puppet owner's: Pro while any source in pro is
+  /// active, Basic otherwise, whether or not the server enforces Sock Pro.
+  /// pro_active can be true on Basic: the server is not enforcing.
+  public var plan: Sock_V1_Plan {
+    get {_storage._plan}
+    set {_uniqueStorage()._plan = newValue}
+  }
+
+  /// What plan allows.
+  public var limits: Sock_V1_PlanLimits {
+    get {_storage._limits ?? Sock_V1_PlanLimits()}
+    set {_uniqueStorage()._limits = newValue}
+  }
+  /// Returns true if `limits` has been explicitly set.
+  public var hasLimits: Bool {_storage._limits != nil}
+  /// Clears the value of `limits`. Subsequent reads from it will return its default value.
+  public mutating func clearLimits() {_uniqueStorage()._limits = nil}
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
-  fileprivate var _account: Sock_V1_Account? = nil
-  fileprivate var _pro: Sock_V1_ProStatus? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+/// PlanLimits are the numbers a plan allows. Basic: 5, 20, 60. Pro: 50, 100,
+/// 300.
+public nonisolated struct Sock_V1_PlanLimits: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Unarchived non-system puppets that work. Past it, while the server
+  /// enforces Sock Pro, the newest are waitlisted (Puppet.waitlisted) and
+  /// CreatePuppet is LIMIT_REACHED.
+  public var puppets: Int32 = 0
+
+  /// Members of a group: Pro's while any human member has Pro. Past it,
+  /// CreateGroup and AddMember are GROUP_FULL.
+  public var groupMembers: Int32 = 0
+
+  /// Messages each puppet sends a minute.
+  public var puppetSendsPerMinute: Int32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
 }
 
 /// ProStatus is the source that keeps Sock Pro active longest.
@@ -1936,6 +2036,10 @@ fileprivate nonisolated let _protobuf_package = "sock.v1"
 
 nonisolated extension Sock_V1_AppleClient: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0APPLE_CLIENT_UNSPECIFIED\0\u{1}APPLE_CLIENT_APP\0\u{1}APPLE_CLIENT_WEB\0")
+}
+
+nonisolated extension Sock_V1_Plan: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PLAN_UNSPECIFIED\0\u{1}PLAN_BASIC\0\u{1}PLAN_PRO\0")
 }
 
 nonisolated extension Sock_V1_ProSource: SwiftProtobuf._ProtoNameProviding {
@@ -3845,7 +3949,133 @@ nonisolated extension Sock_V1_GetMeRequest: SwiftProtobuf.Message, SwiftProtobuf
 
 nonisolated extension Sock_V1_GetMeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}account\0\u{3}accepted_terms_version\0\u{3}current_terms_version\0\u{3}pro_active\0\u{3}support_account_id\0\u{1}pro\0\u{3}trial_available\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}account\0\u{3}accepted_terms_version\0\u{3}current_terms_version\0\u{3}pro_active\0\u{3}support_account_id\0\u{1}pro\0\u{3}trial_available\0\u{1}plan\0\u{1}limits\0")
+
+  fileprivate class _StorageClass {
+    var _account: Sock_V1_Account? = nil
+    var _acceptedTermsVersion: String = String()
+    var _currentTermsVersion: String = String()
+    var _proActive: Bool = false
+    var _supportAccountID: String = String()
+    var _pro: Sock_V1_ProStatus? = nil
+    var _trialAvailable: Bool = false
+    var _plan: Sock_V1_Plan = .unspecified
+    var _limits: Sock_V1_PlanLimits? = nil
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _account = source._account
+      _acceptedTermsVersion = source._acceptedTermsVersion
+      _currentTermsVersion = source._currentTermsVersion
+      _proActive = source._proActive
+      _supportAccountID = source._supportAccountID
+      _pro = source._pro
+      _trialAvailable = source._trialAvailable
+      _plan = source._plan
+      _limits = source._limits
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._account) }()
+        case 2: try { try decoder.decodeSingularStringField(value: &_storage._acceptedTermsVersion) }()
+        case 3: try { try decoder.decodeSingularStringField(value: &_storage._currentTermsVersion) }()
+        case 4: try { try decoder.decodeSingularBoolField(value: &_storage._proActive) }()
+        case 5: try { try decoder.decodeSingularStringField(value: &_storage._supportAccountID) }()
+        case 6: try { try decoder.decodeSingularMessageField(value: &_storage._pro) }()
+        case 7: try { try decoder.decodeSingularBoolField(value: &_storage._trialAvailable) }()
+        case 8: try { try decoder.decodeSingularEnumField(value: &_storage._plan) }()
+        case 9: try { try decoder.decodeSingularMessageField(value: &_storage._limits) }()
+        default: break
+        }
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._account {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      } }()
+      if !_storage._acceptedTermsVersion.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._acceptedTermsVersion, fieldNumber: 2)
+      }
+      if !_storage._currentTermsVersion.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._currentTermsVersion, fieldNumber: 3)
+      }
+      if _storage._proActive != false {
+        try visitor.visitSingularBoolField(value: _storage._proActive, fieldNumber: 4)
+      }
+      if !_storage._supportAccountID.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._supportAccountID, fieldNumber: 5)
+      }
+      try { if let v = _storage._pro {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+      } }()
+      if _storage._trialAvailable != false {
+        try visitor.visitSingularBoolField(value: _storage._trialAvailable, fieldNumber: 7)
+      }
+      if _storage._plan != .unspecified {
+        try visitor.visitSingularEnumField(value: _storage._plan, fieldNumber: 8)
+      }
+      try { if let v = _storage._limits {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+      } }()
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_GetMeResponse, rhs: Sock_V1_GetMeResponse) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._account != rhs_storage._account {return false}
+        if _storage._acceptedTermsVersion != rhs_storage._acceptedTermsVersion {return false}
+        if _storage._currentTermsVersion != rhs_storage._currentTermsVersion {return false}
+        if _storage._proActive != rhs_storage._proActive {return false}
+        if _storage._supportAccountID != rhs_storage._supportAccountID {return false}
+        if _storage._pro != rhs_storage._pro {return false}
+        if _storage._trialAvailable != rhs_storage._trialAvailable {return false}
+        if _storage._plan != rhs_storage._plan {return false}
+        if _storage._limits != rhs_storage._limits {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_PlanLimits: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PlanLimits"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}puppets\0\u{3}group_members\0\u{3}puppet_sends_per_minute\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3853,55 +4083,31 @@ nonisolated extension Sock_V1_GetMeResponse: SwiftProtobuf.Message, SwiftProtobu
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._account) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.acceptedTermsVersion) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.currentTermsVersion) }()
-      case 4: try { try decoder.decodeSingularBoolField(value: &self.proActive) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.supportAccountID) }()
-      case 6: try { try decoder.decodeSingularMessageField(value: &self._pro) }()
-      case 7: try { try decoder.decodeSingularBoolField(value: &self.trialAvailable) }()
+      case 1: try { try decoder.decodeSingularInt32Field(value: &self.puppets) }()
+      case 2: try { try decoder.decodeSingularInt32Field(value: &self.groupMembers) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.puppetSendsPerMinute) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._account {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    } }()
-    if !self.acceptedTermsVersion.isEmpty {
-      try visitor.visitSingularStringField(value: self.acceptedTermsVersion, fieldNumber: 2)
+    if self.puppets != 0 {
+      try visitor.visitSingularInt32Field(value: self.puppets, fieldNumber: 1)
     }
-    if !self.currentTermsVersion.isEmpty {
-      try visitor.visitSingularStringField(value: self.currentTermsVersion, fieldNumber: 3)
+    if self.groupMembers != 0 {
+      try visitor.visitSingularInt32Field(value: self.groupMembers, fieldNumber: 2)
     }
-    if self.proActive != false {
-      try visitor.visitSingularBoolField(value: self.proActive, fieldNumber: 4)
-    }
-    if !self.supportAccountID.isEmpty {
-      try visitor.visitSingularStringField(value: self.supportAccountID, fieldNumber: 5)
-    }
-    try { if let v = self._pro {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-    } }()
-    if self.trialAvailable != false {
-      try visitor.visitSingularBoolField(value: self.trialAvailable, fieldNumber: 7)
+    if self.puppetSendsPerMinute != 0 {
+      try visitor.visitSingularInt32Field(value: self.puppetSendsPerMinute, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Sock_V1_GetMeResponse, rhs: Sock_V1_GetMeResponse) -> Bool {
-    if lhs._account != rhs._account {return false}
-    if lhs.acceptedTermsVersion != rhs.acceptedTermsVersion {return false}
-    if lhs.currentTermsVersion != rhs.currentTermsVersion {return false}
-    if lhs.proActive != rhs.proActive {return false}
-    if lhs.supportAccountID != rhs.supportAccountID {return false}
-    if lhs._pro != rhs._pro {return false}
-    if lhs.trialAvailable != rhs.trialAvailable {return false}
+  public static func ==(lhs: Sock_V1_PlanLimits, rhs: Sock_V1_PlanLimits) -> Bool {
+    if lhs.puppets != rhs.puppets {return false}
+    if lhs.groupMembers != rhs.groupMembers {return false}
+    if lhs.puppetSendsPerMinute != rhs.puppetSendsPerMinute {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

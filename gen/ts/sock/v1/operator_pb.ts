@@ -223,7 +223,7 @@ export const ProGrantSchema: GenMessage<ProGrant> = /*@__PURE__*/
   messageDesc(file_sock_v1_operator, 8);
 
 /**
- * ProTrial is a human's one trial.
+ * ProTrial is a human's one trial. No longer started: the trial is gone.
  *
  * @generated from message sock.v1.ProTrial
  */
@@ -861,7 +861,7 @@ export type GetHumanResponse = Message<"sock.v1.GetHumanResponse"> & {
   pro?: ProStatus | undefined;
 
   /**
-   * Unset: the human never started a trial.
+   * Always unset: the trial is gone.
    *
    * @generated from field: sock.v1.ProTrial trial = 7;
    */

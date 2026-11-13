@@ -81,13 +81,66 @@ func (AppleClient) EnumDescriptor() ([]byte, []int) {
 	return file_sock_v1_identity_proto_rawDescGZIP(), []int{0}
 }
 
+// Plan is what a human's account allows. Not ProPlan, which is a Sock Pro
+// price.
+type Plan int32
+
+const (
+	Plan_PLAN_UNSPECIFIED Plan = 0
+	// Free forever.
+	Plan_PLAN_BASIC Plan = 1
+	// Sock Pro: a subscription or an operator grant is active.
+	Plan_PLAN_PRO Plan = 2
+)
+
+// Enum value maps for Plan.
+var (
+	Plan_name = map[int32]string{
+		0: "PLAN_UNSPECIFIED",
+		1: "PLAN_BASIC",
+		2: "PLAN_PRO",
+	}
+	Plan_value = map[string]int32{
+		"PLAN_UNSPECIFIED": 0,
+		"PLAN_BASIC":       1,
+		"PLAN_PRO":         2,
+	}
+)
+
+func (x Plan) Enum() *Plan {
+	p := new(Plan)
+	*p = x
+	return p
+}
+
+func (x Plan) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Plan) Descriptor() protoreflect.EnumDescriptor {
+	return file_sock_v1_identity_proto_enumTypes[1].Descriptor()
+}
+
+func (Plan) Type() protoreflect.EnumType {
+	return &file_sock_v1_identity_proto_enumTypes[1]
+}
+
+func (x Plan) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Plan.Descriptor instead.
+func (Plan) EnumDescriptor() ([]byte, []int) {
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{1}
+}
+
 // ProSource is one reason Sock Pro is active.
 type ProSource int32
 
 const (
 	// No source is active.
 	ProSource_PRO_SOURCE_UNSPECIFIED ProSource = 0
-	// The human's one 7-day trial.
+	// Never sent: the trial is gone. Kept for wire compatibility.
 	ProSource_PRO_SOURCE_TRIAL ProSource = 1
 	// A Stripe subscription.
 	ProSource_PRO_SOURCE_SUBSCRIPTION ProSource = 2
@@ -122,11 +175,11 @@ func (x ProSource) String() string {
 }
 
 func (ProSource) Descriptor() protoreflect.EnumDescriptor {
-	return file_sock_v1_identity_proto_enumTypes[1].Descriptor()
+	return file_sock_v1_identity_proto_enumTypes[2].Descriptor()
 }
 
 func (ProSource) Type() protoreflect.EnumType {
-	return &file_sock_v1_identity_proto_enumTypes[1]
+	return &file_sock_v1_identity_proto_enumTypes[2]
 }
 
 func (x ProSource) Number() protoreflect.EnumNumber {
@@ -135,7 +188,7 @@ func (x ProSource) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ProSource.Descriptor instead.
 func (ProSource) EnumDescriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{1}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{2}
 }
 
 // ProPlan is a Sock Pro price: $14.99 a month or $149.99 a year, tax
@@ -173,11 +226,11 @@ func (x ProPlan) String() string {
 }
 
 func (ProPlan) Descriptor() protoreflect.EnumDescriptor {
-	return file_sock_v1_identity_proto_enumTypes[2].Descriptor()
+	return file_sock_v1_identity_proto_enumTypes[3].Descriptor()
 }
 
 func (ProPlan) Type() protoreflect.EnumType {
-	return &file_sock_v1_identity_proto_enumTypes[2]
+	return &file_sock_v1_identity_proto_enumTypes[3]
 }
 
 func (x ProPlan) Number() protoreflect.EnumNumber {
@@ -186,7 +239,7 @@ func (x ProPlan) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ProPlan.Descriptor instead.
 func (ProPlan) EnumDescriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{2}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{3}
 }
 
 type SignInWithAppleRequest struct {
@@ -3071,11 +3124,17 @@ type GetMeResponse struct {
 	// What keeps Sock Pro active for this human, or a puppet's owner, longest:
 	// whether or not the server enforces Sock Pro.
 	Pro *ProStatus `protobuf:"bytes,6,opt,name=pro,proto3" json:"pro,omitempty"`
-	// The human never had a trial: the first CreatePuppet, MintPuppetToken,
-	// MintMachineKey or connector issue starts its 7 days. False for a puppet.
+	// Always false: the trial is gone, Basic is free forever
+	// (docs/specs/plans.md). Kept for wire compatibility.
 	TrialAvailable bool `protobuf:"varint,7,opt,name=trial_available,json=trialAvailable,proto3" json:"trial_available,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// The human's plan, or a puppet owner's: Pro while any source in pro is
+	// active, Basic otherwise, whether or not the server enforces Sock Pro.
+	// pro_active can be true on Basic: the server is not enforcing.
+	Plan Plan `protobuf:"varint,8,opt,name=plan,proto3,enum=sock.v1.Plan" json:"plan,omitempty"`
+	// What plan allows.
+	Limits        *PlanLimits `protobuf:"bytes,9,opt,name=limits,proto3" json:"limits,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetMeResponse) Reset() {
@@ -3157,6 +3216,88 @@ func (x *GetMeResponse) GetTrialAvailable() bool {
 	return false
 }
 
+func (x *GetMeResponse) GetPlan() Plan {
+	if x != nil {
+		return x.Plan
+	}
+	return Plan_PLAN_UNSPECIFIED
+}
+
+func (x *GetMeResponse) GetLimits() *PlanLimits {
+	if x != nil {
+		return x.Limits
+	}
+	return nil
+}
+
+// PlanLimits are the numbers a plan allows. Basic: 5, 20, 60. Pro: 50, 100,
+// 300.
+type PlanLimits struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Unarchived non-system puppets that work. Past it, while the server
+	// enforces Sock Pro, the newest are waitlisted (Puppet.waitlisted) and
+	// CreatePuppet is LIMIT_REACHED.
+	Puppets int32 `protobuf:"varint,1,opt,name=puppets,proto3" json:"puppets,omitempty"`
+	// Members of a group: Pro's while any human member has Pro. Past it,
+	// CreateGroup and AddMember are GROUP_FULL.
+	GroupMembers int32 `protobuf:"varint,2,opt,name=group_members,json=groupMembers,proto3" json:"group_members,omitempty"`
+	// Messages each puppet sends a minute.
+	PuppetSendsPerMinute int32 `protobuf:"varint,3,opt,name=puppet_sends_per_minute,json=puppetSendsPerMinute,proto3" json:"puppet_sends_per_minute,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *PlanLimits) Reset() {
+	*x = PlanLimits{}
+	mi := &file_sock_v1_identity_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PlanLimits) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlanLimits) ProtoMessage() {}
+
+func (x *PlanLimits) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_identity_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PlanLimits.ProtoReflect.Descriptor instead.
+func (*PlanLimits) Descriptor() ([]byte, []int) {
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{51}
+}
+
+func (x *PlanLimits) GetPuppets() int32 {
+	if x != nil {
+		return x.Puppets
+	}
+	return 0
+}
+
+func (x *PlanLimits) GetGroupMembers() int32 {
+	if x != nil {
+		return x.GroupMembers
+	}
+	return 0
+}
+
+func (x *PlanLimits) GetPuppetSendsPerMinute() int32 {
+	if x != nil {
+		return x.PuppetSendsPerMinute
+	}
+	return 0
+}
+
 // ProStatus is the source that keeps Sock Pro active longest.
 type ProStatus struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
@@ -3170,7 +3311,7 @@ type ProStatus struct {
 
 func (x *ProStatus) Reset() {
 	*x = ProStatus{}
-	mi := &file_sock_v1_identity_proto_msgTypes[51]
+	mi := &file_sock_v1_identity_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3182,7 +3323,7 @@ func (x *ProStatus) String() string {
 func (*ProStatus) ProtoMessage() {}
 
 func (x *ProStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[51]
+	mi := &file_sock_v1_identity_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3195,7 +3336,7 @@ func (x *ProStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProStatus.ProtoReflect.Descriptor instead.
 func (*ProStatus) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{51}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *ProStatus) GetSource() ProSource {
@@ -3224,7 +3365,7 @@ type StartCheckoutRequest struct {
 
 func (x *StartCheckoutRequest) Reset() {
 	*x = StartCheckoutRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[52]
+	mi := &file_sock_v1_identity_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3236,7 +3377,7 @@ func (x *StartCheckoutRequest) String() string {
 func (*StartCheckoutRequest) ProtoMessage() {}
 
 func (x *StartCheckoutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[52]
+	mi := &file_sock_v1_identity_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3249,7 +3390,7 @@ func (x *StartCheckoutRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartCheckoutRequest.ProtoReflect.Descriptor instead.
 func (*StartCheckoutRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{52}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *StartCheckoutRequest) GetPlan() ProPlan {
@@ -3270,7 +3411,7 @@ type StartCheckoutResponse struct {
 
 func (x *StartCheckoutResponse) Reset() {
 	*x = StartCheckoutResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[53]
+	mi := &file_sock_v1_identity_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3282,7 +3423,7 @@ func (x *StartCheckoutResponse) String() string {
 func (*StartCheckoutResponse) ProtoMessage() {}
 
 func (x *StartCheckoutResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[53]
+	mi := &file_sock_v1_identity_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3295,7 +3436,7 @@ func (x *StartCheckoutResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartCheckoutResponse.ProtoReflect.Descriptor instead.
 func (*StartCheckoutResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{53}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *StartCheckoutResponse) GetUrl() string {
@@ -3316,7 +3457,7 @@ type OpenBillingPortalRequest struct {
 
 func (x *OpenBillingPortalRequest) Reset() {
 	*x = OpenBillingPortalRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[54]
+	mi := &file_sock_v1_identity_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3328,7 +3469,7 @@ func (x *OpenBillingPortalRequest) String() string {
 func (*OpenBillingPortalRequest) ProtoMessage() {}
 
 func (x *OpenBillingPortalRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[54]
+	mi := &file_sock_v1_identity_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3341,7 +3482,7 @@ func (x *OpenBillingPortalRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenBillingPortalRequest.ProtoReflect.Descriptor instead.
 func (*OpenBillingPortalRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{54}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{55}
 }
 
 type OpenBillingPortalResponse struct {
@@ -3354,7 +3495,7 @@ type OpenBillingPortalResponse struct {
 
 func (x *OpenBillingPortalResponse) Reset() {
 	*x = OpenBillingPortalResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[55]
+	mi := &file_sock_v1_identity_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3366,7 +3507,7 @@ func (x *OpenBillingPortalResponse) String() string {
 func (*OpenBillingPortalResponse) ProtoMessage() {}
 
 func (x *OpenBillingPortalResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[55]
+	mi := &file_sock_v1_identity_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3379,7 +3520,7 @@ func (x *OpenBillingPortalResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenBillingPortalResponse.ProtoReflect.Descriptor instead.
 func (*OpenBillingPortalResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{55}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *OpenBillingPortalResponse) GetUrl() string {
@@ -3399,7 +3540,7 @@ type AcceptTermsRequest struct {
 
 func (x *AcceptTermsRequest) Reset() {
 	*x = AcceptTermsRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[56]
+	mi := &file_sock_v1_identity_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3411,7 +3552,7 @@ func (x *AcceptTermsRequest) String() string {
 func (*AcceptTermsRequest) ProtoMessage() {}
 
 func (x *AcceptTermsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[56]
+	mi := &file_sock_v1_identity_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3424,7 +3565,7 @@ func (x *AcceptTermsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcceptTermsRequest.ProtoReflect.Descriptor instead.
 func (*AcceptTermsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{56}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *AcceptTermsRequest) GetTermsVersion() string {
@@ -3442,7 +3583,7 @@ type AcceptTermsResponse struct {
 
 func (x *AcceptTermsResponse) Reset() {
 	*x = AcceptTermsResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[57]
+	mi := &file_sock_v1_identity_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3454,7 +3595,7 @@ func (x *AcceptTermsResponse) String() string {
 func (*AcceptTermsResponse) ProtoMessage() {}
 
 func (x *AcceptTermsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[57]
+	mi := &file_sock_v1_identity_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3467,7 +3608,7 @@ func (x *AcceptTermsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcceptTermsResponse.ProtoReflect.Descriptor instead.
 func (*AcceptTermsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{57}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{58}
 }
 
 type GetAccountsRequest struct {
@@ -3480,7 +3621,7 @@ type GetAccountsRequest struct {
 
 func (x *GetAccountsRequest) Reset() {
 	*x = GetAccountsRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[58]
+	mi := &file_sock_v1_identity_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3492,7 +3633,7 @@ func (x *GetAccountsRequest) String() string {
 func (*GetAccountsRequest) ProtoMessage() {}
 
 func (x *GetAccountsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[58]
+	mi := &file_sock_v1_identity_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3505,7 +3646,7 @@ func (x *GetAccountsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAccountsRequest.ProtoReflect.Descriptor instead.
 func (*GetAccountsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{58}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *GetAccountsRequest) GetIds() []string {
@@ -3525,7 +3666,7 @@ type GetAccountsResponse struct {
 
 func (x *GetAccountsResponse) Reset() {
 	*x = GetAccountsResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[59]
+	mi := &file_sock_v1_identity_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3537,7 +3678,7 @@ func (x *GetAccountsResponse) String() string {
 func (*GetAccountsResponse) ProtoMessage() {}
 
 func (x *GetAccountsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[59]
+	mi := &file_sock_v1_identity_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3550,7 +3691,7 @@ func (x *GetAccountsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAccountsResponse.ProtoReflect.Descriptor instead.
 func (*GetAccountsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{59}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *GetAccountsResponse) GetAccounts() []*Account {
@@ -3570,7 +3711,7 @@ type LookupHandleRequest struct {
 
 func (x *LookupHandleRequest) Reset() {
 	*x = LookupHandleRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[60]
+	mi := &file_sock_v1_identity_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3582,7 +3723,7 @@ func (x *LookupHandleRequest) String() string {
 func (*LookupHandleRequest) ProtoMessage() {}
 
 func (x *LookupHandleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[60]
+	mi := &file_sock_v1_identity_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3595,7 +3736,7 @@ func (x *LookupHandleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupHandleRequest.ProtoReflect.Descriptor instead.
 func (*LookupHandleRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{60}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *LookupHandleRequest) GetHandle() string {
@@ -3614,7 +3755,7 @@ type LookupHandleResponse struct {
 
 func (x *LookupHandleResponse) Reset() {
 	*x = LookupHandleResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[61]
+	mi := &file_sock_v1_identity_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3626,7 +3767,7 @@ func (x *LookupHandleResponse) String() string {
 func (*LookupHandleResponse) ProtoMessage() {}
 
 func (x *LookupHandleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[61]
+	mi := &file_sock_v1_identity_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3639,7 +3780,7 @@ func (x *LookupHandleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupHandleResponse.ProtoReflect.Descriptor instead.
 func (*LookupHandleResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{61}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *LookupHandleResponse) GetAccount() *Account {
@@ -3658,7 +3799,7 @@ type UpdateDisplayNameRequest struct {
 
 func (x *UpdateDisplayNameRequest) Reset() {
 	*x = UpdateDisplayNameRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[62]
+	mi := &file_sock_v1_identity_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3670,7 +3811,7 @@ func (x *UpdateDisplayNameRequest) String() string {
 func (*UpdateDisplayNameRequest) ProtoMessage() {}
 
 func (x *UpdateDisplayNameRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[62]
+	mi := &file_sock_v1_identity_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3683,7 +3824,7 @@ func (x *UpdateDisplayNameRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDisplayNameRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDisplayNameRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{62}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *UpdateDisplayNameRequest) GetDisplayName() string {
@@ -3702,7 +3843,7 @@ type UpdateDisplayNameResponse struct {
 
 func (x *UpdateDisplayNameResponse) Reset() {
 	*x = UpdateDisplayNameResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[63]
+	mi := &file_sock_v1_identity_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3714,7 +3855,7 @@ func (x *UpdateDisplayNameResponse) String() string {
 func (*UpdateDisplayNameResponse) ProtoMessage() {}
 
 func (x *UpdateDisplayNameResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[63]
+	mi := &file_sock_v1_identity_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3727,7 +3868,7 @@ func (x *UpdateDisplayNameResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDisplayNameResponse.ProtoReflect.Descriptor instead.
 func (*UpdateDisplayNameResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{63}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *UpdateDisplayNameResponse) GetAccount() *Account {
@@ -3746,7 +3887,7 @@ type ChangeHandleRequest struct {
 
 func (x *ChangeHandleRequest) Reset() {
 	*x = ChangeHandleRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[64]
+	mi := &file_sock_v1_identity_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3758,7 +3899,7 @@ func (x *ChangeHandleRequest) String() string {
 func (*ChangeHandleRequest) ProtoMessage() {}
 
 func (x *ChangeHandleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[64]
+	mi := &file_sock_v1_identity_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3771,7 +3912,7 @@ func (x *ChangeHandleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangeHandleRequest.ProtoReflect.Descriptor instead.
 func (*ChangeHandleRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{64}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *ChangeHandleRequest) GetHandle() string {
@@ -3790,7 +3931,7 @@ type ChangeHandleResponse struct {
 
 func (x *ChangeHandleResponse) Reset() {
 	*x = ChangeHandleResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[65]
+	mi := &file_sock_v1_identity_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3802,7 +3943,7 @@ func (x *ChangeHandleResponse) String() string {
 func (*ChangeHandleResponse) ProtoMessage() {}
 
 func (x *ChangeHandleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[65]
+	mi := &file_sock_v1_identity_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3815,7 +3956,7 @@ func (x *ChangeHandleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangeHandleResponse.ProtoReflect.Descriptor instead.
 func (*ChangeHandleResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{65}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *ChangeHandleResponse) GetAccount() *Account {
@@ -3833,7 +3974,7 @@ type ListDevicesRequest struct {
 
 func (x *ListDevicesRequest) Reset() {
 	*x = ListDevicesRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[66]
+	mi := &file_sock_v1_identity_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3845,7 +3986,7 @@ func (x *ListDevicesRequest) String() string {
 func (*ListDevicesRequest) ProtoMessage() {}
 
 func (x *ListDevicesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[66]
+	mi := &file_sock_v1_identity_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3858,7 +3999,7 @@ func (x *ListDevicesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDevicesRequest.ProtoReflect.Descriptor instead.
 func (*ListDevicesRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{66}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{67}
 }
 
 type ListDevicesResponse struct {
@@ -3872,7 +4013,7 @@ type ListDevicesResponse struct {
 
 func (x *ListDevicesResponse) Reset() {
 	*x = ListDevicesResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[67]
+	mi := &file_sock_v1_identity_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3884,7 +4025,7 @@ func (x *ListDevicesResponse) String() string {
 func (*ListDevicesResponse) ProtoMessage() {}
 
 func (x *ListDevicesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[67]
+	mi := &file_sock_v1_identity_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3897,7 +4038,7 @@ func (x *ListDevicesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDevicesResponse.ProtoReflect.Descriptor instead.
 func (*ListDevicesResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{67}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *ListDevicesResponse) GetDevices() []*Device {
@@ -3918,7 +4059,7 @@ type RevokeDeviceRequest struct {
 
 func (x *RevokeDeviceRequest) Reset() {
 	*x = RevokeDeviceRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[68]
+	mi := &file_sock_v1_identity_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3930,7 +4071,7 @@ func (x *RevokeDeviceRequest) String() string {
 func (*RevokeDeviceRequest) ProtoMessage() {}
 
 func (x *RevokeDeviceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[68]
+	mi := &file_sock_v1_identity_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3943,7 +4084,7 @@ func (x *RevokeDeviceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeDeviceRequest.ProtoReflect.Descriptor instead.
 func (*RevokeDeviceRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{68}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *RevokeDeviceRequest) GetDeviceId() string {
@@ -3961,7 +4102,7 @@ type RevokeDeviceResponse struct {
 
 func (x *RevokeDeviceResponse) Reset() {
 	*x = RevokeDeviceResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[69]
+	mi := &file_sock_v1_identity_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3973,7 +4114,7 @@ func (x *RevokeDeviceResponse) String() string {
 func (*RevokeDeviceResponse) ProtoMessage() {}
 
 func (x *RevokeDeviceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[69]
+	mi := &file_sock_v1_identity_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3986,7 +4127,7 @@ func (x *RevokeDeviceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeDeviceResponse.ProtoReflect.Descriptor instead.
 func (*RevokeDeviceResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{69}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{70}
 }
 
 type MintMachineKeyRequest struct {
@@ -3999,7 +4140,7 @@ type MintMachineKeyRequest struct {
 
 func (x *MintMachineKeyRequest) Reset() {
 	*x = MintMachineKeyRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[70]
+	mi := &file_sock_v1_identity_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4011,7 +4152,7 @@ func (x *MintMachineKeyRequest) String() string {
 func (*MintMachineKeyRequest) ProtoMessage() {}
 
 func (x *MintMachineKeyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[70]
+	mi := &file_sock_v1_identity_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4024,7 +4165,7 @@ func (x *MintMachineKeyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MintMachineKeyRequest.ProtoReflect.Descriptor instead.
 func (*MintMachineKeyRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{70}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *MintMachineKeyRequest) GetLabel() string {
@@ -4046,7 +4187,7 @@ type MintMachineKeyResponse struct {
 
 func (x *MintMachineKeyResponse) Reset() {
 	*x = MintMachineKeyResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[71]
+	mi := &file_sock_v1_identity_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4058,7 +4199,7 @@ func (x *MintMachineKeyResponse) String() string {
 func (*MintMachineKeyResponse) ProtoMessage() {}
 
 func (x *MintMachineKeyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[71]
+	mi := &file_sock_v1_identity_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4071,7 +4212,7 @@ func (x *MintMachineKeyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MintMachineKeyResponse.ProtoReflect.Descriptor instead.
 func (*MintMachineKeyResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{71}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *MintMachineKeyResponse) GetDevice() *Device {
@@ -4099,7 +4240,7 @@ type CreatePuppetRequest struct {
 
 func (x *CreatePuppetRequest) Reset() {
 	*x = CreatePuppetRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[72]
+	mi := &file_sock_v1_identity_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4111,7 +4252,7 @@ func (x *CreatePuppetRequest) String() string {
 func (*CreatePuppetRequest) ProtoMessage() {}
 
 func (x *CreatePuppetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[72]
+	mi := &file_sock_v1_identity_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4124,7 +4265,7 @@ func (x *CreatePuppetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePuppetRequest.ProtoReflect.Descriptor instead.
 func (*CreatePuppetRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{72}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *CreatePuppetRequest) GetName() string {
@@ -4153,7 +4294,7 @@ type CreatePuppetResponse struct {
 
 func (x *CreatePuppetResponse) Reset() {
 	*x = CreatePuppetResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[73]
+	mi := &file_sock_v1_identity_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4165,7 +4306,7 @@ func (x *CreatePuppetResponse) String() string {
 func (*CreatePuppetResponse) ProtoMessage() {}
 
 func (x *CreatePuppetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[73]
+	mi := &file_sock_v1_identity_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4178,7 +4319,7 @@ func (x *CreatePuppetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePuppetResponse.ProtoReflect.Descriptor instead.
 func (*CreatePuppetResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{73}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *CreatePuppetResponse) GetPuppet() *Account {
@@ -4210,7 +4351,7 @@ type ListPuppetsRequest struct {
 
 func (x *ListPuppetsRequest) Reset() {
 	*x = ListPuppetsRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[74]
+	mi := &file_sock_v1_identity_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4222,7 +4363,7 @@ func (x *ListPuppetsRequest) String() string {
 func (*ListPuppetsRequest) ProtoMessage() {}
 
 func (x *ListPuppetsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[74]
+	mi := &file_sock_v1_identity_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4235,7 +4376,7 @@ func (x *ListPuppetsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPuppetsRequest.ProtoReflect.Descriptor instead.
 func (*ListPuppetsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{74}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{75}
 }
 
 type ListPuppetsResponse struct {
@@ -4247,7 +4388,7 @@ type ListPuppetsResponse struct {
 
 func (x *ListPuppetsResponse) Reset() {
 	*x = ListPuppetsResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[75]
+	mi := &file_sock_v1_identity_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4259,7 +4400,7 @@ func (x *ListPuppetsResponse) String() string {
 func (*ListPuppetsResponse) ProtoMessage() {}
 
 func (x *ListPuppetsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[75]
+	mi := &file_sock_v1_identity_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4272,7 +4413,7 @@ func (x *ListPuppetsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPuppetsResponse.ProtoReflect.Descriptor instead.
 func (*ListPuppetsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{75}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *ListPuppetsResponse) GetPuppets() []*PuppetWithDevices {
@@ -4296,7 +4437,7 @@ type PuppetWithDevices struct {
 
 func (x *PuppetWithDevices) Reset() {
 	*x = PuppetWithDevices{}
-	mi := &file_sock_v1_identity_proto_msgTypes[76]
+	mi := &file_sock_v1_identity_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4308,7 +4449,7 @@ func (x *PuppetWithDevices) String() string {
 func (*PuppetWithDevices) ProtoMessage() {}
 
 func (x *PuppetWithDevices) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[76]
+	mi := &file_sock_v1_identity_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4321,7 +4462,7 @@ func (x *PuppetWithDevices) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PuppetWithDevices.ProtoReflect.Descriptor instead.
 func (*PuppetWithDevices) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{76}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *PuppetWithDevices) GetPuppet() *Account {
@@ -4355,7 +4496,7 @@ type MintPuppetTokenRequest struct {
 
 func (x *MintPuppetTokenRequest) Reset() {
 	*x = MintPuppetTokenRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[77]
+	mi := &file_sock_v1_identity_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4367,7 +4508,7 @@ func (x *MintPuppetTokenRequest) String() string {
 func (*MintPuppetTokenRequest) ProtoMessage() {}
 
 func (x *MintPuppetTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[77]
+	mi := &file_sock_v1_identity_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4380,7 +4521,7 @@ func (x *MintPuppetTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MintPuppetTokenRequest.ProtoReflect.Descriptor instead.
 func (*MintPuppetTokenRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{77}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *MintPuppetTokenRequest) GetPuppetId() string {
@@ -4407,7 +4548,7 @@ type MintPuppetTokenResponse struct {
 
 func (x *MintPuppetTokenResponse) Reset() {
 	*x = MintPuppetTokenResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[78]
+	mi := &file_sock_v1_identity_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4419,7 +4560,7 @@ func (x *MintPuppetTokenResponse) String() string {
 func (*MintPuppetTokenResponse) ProtoMessage() {}
 
 func (x *MintPuppetTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[78]
+	mi := &file_sock_v1_identity_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4432,7 +4573,7 @@ func (x *MintPuppetTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MintPuppetTokenResponse.ProtoReflect.Descriptor instead.
 func (*MintPuppetTokenResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{78}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *MintPuppetTokenResponse) GetDevice() *Device {
@@ -4458,7 +4599,7 @@ type ErasePuppetRequest struct {
 
 func (x *ErasePuppetRequest) Reset() {
 	*x = ErasePuppetRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[79]
+	mi := &file_sock_v1_identity_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4470,7 +4611,7 @@ func (x *ErasePuppetRequest) String() string {
 func (*ErasePuppetRequest) ProtoMessage() {}
 
 func (x *ErasePuppetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[79]
+	mi := &file_sock_v1_identity_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4483,7 +4624,7 @@ func (x *ErasePuppetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErasePuppetRequest.ProtoReflect.Descriptor instead.
 func (*ErasePuppetRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{79}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *ErasePuppetRequest) GetPuppetId() string {
@@ -4501,7 +4642,7 @@ type ErasePuppetResponse struct {
 
 func (x *ErasePuppetResponse) Reset() {
 	*x = ErasePuppetResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[80]
+	mi := &file_sock_v1_identity_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4513,7 +4654,7 @@ func (x *ErasePuppetResponse) String() string {
 func (*ErasePuppetResponse) ProtoMessage() {}
 
 func (x *ErasePuppetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[80]
+	mi := &file_sock_v1_identity_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4526,7 +4667,7 @@ func (x *ErasePuppetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErasePuppetResponse.ProtoReflect.Descriptor instead.
 func (*ErasePuppetResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{80}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{81}
 }
 
 type ArchivePuppetRequest struct {
@@ -4538,7 +4679,7 @@ type ArchivePuppetRequest struct {
 
 func (x *ArchivePuppetRequest) Reset() {
 	*x = ArchivePuppetRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[81]
+	mi := &file_sock_v1_identity_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4550,7 +4691,7 @@ func (x *ArchivePuppetRequest) String() string {
 func (*ArchivePuppetRequest) ProtoMessage() {}
 
 func (x *ArchivePuppetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[81]
+	mi := &file_sock_v1_identity_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4563,7 +4704,7 @@ func (x *ArchivePuppetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchivePuppetRequest.ProtoReflect.Descriptor instead.
 func (*ArchivePuppetRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{81}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *ArchivePuppetRequest) GetPuppetId() string {
@@ -4583,7 +4724,7 @@ type ArchivePuppetResponse struct {
 
 func (x *ArchivePuppetResponse) Reset() {
 	*x = ArchivePuppetResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[82]
+	mi := &file_sock_v1_identity_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4595,7 +4736,7 @@ func (x *ArchivePuppetResponse) String() string {
 func (*ArchivePuppetResponse) ProtoMessage() {}
 
 func (x *ArchivePuppetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[82]
+	mi := &file_sock_v1_identity_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4608,7 +4749,7 @@ func (x *ArchivePuppetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchivePuppetResponse.ProtoReflect.Descriptor instead.
 func (*ArchivePuppetResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{82}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *ArchivePuppetResponse) GetArchivedAt() *timestamppb.Timestamp {
@@ -4627,7 +4768,7 @@ type UnarchivePuppetRequest struct {
 
 func (x *UnarchivePuppetRequest) Reset() {
 	*x = UnarchivePuppetRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[83]
+	mi := &file_sock_v1_identity_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4639,7 +4780,7 @@ func (x *UnarchivePuppetRequest) String() string {
 func (*UnarchivePuppetRequest) ProtoMessage() {}
 
 func (x *UnarchivePuppetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[83]
+	mi := &file_sock_v1_identity_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4652,7 +4793,7 @@ func (x *UnarchivePuppetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchivePuppetRequest.ProtoReflect.Descriptor instead.
 func (*UnarchivePuppetRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{83}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *UnarchivePuppetRequest) GetPuppetId() string {
@@ -4670,7 +4811,7 @@ type UnarchivePuppetResponse struct {
 
 func (x *UnarchivePuppetResponse) Reset() {
 	*x = UnarchivePuppetResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[84]
+	mi := &file_sock_v1_identity_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4682,7 +4823,7 @@ func (x *UnarchivePuppetResponse) String() string {
 func (*UnarchivePuppetResponse) ProtoMessage() {}
 
 func (x *UnarchivePuppetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[84]
+	mi := &file_sock_v1_identity_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4695,7 +4836,7 @@ func (x *UnarchivePuppetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchivePuppetResponse.ProtoReflect.Descriptor instead.
 func (*UnarchivePuppetResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{84}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{85}
 }
 
 type IssueConnectorPuppetTokenRequest struct {
@@ -4709,7 +4850,7 @@ type IssueConnectorPuppetTokenRequest struct {
 
 func (x *IssueConnectorPuppetTokenRequest) Reset() {
 	*x = IssueConnectorPuppetTokenRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[85]
+	mi := &file_sock_v1_identity_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4721,7 +4862,7 @@ func (x *IssueConnectorPuppetTokenRequest) String() string {
 func (*IssueConnectorPuppetTokenRequest) ProtoMessage() {}
 
 func (x *IssueConnectorPuppetTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[85]
+	mi := &file_sock_v1_identity_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4734,7 +4875,7 @@ func (x *IssueConnectorPuppetTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IssueConnectorPuppetTokenRequest.ProtoReflect.Descriptor instead.
 func (*IssueConnectorPuppetTokenRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{85}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *IssueConnectorPuppetTokenRequest) GetAccessToken() string {
@@ -4765,7 +4906,7 @@ type IssueConnectorPuppetTokenResponse struct {
 
 func (x *IssueConnectorPuppetTokenResponse) Reset() {
 	*x = IssueConnectorPuppetTokenResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[86]
+	mi := &file_sock_v1_identity_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4777,7 +4918,7 @@ func (x *IssueConnectorPuppetTokenResponse) String() string {
 func (*IssueConnectorPuppetTokenResponse) ProtoMessage() {}
 
 func (x *IssueConnectorPuppetTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[86]
+	mi := &file_sock_v1_identity_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4790,7 +4931,7 @@ func (x *IssueConnectorPuppetTokenResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use IssueConnectorPuppetTokenResponse.ProtoReflect.Descriptor instead.
 func (*IssueConnectorPuppetTokenResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{86}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *IssueConnectorPuppetTokenResponse) GetDevice() *Device {
@@ -4831,7 +4972,7 @@ type RevokeConnectorDeviceRequest struct {
 
 func (x *RevokeConnectorDeviceRequest) Reset() {
 	*x = RevokeConnectorDeviceRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[87]
+	mi := &file_sock_v1_identity_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4843,7 +4984,7 @@ func (x *RevokeConnectorDeviceRequest) String() string {
 func (*RevokeConnectorDeviceRequest) ProtoMessage() {}
 
 func (x *RevokeConnectorDeviceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[87]
+	mi := &file_sock_v1_identity_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4856,7 +4997,7 @@ func (x *RevokeConnectorDeviceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeConnectorDeviceRequest.ProtoReflect.Descriptor instead.
 func (*RevokeConnectorDeviceRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{87}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *RevokeConnectorDeviceRequest) GetAccessToken() string {
@@ -4874,7 +5015,7 @@ type RevokeConnectorDeviceResponse struct {
 
 func (x *RevokeConnectorDeviceResponse) Reset() {
 	*x = RevokeConnectorDeviceResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[88]
+	mi := &file_sock_v1_identity_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4886,7 +5027,7 @@ func (x *RevokeConnectorDeviceResponse) String() string {
 func (*RevokeConnectorDeviceResponse) ProtoMessage() {}
 
 func (x *RevokeConnectorDeviceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[88]
+	mi := &file_sock_v1_identity_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4899,7 +5040,7 @@ func (x *RevokeConnectorDeviceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeConnectorDeviceResponse.ProtoReflect.Descriptor instead.
 func (*RevokeConnectorDeviceResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{88}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{89}
 }
 
 type ExportIdentityDataRequest struct {
@@ -4910,7 +5051,7 @@ type ExportIdentityDataRequest struct {
 
 func (x *ExportIdentityDataRequest) Reset() {
 	*x = ExportIdentityDataRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[89]
+	mi := &file_sock_v1_identity_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4922,7 +5063,7 @@ func (x *ExportIdentityDataRequest) String() string {
 func (*ExportIdentityDataRequest) ProtoMessage() {}
 
 func (x *ExportIdentityDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[89]
+	mi := &file_sock_v1_identity_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4935,7 +5076,7 @@ func (x *ExportIdentityDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportIdentityDataRequest.ProtoReflect.Descriptor instead.
 func (*ExportIdentityDataRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{89}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{90}
 }
 
 // Identity's half of the GDPR export. MessagingService.ExportMessagingData returns
@@ -4953,7 +5094,7 @@ type ExportIdentityDataResponse struct {
 
 func (x *ExportIdentityDataResponse) Reset() {
 	*x = ExportIdentityDataResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[90]
+	mi := &file_sock_v1_identity_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4965,7 +5106,7 @@ func (x *ExportIdentityDataResponse) String() string {
 func (*ExportIdentityDataResponse) ProtoMessage() {}
 
 func (x *ExportIdentityDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[90]
+	mi := &file_sock_v1_identity_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4978,7 +5119,7 @@ func (x *ExportIdentityDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportIdentityDataResponse.ProtoReflect.Descriptor instead.
 func (*ExportIdentityDataResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{90}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *ExportIdentityDataResponse) GetAccount() *Account {
@@ -5017,7 +5158,7 @@ type EraseAccountRequest struct {
 
 func (x *EraseAccountRequest) Reset() {
 	*x = EraseAccountRequest{}
-	mi := &file_sock_v1_identity_proto_msgTypes[91]
+	mi := &file_sock_v1_identity_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5029,7 +5170,7 @@ func (x *EraseAccountRequest) String() string {
 func (*EraseAccountRequest) ProtoMessage() {}
 
 func (x *EraseAccountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[91]
+	mi := &file_sock_v1_identity_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5042,7 +5183,7 @@ func (x *EraseAccountRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EraseAccountRequest.ProtoReflect.Descriptor instead.
 func (*EraseAccountRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{91}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{92}
 }
 
 type EraseAccountResponse struct {
@@ -5053,7 +5194,7 @@ type EraseAccountResponse struct {
 
 func (x *EraseAccountResponse) Reset() {
 	*x = EraseAccountResponse{}
-	mi := &file_sock_v1_identity_proto_msgTypes[92]
+	mi := &file_sock_v1_identity_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5065,7 +5206,7 @@ func (x *EraseAccountResponse) String() string {
 func (*EraseAccountResponse) ProtoMessage() {}
 
 func (x *EraseAccountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_identity_proto_msgTypes[92]
+	mi := &file_sock_v1_identity_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5078,7 +5219,7 @@ func (x *EraseAccountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EraseAccountResponse.ProtoReflect.Descriptor instead.
 func (*EraseAccountResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_identity_proto_rawDescGZIP(), []int{92}
+	return file_sock_v1_identity_proto_rawDescGZIP(), []int{93}
 }
 
 var File_sock_v1_identity_proto protoreflect.FileDescriptor
@@ -5250,7 +5391,7 @@ const file_sock_v1_identity_proto_rawDesc = "" +
 	"\x05token\x18\x03 \x01(\tR\x05token\"\x10\n" +
 	"\x0eSignOutRequest\"\x11\n" +
 	"\x0fSignOutResponse\"\x0e\n" +
-	"\fGetMeRequest\"\xc1\x02\n" +
+	"\fGetMeRequest\"\x91\x03\n" +
 	"\rGetMeResponse\x12*\n" +
 	"\aaccount\x18\x01 \x01(\v2\x10.sock.v1.AccountR\aaccount\x124\n" +
 	"\x16accepted_terms_version\x18\x02 \x01(\tR\x14acceptedTermsVersion\x122\n" +
@@ -5259,7 +5400,14 @@ const file_sock_v1_identity_proto_rawDesc = "" +
 	"pro_active\x18\x04 \x01(\bR\tproActive\x12,\n" +
 	"\x12support_account_id\x18\x05 \x01(\tR\x10supportAccountId\x12$\n" +
 	"\x03pro\x18\x06 \x01(\v2\x12.sock.v1.ProStatusR\x03pro\x12'\n" +
-	"\x0ftrial_available\x18\a \x01(\bR\x0etrialAvailable\"v\n" +
+	"\x0ftrial_available\x18\a \x01(\bR\x0etrialAvailable\x12!\n" +
+	"\x04plan\x18\b \x01(\x0e2\r.sock.v1.PlanR\x04plan\x12+\n" +
+	"\x06limits\x18\t \x01(\v2\x13.sock.v1.PlanLimitsR\x06limits\"\x82\x01\n" +
+	"\n" +
+	"PlanLimits\x12\x18\n" +
+	"\apuppets\x18\x01 \x01(\x05R\apuppets\x12#\n" +
+	"\rgroup_members\x18\x02 \x01(\x05R\fgroupMembers\x125\n" +
+	"\x17puppet_sends_per_minute\x18\x03 \x01(\x05R\x14puppetSendsPerMinute\"v\n" +
 	"\tProStatus\x12*\n" +
 	"\x06source\x18\x01 \x01(\x0e2\x12.sock.v1.ProSourceR\x06source\x12=\n" +
 	"\factive_until\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\vactiveUntil\"<\n" +
@@ -5355,7 +5503,12 @@ const file_sock_v1_identity_proto_rawDesc = "" +
 	"\vAppleClient\x12\x1c\n" +
 	"\x18APPLE_CLIENT_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10APPLE_CLIENT_APP\x10\x01\x12\x14\n" +
-	"\x10APPLE_CLIENT_WEB\x10\x02*p\n" +
+	"\x10APPLE_CLIENT_WEB\x10\x02*:\n" +
+	"\x04Plan\x12\x14\n" +
+	"\x10PLAN_UNSPECIFIED\x10\x00\x12\x0e\n" +
+	"\n" +
+	"PLAN_BASIC\x10\x01\x12\f\n" +
+	"\bPLAN_PRO\x10\x02*p\n" +
 	"\tProSource\x12\x1a\n" +
 	"\x16PRO_SOURCE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10PRO_SOURCE_TRIAL\x10\x01\x12\x1b\n" +
@@ -5422,251 +5575,255 @@ func file_sock_v1_identity_proto_rawDescGZIP() []byte {
 	return file_sock_v1_identity_proto_rawDescData
 }
 
-var file_sock_v1_identity_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_sock_v1_identity_proto_msgTypes = make([]protoimpl.MessageInfo, 93)
+var file_sock_v1_identity_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_sock_v1_identity_proto_msgTypes = make([]protoimpl.MessageInfo, 94)
 var file_sock_v1_identity_proto_goTypes = []any{
 	(AppleClient)(0),                          // 0: sock.v1.AppleClient
-	(ProSource)(0),                            // 1: sock.v1.ProSource
-	(ProPlan)(0),                              // 2: sock.v1.ProPlan
-	(*SignInWithAppleRequest)(nil),            // 3: sock.v1.SignInWithAppleRequest
-	(*SignInWithAppleResponse)(nil),           // 4: sock.v1.SignInWithAppleResponse
-	(*RegisterWithAppleRequest)(nil),          // 5: sock.v1.RegisterWithAppleRequest
-	(*RegisterWithAppleResponse)(nil),         // 6: sock.v1.RegisterWithAppleResponse
-	(*SignInWithEmailRequest)(nil),            // 7: sock.v1.SignInWithEmailRequest
-	(*SignInWithEmailResponse)(nil),           // 8: sock.v1.SignInWithEmailResponse
-	(*RegisterWithEmailRequest)(nil),          // 9: sock.v1.RegisterWithEmailRequest
-	(*RegisterWithEmailResponse)(nil),         // 10: sock.v1.RegisterWithEmailResponse
-	(*GetRegistrationPolicyRequest)(nil),      // 11: sock.v1.GetRegistrationPolicyRequest
-	(*GetRegistrationPolicyResponse)(nil),     // 12: sock.v1.GetRegistrationPolicyResponse
-	(*AddEmailSignInRequest)(nil),             // 13: sock.v1.AddEmailSignInRequest
-	(*EmailCodeProof)(nil),                    // 14: sock.v1.EmailCodeProof
-	(*WorkOSCodeProof)(nil),                   // 15: sock.v1.WorkOSCodeProof
-	(*StartEmailSignInRequest)(nil),           // 16: sock.v1.StartEmailSignInRequest
-	(*StartEmailSignInResponse)(nil),          // 17: sock.v1.StartEmailSignInResponse
-	(*VerifyEmailSignInRequest)(nil),          // 18: sock.v1.VerifyEmailSignInRequest
-	(*VerifyEmailSignInResponse)(nil),         // 19: sock.v1.VerifyEmailSignInResponse
-	(*SignInWithEmailPasswordRequest)(nil),    // 20: sock.v1.SignInWithEmailPasswordRequest
-	(*SignInWithEmailPasswordResponse)(nil),   // 21: sock.v1.SignInWithEmailPasswordResponse
-	(*RegistrationTicket)(nil),                // 22: sock.v1.RegistrationTicket
-	(*SignInWithGoogleRequest)(nil),           // 23: sock.v1.SignInWithGoogleRequest
-	(*SignInWithGoogleResponse)(nil),          // 24: sock.v1.SignInWithGoogleResponse
-	(*StartTerminalSignInRequest)(nil),        // 25: sock.v1.StartTerminalSignInRequest
-	(*StartTerminalSignInResponse)(nil),       // 26: sock.v1.StartTerminalSignInResponse
-	(*FinishTerminalSignInRequest)(nil),       // 27: sock.v1.FinishTerminalSignInRequest
-	(*FinishTerminalSignInResponse)(nil),      // 28: sock.v1.FinishTerminalSignInResponse
-	(*TerminalSignInPending)(nil),             // 29: sock.v1.TerminalSignInPending
-	(*StartPasskeyRegistrationRequest)(nil),   // 30: sock.v1.StartPasskeyRegistrationRequest
-	(*StartPasskeyRegistrationResponse)(nil),  // 31: sock.v1.StartPasskeyRegistrationResponse
-	(*FinishPasskeyRegistrationRequest)(nil),  // 32: sock.v1.FinishPasskeyRegistrationRequest
-	(*FinishPasskeyRegistrationResponse)(nil), // 33: sock.v1.FinishPasskeyRegistrationResponse
-	(*Passkey)(nil),                           // 34: sock.v1.Passkey
-	(*ListSignInIdentitiesRequest)(nil),       // 35: sock.v1.ListSignInIdentitiesRequest
-	(*ListSignInIdentitiesResponse)(nil),      // 36: sock.v1.ListSignInIdentitiesResponse
-	(*EmailSignIn)(nil),                       // 37: sock.v1.EmailSignIn
-	(*RemoveEmailSignInRequest)(nil),          // 38: sock.v1.RemoveEmailSignInRequest
-	(*RemoveEmailSignInResponse)(nil),         // 39: sock.v1.RemoveEmailSignInResponse
-	(*ListPasskeysRequest)(nil),               // 40: sock.v1.ListPasskeysRequest
-	(*ListPasskeysResponse)(nil),              // 41: sock.v1.ListPasskeysResponse
-	(*RemovePasskeyRequest)(nil),              // 42: sock.v1.RemovePasskeyRequest
-	(*RemovePasskeyResponse)(nil),             // 43: sock.v1.RemovePasskeyResponse
-	(*StartPasskeySignInRequest)(nil),         // 44: sock.v1.StartPasskeySignInRequest
-	(*StartPasskeySignInResponse)(nil),        // 45: sock.v1.StartPasskeySignInResponse
-	(*SignInWithPasskeyRequest)(nil),          // 46: sock.v1.SignInWithPasskeyRequest
-	(*SignInWithPasskeyResponse)(nil),         // 47: sock.v1.SignInWithPasskeyResponse
-	(*AddEmailSignInResponse)(nil),            // 48: sock.v1.AddEmailSignInResponse
-	(*Session)(nil),                           // 49: sock.v1.Session
-	(*SignOutRequest)(nil),                    // 50: sock.v1.SignOutRequest
-	(*SignOutResponse)(nil),                   // 51: sock.v1.SignOutResponse
-	(*GetMeRequest)(nil),                      // 52: sock.v1.GetMeRequest
-	(*GetMeResponse)(nil),                     // 53: sock.v1.GetMeResponse
-	(*ProStatus)(nil),                         // 54: sock.v1.ProStatus
-	(*StartCheckoutRequest)(nil),              // 55: sock.v1.StartCheckoutRequest
-	(*StartCheckoutResponse)(nil),             // 56: sock.v1.StartCheckoutResponse
-	(*OpenBillingPortalRequest)(nil),          // 57: sock.v1.OpenBillingPortalRequest
-	(*OpenBillingPortalResponse)(nil),         // 58: sock.v1.OpenBillingPortalResponse
-	(*AcceptTermsRequest)(nil),                // 59: sock.v1.AcceptTermsRequest
-	(*AcceptTermsResponse)(nil),               // 60: sock.v1.AcceptTermsResponse
-	(*GetAccountsRequest)(nil),                // 61: sock.v1.GetAccountsRequest
-	(*GetAccountsResponse)(nil),               // 62: sock.v1.GetAccountsResponse
-	(*LookupHandleRequest)(nil),               // 63: sock.v1.LookupHandleRequest
-	(*LookupHandleResponse)(nil),              // 64: sock.v1.LookupHandleResponse
-	(*UpdateDisplayNameRequest)(nil),          // 65: sock.v1.UpdateDisplayNameRequest
-	(*UpdateDisplayNameResponse)(nil),         // 66: sock.v1.UpdateDisplayNameResponse
-	(*ChangeHandleRequest)(nil),               // 67: sock.v1.ChangeHandleRequest
-	(*ChangeHandleResponse)(nil),              // 68: sock.v1.ChangeHandleResponse
-	(*ListDevicesRequest)(nil),                // 69: sock.v1.ListDevicesRequest
-	(*ListDevicesResponse)(nil),               // 70: sock.v1.ListDevicesResponse
-	(*RevokeDeviceRequest)(nil),               // 71: sock.v1.RevokeDeviceRequest
-	(*RevokeDeviceResponse)(nil),              // 72: sock.v1.RevokeDeviceResponse
-	(*MintMachineKeyRequest)(nil),             // 73: sock.v1.MintMachineKeyRequest
-	(*MintMachineKeyResponse)(nil),            // 74: sock.v1.MintMachineKeyResponse
-	(*CreatePuppetRequest)(nil),               // 75: sock.v1.CreatePuppetRequest
-	(*CreatePuppetResponse)(nil),              // 76: sock.v1.CreatePuppetResponse
-	(*ListPuppetsRequest)(nil),                // 77: sock.v1.ListPuppetsRequest
-	(*ListPuppetsResponse)(nil),               // 78: sock.v1.ListPuppetsResponse
-	(*PuppetWithDevices)(nil),                 // 79: sock.v1.PuppetWithDevices
-	(*MintPuppetTokenRequest)(nil),            // 80: sock.v1.MintPuppetTokenRequest
-	(*MintPuppetTokenResponse)(nil),           // 81: sock.v1.MintPuppetTokenResponse
-	(*ErasePuppetRequest)(nil),                // 82: sock.v1.ErasePuppetRequest
-	(*ErasePuppetResponse)(nil),               // 83: sock.v1.ErasePuppetResponse
-	(*ArchivePuppetRequest)(nil),              // 84: sock.v1.ArchivePuppetRequest
-	(*ArchivePuppetResponse)(nil),             // 85: sock.v1.ArchivePuppetResponse
-	(*UnarchivePuppetRequest)(nil),            // 86: sock.v1.UnarchivePuppetRequest
-	(*UnarchivePuppetResponse)(nil),           // 87: sock.v1.UnarchivePuppetResponse
-	(*IssueConnectorPuppetTokenRequest)(nil),  // 88: sock.v1.IssueConnectorPuppetTokenRequest
-	(*IssueConnectorPuppetTokenResponse)(nil), // 89: sock.v1.IssueConnectorPuppetTokenResponse
-	(*RevokeConnectorDeviceRequest)(nil),      // 90: sock.v1.RevokeConnectorDeviceRequest
-	(*RevokeConnectorDeviceResponse)(nil),     // 91: sock.v1.RevokeConnectorDeviceResponse
-	(*ExportIdentityDataRequest)(nil),         // 92: sock.v1.ExportIdentityDataRequest
-	(*ExportIdentityDataResponse)(nil),        // 93: sock.v1.ExportIdentityDataResponse
-	(*EraseAccountRequest)(nil),               // 94: sock.v1.EraseAccountRequest
-	(*EraseAccountResponse)(nil),              // 95: sock.v1.EraseAccountResponse
-	(*timestamppb.Timestamp)(nil),             // 96: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),               // 97: google.protobuf.Duration
-	(*Account)(nil),                           // 98: sock.v1.Account
-	(*Device)(nil),                            // 99: sock.v1.Device
+	(Plan)(0),                                 // 1: sock.v1.Plan
+	(ProSource)(0),                            // 2: sock.v1.ProSource
+	(ProPlan)(0),                              // 3: sock.v1.ProPlan
+	(*SignInWithAppleRequest)(nil),            // 4: sock.v1.SignInWithAppleRequest
+	(*SignInWithAppleResponse)(nil),           // 5: sock.v1.SignInWithAppleResponse
+	(*RegisterWithAppleRequest)(nil),          // 6: sock.v1.RegisterWithAppleRequest
+	(*RegisterWithAppleResponse)(nil),         // 7: sock.v1.RegisterWithAppleResponse
+	(*SignInWithEmailRequest)(nil),            // 8: sock.v1.SignInWithEmailRequest
+	(*SignInWithEmailResponse)(nil),           // 9: sock.v1.SignInWithEmailResponse
+	(*RegisterWithEmailRequest)(nil),          // 10: sock.v1.RegisterWithEmailRequest
+	(*RegisterWithEmailResponse)(nil),         // 11: sock.v1.RegisterWithEmailResponse
+	(*GetRegistrationPolicyRequest)(nil),      // 12: sock.v1.GetRegistrationPolicyRequest
+	(*GetRegistrationPolicyResponse)(nil),     // 13: sock.v1.GetRegistrationPolicyResponse
+	(*AddEmailSignInRequest)(nil),             // 14: sock.v1.AddEmailSignInRequest
+	(*EmailCodeProof)(nil),                    // 15: sock.v1.EmailCodeProof
+	(*WorkOSCodeProof)(nil),                   // 16: sock.v1.WorkOSCodeProof
+	(*StartEmailSignInRequest)(nil),           // 17: sock.v1.StartEmailSignInRequest
+	(*StartEmailSignInResponse)(nil),          // 18: sock.v1.StartEmailSignInResponse
+	(*VerifyEmailSignInRequest)(nil),          // 19: sock.v1.VerifyEmailSignInRequest
+	(*VerifyEmailSignInResponse)(nil),         // 20: sock.v1.VerifyEmailSignInResponse
+	(*SignInWithEmailPasswordRequest)(nil),    // 21: sock.v1.SignInWithEmailPasswordRequest
+	(*SignInWithEmailPasswordResponse)(nil),   // 22: sock.v1.SignInWithEmailPasswordResponse
+	(*RegistrationTicket)(nil),                // 23: sock.v1.RegistrationTicket
+	(*SignInWithGoogleRequest)(nil),           // 24: sock.v1.SignInWithGoogleRequest
+	(*SignInWithGoogleResponse)(nil),          // 25: sock.v1.SignInWithGoogleResponse
+	(*StartTerminalSignInRequest)(nil),        // 26: sock.v1.StartTerminalSignInRequest
+	(*StartTerminalSignInResponse)(nil),       // 27: sock.v1.StartTerminalSignInResponse
+	(*FinishTerminalSignInRequest)(nil),       // 28: sock.v1.FinishTerminalSignInRequest
+	(*FinishTerminalSignInResponse)(nil),      // 29: sock.v1.FinishTerminalSignInResponse
+	(*TerminalSignInPending)(nil),             // 30: sock.v1.TerminalSignInPending
+	(*StartPasskeyRegistrationRequest)(nil),   // 31: sock.v1.StartPasskeyRegistrationRequest
+	(*StartPasskeyRegistrationResponse)(nil),  // 32: sock.v1.StartPasskeyRegistrationResponse
+	(*FinishPasskeyRegistrationRequest)(nil),  // 33: sock.v1.FinishPasskeyRegistrationRequest
+	(*FinishPasskeyRegistrationResponse)(nil), // 34: sock.v1.FinishPasskeyRegistrationResponse
+	(*Passkey)(nil),                           // 35: sock.v1.Passkey
+	(*ListSignInIdentitiesRequest)(nil),       // 36: sock.v1.ListSignInIdentitiesRequest
+	(*ListSignInIdentitiesResponse)(nil),      // 37: sock.v1.ListSignInIdentitiesResponse
+	(*EmailSignIn)(nil),                       // 38: sock.v1.EmailSignIn
+	(*RemoveEmailSignInRequest)(nil),          // 39: sock.v1.RemoveEmailSignInRequest
+	(*RemoveEmailSignInResponse)(nil),         // 40: sock.v1.RemoveEmailSignInResponse
+	(*ListPasskeysRequest)(nil),               // 41: sock.v1.ListPasskeysRequest
+	(*ListPasskeysResponse)(nil),              // 42: sock.v1.ListPasskeysResponse
+	(*RemovePasskeyRequest)(nil),              // 43: sock.v1.RemovePasskeyRequest
+	(*RemovePasskeyResponse)(nil),             // 44: sock.v1.RemovePasskeyResponse
+	(*StartPasskeySignInRequest)(nil),         // 45: sock.v1.StartPasskeySignInRequest
+	(*StartPasskeySignInResponse)(nil),        // 46: sock.v1.StartPasskeySignInResponse
+	(*SignInWithPasskeyRequest)(nil),          // 47: sock.v1.SignInWithPasskeyRequest
+	(*SignInWithPasskeyResponse)(nil),         // 48: sock.v1.SignInWithPasskeyResponse
+	(*AddEmailSignInResponse)(nil),            // 49: sock.v1.AddEmailSignInResponse
+	(*Session)(nil),                           // 50: sock.v1.Session
+	(*SignOutRequest)(nil),                    // 51: sock.v1.SignOutRequest
+	(*SignOutResponse)(nil),                   // 52: sock.v1.SignOutResponse
+	(*GetMeRequest)(nil),                      // 53: sock.v1.GetMeRequest
+	(*GetMeResponse)(nil),                     // 54: sock.v1.GetMeResponse
+	(*PlanLimits)(nil),                        // 55: sock.v1.PlanLimits
+	(*ProStatus)(nil),                         // 56: sock.v1.ProStatus
+	(*StartCheckoutRequest)(nil),              // 57: sock.v1.StartCheckoutRequest
+	(*StartCheckoutResponse)(nil),             // 58: sock.v1.StartCheckoutResponse
+	(*OpenBillingPortalRequest)(nil),          // 59: sock.v1.OpenBillingPortalRequest
+	(*OpenBillingPortalResponse)(nil),         // 60: sock.v1.OpenBillingPortalResponse
+	(*AcceptTermsRequest)(nil),                // 61: sock.v1.AcceptTermsRequest
+	(*AcceptTermsResponse)(nil),               // 62: sock.v1.AcceptTermsResponse
+	(*GetAccountsRequest)(nil),                // 63: sock.v1.GetAccountsRequest
+	(*GetAccountsResponse)(nil),               // 64: sock.v1.GetAccountsResponse
+	(*LookupHandleRequest)(nil),               // 65: sock.v1.LookupHandleRequest
+	(*LookupHandleResponse)(nil),              // 66: sock.v1.LookupHandleResponse
+	(*UpdateDisplayNameRequest)(nil),          // 67: sock.v1.UpdateDisplayNameRequest
+	(*UpdateDisplayNameResponse)(nil),         // 68: sock.v1.UpdateDisplayNameResponse
+	(*ChangeHandleRequest)(nil),               // 69: sock.v1.ChangeHandleRequest
+	(*ChangeHandleResponse)(nil),              // 70: sock.v1.ChangeHandleResponse
+	(*ListDevicesRequest)(nil),                // 71: sock.v1.ListDevicesRequest
+	(*ListDevicesResponse)(nil),               // 72: sock.v1.ListDevicesResponse
+	(*RevokeDeviceRequest)(nil),               // 73: sock.v1.RevokeDeviceRequest
+	(*RevokeDeviceResponse)(nil),              // 74: sock.v1.RevokeDeviceResponse
+	(*MintMachineKeyRequest)(nil),             // 75: sock.v1.MintMachineKeyRequest
+	(*MintMachineKeyResponse)(nil),            // 76: sock.v1.MintMachineKeyResponse
+	(*CreatePuppetRequest)(nil),               // 77: sock.v1.CreatePuppetRequest
+	(*CreatePuppetResponse)(nil),              // 78: sock.v1.CreatePuppetResponse
+	(*ListPuppetsRequest)(nil),                // 79: sock.v1.ListPuppetsRequest
+	(*ListPuppetsResponse)(nil),               // 80: sock.v1.ListPuppetsResponse
+	(*PuppetWithDevices)(nil),                 // 81: sock.v1.PuppetWithDevices
+	(*MintPuppetTokenRequest)(nil),            // 82: sock.v1.MintPuppetTokenRequest
+	(*MintPuppetTokenResponse)(nil),           // 83: sock.v1.MintPuppetTokenResponse
+	(*ErasePuppetRequest)(nil),                // 84: sock.v1.ErasePuppetRequest
+	(*ErasePuppetResponse)(nil),               // 85: sock.v1.ErasePuppetResponse
+	(*ArchivePuppetRequest)(nil),              // 86: sock.v1.ArchivePuppetRequest
+	(*ArchivePuppetResponse)(nil),             // 87: sock.v1.ArchivePuppetResponse
+	(*UnarchivePuppetRequest)(nil),            // 88: sock.v1.UnarchivePuppetRequest
+	(*UnarchivePuppetResponse)(nil),           // 89: sock.v1.UnarchivePuppetResponse
+	(*IssueConnectorPuppetTokenRequest)(nil),  // 90: sock.v1.IssueConnectorPuppetTokenRequest
+	(*IssueConnectorPuppetTokenResponse)(nil), // 91: sock.v1.IssueConnectorPuppetTokenResponse
+	(*RevokeConnectorDeviceRequest)(nil),      // 92: sock.v1.RevokeConnectorDeviceRequest
+	(*RevokeConnectorDeviceResponse)(nil),     // 93: sock.v1.RevokeConnectorDeviceResponse
+	(*ExportIdentityDataRequest)(nil),         // 94: sock.v1.ExportIdentityDataRequest
+	(*ExportIdentityDataResponse)(nil),        // 95: sock.v1.ExportIdentityDataResponse
+	(*EraseAccountRequest)(nil),               // 96: sock.v1.EraseAccountRequest
+	(*EraseAccountResponse)(nil),              // 97: sock.v1.EraseAccountResponse
+	(*timestamppb.Timestamp)(nil),             // 98: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),               // 99: google.protobuf.Duration
+	(*Account)(nil),                           // 100: sock.v1.Account
+	(*Device)(nil),                            // 101: sock.v1.Device
 }
 var file_sock_v1_identity_proto_depIdxs = []int32{
-	0,  // 0: sock.v1.SignInWithAppleRequest.apple_client:type_name -> sock.v1.AppleClient
-	49, // 1: sock.v1.SignInWithAppleResponse.session:type_name -> sock.v1.Session
-	0,  // 2: sock.v1.RegisterWithAppleRequest.apple_client:type_name -> sock.v1.AppleClient
-	49, // 3: sock.v1.RegisterWithAppleResponse.session:type_name -> sock.v1.Session
-	49, // 4: sock.v1.SignInWithEmailResponse.session:type_name -> sock.v1.Session
-	49, // 5: sock.v1.RegisterWithEmailResponse.session:type_name -> sock.v1.Session
-	14, // 6: sock.v1.AddEmailSignInRequest.email_code:type_name -> sock.v1.EmailCodeProof
-	15, // 7: sock.v1.AddEmailSignInRequest.google:type_name -> sock.v1.WorkOSCodeProof
-	49, // 8: sock.v1.VerifyEmailSignInResponse.session:type_name -> sock.v1.Session
-	22, // 9: sock.v1.VerifyEmailSignInResponse.registration:type_name -> sock.v1.RegistrationTicket
-	49, // 10: sock.v1.SignInWithEmailPasswordResponse.session:type_name -> sock.v1.Session
-	22, // 11: sock.v1.SignInWithEmailPasswordResponse.registration:type_name -> sock.v1.RegistrationTicket
-	96, // 12: sock.v1.RegistrationTicket.expires_at:type_name -> google.protobuf.Timestamp
-	49, // 13: sock.v1.SignInWithGoogleResponse.session:type_name -> sock.v1.Session
-	22, // 14: sock.v1.SignInWithGoogleResponse.registration:type_name -> sock.v1.RegistrationTicket
-	96, // 15: sock.v1.StartTerminalSignInResponse.expires_at:type_name -> google.protobuf.Timestamp
-	97, // 16: sock.v1.StartTerminalSignInResponse.poll_interval:type_name -> google.protobuf.Duration
-	49, // 17: sock.v1.FinishTerminalSignInResponse.session:type_name -> sock.v1.Session
-	22, // 18: sock.v1.FinishTerminalSignInResponse.registration:type_name -> sock.v1.RegistrationTicket
-	29, // 19: sock.v1.FinishTerminalSignInResponse.pending:type_name -> sock.v1.TerminalSignInPending
-	97, // 20: sock.v1.TerminalSignInPending.retry_after:type_name -> google.protobuf.Duration
-	34, // 21: sock.v1.FinishPasskeyRegistrationResponse.passkey:type_name -> sock.v1.Passkey
-	96, // 22: sock.v1.Passkey.created_at:type_name -> google.protobuf.Timestamp
-	37, // 23: sock.v1.ListSignInIdentitiesResponse.email:type_name -> sock.v1.EmailSignIn
-	34, // 24: sock.v1.ListPasskeysResponse.passkeys:type_name -> sock.v1.Passkey
-	49, // 25: sock.v1.SignInWithPasskeyResponse.session:type_name -> sock.v1.Session
-	98, // 26: sock.v1.Session.account:type_name -> sock.v1.Account
-	99, // 27: sock.v1.Session.device:type_name -> sock.v1.Device
-	98, // 28: sock.v1.GetMeResponse.account:type_name -> sock.v1.Account
-	54, // 29: sock.v1.GetMeResponse.pro:type_name -> sock.v1.ProStatus
-	1,  // 30: sock.v1.ProStatus.source:type_name -> sock.v1.ProSource
-	96, // 31: sock.v1.ProStatus.active_until:type_name -> google.protobuf.Timestamp
-	2,  // 32: sock.v1.StartCheckoutRequest.plan:type_name -> sock.v1.ProPlan
-	98, // 33: sock.v1.GetAccountsResponse.accounts:type_name -> sock.v1.Account
-	98, // 34: sock.v1.LookupHandleResponse.account:type_name -> sock.v1.Account
-	98, // 35: sock.v1.UpdateDisplayNameResponse.account:type_name -> sock.v1.Account
-	98, // 36: sock.v1.ChangeHandleResponse.account:type_name -> sock.v1.Account
-	99, // 37: sock.v1.ListDevicesResponse.devices:type_name -> sock.v1.Device
-	99, // 38: sock.v1.MintMachineKeyResponse.device:type_name -> sock.v1.Device
-	98, // 39: sock.v1.CreatePuppetResponse.puppet:type_name -> sock.v1.Account
-	99, // 40: sock.v1.CreatePuppetResponse.device:type_name -> sock.v1.Device
-	79, // 41: sock.v1.ListPuppetsResponse.puppets:type_name -> sock.v1.PuppetWithDevices
-	98, // 42: sock.v1.PuppetWithDevices.puppet:type_name -> sock.v1.Account
-	99, // 43: sock.v1.PuppetWithDevices.devices:type_name -> sock.v1.Device
-	96, // 44: sock.v1.PuppetWithDevices.archived_at:type_name -> google.protobuf.Timestamp
-	99, // 45: sock.v1.MintPuppetTokenResponse.device:type_name -> sock.v1.Device
-	96, // 46: sock.v1.ArchivePuppetResponse.archived_at:type_name -> google.protobuf.Timestamp
-	99, // 47: sock.v1.IssueConnectorPuppetTokenResponse.device:type_name -> sock.v1.Device
-	98, // 48: sock.v1.ExportIdentityDataResponse.account:type_name -> sock.v1.Account
-	99, // 49: sock.v1.ExportIdentityDataResponse.devices:type_name -> sock.v1.Device
-	79, // 50: sock.v1.ExportIdentityDataResponse.puppets:type_name -> sock.v1.PuppetWithDevices
-	3,  // 51: sock.v1.IdentityService.SignInWithApple:input_type -> sock.v1.SignInWithAppleRequest
-	5,  // 52: sock.v1.IdentityService.RegisterWithApple:input_type -> sock.v1.RegisterWithAppleRequest
-	7,  // 53: sock.v1.IdentityService.SignInWithEmail:input_type -> sock.v1.SignInWithEmailRequest
-	9,  // 54: sock.v1.IdentityService.RegisterWithEmail:input_type -> sock.v1.RegisterWithEmailRequest
-	13, // 55: sock.v1.IdentityService.AddEmailSignIn:input_type -> sock.v1.AddEmailSignInRequest
-	35, // 56: sock.v1.IdentityService.ListSignInIdentities:input_type -> sock.v1.ListSignInIdentitiesRequest
-	38, // 57: sock.v1.IdentityService.RemoveEmailSignIn:input_type -> sock.v1.RemoveEmailSignInRequest
-	16, // 58: sock.v1.IdentityService.StartEmailSignIn:input_type -> sock.v1.StartEmailSignInRequest
-	18, // 59: sock.v1.IdentityService.VerifyEmailSignIn:input_type -> sock.v1.VerifyEmailSignInRequest
-	20, // 60: sock.v1.IdentityService.SignInWithEmailPassword:input_type -> sock.v1.SignInWithEmailPasswordRequest
-	23, // 61: sock.v1.IdentityService.SignInWithGoogle:input_type -> sock.v1.SignInWithGoogleRequest
-	30, // 62: sock.v1.IdentityService.StartPasskeyRegistration:input_type -> sock.v1.StartPasskeyRegistrationRequest
-	32, // 63: sock.v1.IdentityService.FinishPasskeyRegistration:input_type -> sock.v1.FinishPasskeyRegistrationRequest
-	40, // 64: sock.v1.IdentityService.ListPasskeys:input_type -> sock.v1.ListPasskeysRequest
-	42, // 65: sock.v1.IdentityService.RemovePasskey:input_type -> sock.v1.RemovePasskeyRequest
-	44, // 66: sock.v1.IdentityService.StartPasskeySignIn:input_type -> sock.v1.StartPasskeySignInRequest
-	46, // 67: sock.v1.IdentityService.SignInWithPasskey:input_type -> sock.v1.SignInWithPasskeyRequest
-	50, // 68: sock.v1.IdentityService.SignOut:input_type -> sock.v1.SignOutRequest
-	11, // 69: sock.v1.IdentityService.GetRegistrationPolicy:input_type -> sock.v1.GetRegistrationPolicyRequest
-	25, // 70: sock.v1.IdentityService.StartTerminalSignIn:input_type -> sock.v1.StartTerminalSignInRequest
-	27, // 71: sock.v1.IdentityService.FinishTerminalSignIn:input_type -> sock.v1.FinishTerminalSignInRequest
-	52, // 72: sock.v1.IdentityService.GetMe:input_type -> sock.v1.GetMeRequest
-	59, // 73: sock.v1.IdentityService.AcceptTerms:input_type -> sock.v1.AcceptTermsRequest
-	61, // 74: sock.v1.IdentityService.GetAccounts:input_type -> sock.v1.GetAccountsRequest
-	63, // 75: sock.v1.IdentityService.LookupHandle:input_type -> sock.v1.LookupHandleRequest
-	65, // 76: sock.v1.IdentityService.UpdateDisplayName:input_type -> sock.v1.UpdateDisplayNameRequest
-	67, // 77: sock.v1.IdentityService.ChangeHandle:input_type -> sock.v1.ChangeHandleRequest
-	69, // 78: sock.v1.IdentityService.ListDevices:input_type -> sock.v1.ListDevicesRequest
-	71, // 79: sock.v1.IdentityService.RevokeDevice:input_type -> sock.v1.RevokeDeviceRequest
-	73, // 80: sock.v1.IdentityService.MintMachineKey:input_type -> sock.v1.MintMachineKeyRequest
-	75, // 81: sock.v1.IdentityService.CreatePuppet:input_type -> sock.v1.CreatePuppetRequest
-	77, // 82: sock.v1.IdentityService.ListPuppets:input_type -> sock.v1.ListPuppetsRequest
-	80, // 83: sock.v1.IdentityService.MintPuppetToken:input_type -> sock.v1.MintPuppetTokenRequest
-	82, // 84: sock.v1.IdentityService.ErasePuppet:input_type -> sock.v1.ErasePuppetRequest
-	84, // 85: sock.v1.IdentityService.ArchivePuppet:input_type -> sock.v1.ArchivePuppetRequest
-	86, // 86: sock.v1.IdentityService.UnarchivePuppet:input_type -> sock.v1.UnarchivePuppetRequest
-	88, // 87: sock.v1.IdentityService.IssueConnectorPuppetToken:input_type -> sock.v1.IssueConnectorPuppetTokenRequest
-	90, // 88: sock.v1.IdentityService.RevokeConnectorDevice:input_type -> sock.v1.RevokeConnectorDeviceRequest
-	92, // 89: sock.v1.IdentityService.ExportIdentityData:input_type -> sock.v1.ExportIdentityDataRequest
-	94, // 90: sock.v1.IdentityService.EraseAccount:input_type -> sock.v1.EraseAccountRequest
-	55, // 91: sock.v1.IdentityService.StartCheckout:input_type -> sock.v1.StartCheckoutRequest
-	57, // 92: sock.v1.IdentityService.OpenBillingPortal:input_type -> sock.v1.OpenBillingPortalRequest
-	4,  // 93: sock.v1.IdentityService.SignInWithApple:output_type -> sock.v1.SignInWithAppleResponse
-	6,  // 94: sock.v1.IdentityService.RegisterWithApple:output_type -> sock.v1.RegisterWithAppleResponse
-	8,  // 95: sock.v1.IdentityService.SignInWithEmail:output_type -> sock.v1.SignInWithEmailResponse
-	10, // 96: sock.v1.IdentityService.RegisterWithEmail:output_type -> sock.v1.RegisterWithEmailResponse
-	48, // 97: sock.v1.IdentityService.AddEmailSignIn:output_type -> sock.v1.AddEmailSignInResponse
-	36, // 98: sock.v1.IdentityService.ListSignInIdentities:output_type -> sock.v1.ListSignInIdentitiesResponse
-	39, // 99: sock.v1.IdentityService.RemoveEmailSignIn:output_type -> sock.v1.RemoveEmailSignInResponse
-	17, // 100: sock.v1.IdentityService.StartEmailSignIn:output_type -> sock.v1.StartEmailSignInResponse
-	19, // 101: sock.v1.IdentityService.VerifyEmailSignIn:output_type -> sock.v1.VerifyEmailSignInResponse
-	21, // 102: sock.v1.IdentityService.SignInWithEmailPassword:output_type -> sock.v1.SignInWithEmailPasswordResponse
-	24, // 103: sock.v1.IdentityService.SignInWithGoogle:output_type -> sock.v1.SignInWithGoogleResponse
-	31, // 104: sock.v1.IdentityService.StartPasskeyRegistration:output_type -> sock.v1.StartPasskeyRegistrationResponse
-	33, // 105: sock.v1.IdentityService.FinishPasskeyRegistration:output_type -> sock.v1.FinishPasskeyRegistrationResponse
-	41, // 106: sock.v1.IdentityService.ListPasskeys:output_type -> sock.v1.ListPasskeysResponse
-	43, // 107: sock.v1.IdentityService.RemovePasskey:output_type -> sock.v1.RemovePasskeyResponse
-	45, // 108: sock.v1.IdentityService.StartPasskeySignIn:output_type -> sock.v1.StartPasskeySignInResponse
-	47, // 109: sock.v1.IdentityService.SignInWithPasskey:output_type -> sock.v1.SignInWithPasskeyResponse
-	51, // 110: sock.v1.IdentityService.SignOut:output_type -> sock.v1.SignOutResponse
-	12, // 111: sock.v1.IdentityService.GetRegistrationPolicy:output_type -> sock.v1.GetRegistrationPolicyResponse
-	26, // 112: sock.v1.IdentityService.StartTerminalSignIn:output_type -> sock.v1.StartTerminalSignInResponse
-	28, // 113: sock.v1.IdentityService.FinishTerminalSignIn:output_type -> sock.v1.FinishTerminalSignInResponse
-	53, // 114: sock.v1.IdentityService.GetMe:output_type -> sock.v1.GetMeResponse
-	60, // 115: sock.v1.IdentityService.AcceptTerms:output_type -> sock.v1.AcceptTermsResponse
-	62, // 116: sock.v1.IdentityService.GetAccounts:output_type -> sock.v1.GetAccountsResponse
-	64, // 117: sock.v1.IdentityService.LookupHandle:output_type -> sock.v1.LookupHandleResponse
-	66, // 118: sock.v1.IdentityService.UpdateDisplayName:output_type -> sock.v1.UpdateDisplayNameResponse
-	68, // 119: sock.v1.IdentityService.ChangeHandle:output_type -> sock.v1.ChangeHandleResponse
-	70, // 120: sock.v1.IdentityService.ListDevices:output_type -> sock.v1.ListDevicesResponse
-	72, // 121: sock.v1.IdentityService.RevokeDevice:output_type -> sock.v1.RevokeDeviceResponse
-	74, // 122: sock.v1.IdentityService.MintMachineKey:output_type -> sock.v1.MintMachineKeyResponse
-	76, // 123: sock.v1.IdentityService.CreatePuppet:output_type -> sock.v1.CreatePuppetResponse
-	78, // 124: sock.v1.IdentityService.ListPuppets:output_type -> sock.v1.ListPuppetsResponse
-	81, // 125: sock.v1.IdentityService.MintPuppetToken:output_type -> sock.v1.MintPuppetTokenResponse
-	83, // 126: sock.v1.IdentityService.ErasePuppet:output_type -> sock.v1.ErasePuppetResponse
-	85, // 127: sock.v1.IdentityService.ArchivePuppet:output_type -> sock.v1.ArchivePuppetResponse
-	87, // 128: sock.v1.IdentityService.UnarchivePuppet:output_type -> sock.v1.UnarchivePuppetResponse
-	89, // 129: sock.v1.IdentityService.IssueConnectorPuppetToken:output_type -> sock.v1.IssueConnectorPuppetTokenResponse
-	91, // 130: sock.v1.IdentityService.RevokeConnectorDevice:output_type -> sock.v1.RevokeConnectorDeviceResponse
-	93, // 131: sock.v1.IdentityService.ExportIdentityData:output_type -> sock.v1.ExportIdentityDataResponse
-	95, // 132: sock.v1.IdentityService.EraseAccount:output_type -> sock.v1.EraseAccountResponse
-	56, // 133: sock.v1.IdentityService.StartCheckout:output_type -> sock.v1.StartCheckoutResponse
-	58, // 134: sock.v1.IdentityService.OpenBillingPortal:output_type -> sock.v1.OpenBillingPortalResponse
-	93, // [93:135] is the sub-list for method output_type
-	51, // [51:93] is the sub-list for method input_type
-	51, // [51:51] is the sub-list for extension type_name
-	51, // [51:51] is the sub-list for extension extendee
-	0,  // [0:51] is the sub-list for field type_name
+	0,   // 0: sock.v1.SignInWithAppleRequest.apple_client:type_name -> sock.v1.AppleClient
+	50,  // 1: sock.v1.SignInWithAppleResponse.session:type_name -> sock.v1.Session
+	0,   // 2: sock.v1.RegisterWithAppleRequest.apple_client:type_name -> sock.v1.AppleClient
+	50,  // 3: sock.v1.RegisterWithAppleResponse.session:type_name -> sock.v1.Session
+	50,  // 4: sock.v1.SignInWithEmailResponse.session:type_name -> sock.v1.Session
+	50,  // 5: sock.v1.RegisterWithEmailResponse.session:type_name -> sock.v1.Session
+	15,  // 6: sock.v1.AddEmailSignInRequest.email_code:type_name -> sock.v1.EmailCodeProof
+	16,  // 7: sock.v1.AddEmailSignInRequest.google:type_name -> sock.v1.WorkOSCodeProof
+	50,  // 8: sock.v1.VerifyEmailSignInResponse.session:type_name -> sock.v1.Session
+	23,  // 9: sock.v1.VerifyEmailSignInResponse.registration:type_name -> sock.v1.RegistrationTicket
+	50,  // 10: sock.v1.SignInWithEmailPasswordResponse.session:type_name -> sock.v1.Session
+	23,  // 11: sock.v1.SignInWithEmailPasswordResponse.registration:type_name -> sock.v1.RegistrationTicket
+	98,  // 12: sock.v1.RegistrationTicket.expires_at:type_name -> google.protobuf.Timestamp
+	50,  // 13: sock.v1.SignInWithGoogleResponse.session:type_name -> sock.v1.Session
+	23,  // 14: sock.v1.SignInWithGoogleResponse.registration:type_name -> sock.v1.RegistrationTicket
+	98,  // 15: sock.v1.StartTerminalSignInResponse.expires_at:type_name -> google.protobuf.Timestamp
+	99,  // 16: sock.v1.StartTerminalSignInResponse.poll_interval:type_name -> google.protobuf.Duration
+	50,  // 17: sock.v1.FinishTerminalSignInResponse.session:type_name -> sock.v1.Session
+	23,  // 18: sock.v1.FinishTerminalSignInResponse.registration:type_name -> sock.v1.RegistrationTicket
+	30,  // 19: sock.v1.FinishTerminalSignInResponse.pending:type_name -> sock.v1.TerminalSignInPending
+	99,  // 20: sock.v1.TerminalSignInPending.retry_after:type_name -> google.protobuf.Duration
+	35,  // 21: sock.v1.FinishPasskeyRegistrationResponse.passkey:type_name -> sock.v1.Passkey
+	98,  // 22: sock.v1.Passkey.created_at:type_name -> google.protobuf.Timestamp
+	38,  // 23: sock.v1.ListSignInIdentitiesResponse.email:type_name -> sock.v1.EmailSignIn
+	35,  // 24: sock.v1.ListPasskeysResponse.passkeys:type_name -> sock.v1.Passkey
+	50,  // 25: sock.v1.SignInWithPasskeyResponse.session:type_name -> sock.v1.Session
+	100, // 26: sock.v1.Session.account:type_name -> sock.v1.Account
+	101, // 27: sock.v1.Session.device:type_name -> sock.v1.Device
+	100, // 28: sock.v1.GetMeResponse.account:type_name -> sock.v1.Account
+	56,  // 29: sock.v1.GetMeResponse.pro:type_name -> sock.v1.ProStatus
+	1,   // 30: sock.v1.GetMeResponse.plan:type_name -> sock.v1.Plan
+	55,  // 31: sock.v1.GetMeResponse.limits:type_name -> sock.v1.PlanLimits
+	2,   // 32: sock.v1.ProStatus.source:type_name -> sock.v1.ProSource
+	98,  // 33: sock.v1.ProStatus.active_until:type_name -> google.protobuf.Timestamp
+	3,   // 34: sock.v1.StartCheckoutRequest.plan:type_name -> sock.v1.ProPlan
+	100, // 35: sock.v1.GetAccountsResponse.accounts:type_name -> sock.v1.Account
+	100, // 36: sock.v1.LookupHandleResponse.account:type_name -> sock.v1.Account
+	100, // 37: sock.v1.UpdateDisplayNameResponse.account:type_name -> sock.v1.Account
+	100, // 38: sock.v1.ChangeHandleResponse.account:type_name -> sock.v1.Account
+	101, // 39: sock.v1.ListDevicesResponse.devices:type_name -> sock.v1.Device
+	101, // 40: sock.v1.MintMachineKeyResponse.device:type_name -> sock.v1.Device
+	100, // 41: sock.v1.CreatePuppetResponse.puppet:type_name -> sock.v1.Account
+	101, // 42: sock.v1.CreatePuppetResponse.device:type_name -> sock.v1.Device
+	81,  // 43: sock.v1.ListPuppetsResponse.puppets:type_name -> sock.v1.PuppetWithDevices
+	100, // 44: sock.v1.PuppetWithDevices.puppet:type_name -> sock.v1.Account
+	101, // 45: sock.v1.PuppetWithDevices.devices:type_name -> sock.v1.Device
+	98,  // 46: sock.v1.PuppetWithDevices.archived_at:type_name -> google.protobuf.Timestamp
+	101, // 47: sock.v1.MintPuppetTokenResponse.device:type_name -> sock.v1.Device
+	98,  // 48: sock.v1.ArchivePuppetResponse.archived_at:type_name -> google.protobuf.Timestamp
+	101, // 49: sock.v1.IssueConnectorPuppetTokenResponse.device:type_name -> sock.v1.Device
+	100, // 50: sock.v1.ExportIdentityDataResponse.account:type_name -> sock.v1.Account
+	101, // 51: sock.v1.ExportIdentityDataResponse.devices:type_name -> sock.v1.Device
+	81,  // 52: sock.v1.ExportIdentityDataResponse.puppets:type_name -> sock.v1.PuppetWithDevices
+	4,   // 53: sock.v1.IdentityService.SignInWithApple:input_type -> sock.v1.SignInWithAppleRequest
+	6,   // 54: sock.v1.IdentityService.RegisterWithApple:input_type -> sock.v1.RegisterWithAppleRequest
+	8,   // 55: sock.v1.IdentityService.SignInWithEmail:input_type -> sock.v1.SignInWithEmailRequest
+	10,  // 56: sock.v1.IdentityService.RegisterWithEmail:input_type -> sock.v1.RegisterWithEmailRequest
+	14,  // 57: sock.v1.IdentityService.AddEmailSignIn:input_type -> sock.v1.AddEmailSignInRequest
+	36,  // 58: sock.v1.IdentityService.ListSignInIdentities:input_type -> sock.v1.ListSignInIdentitiesRequest
+	39,  // 59: sock.v1.IdentityService.RemoveEmailSignIn:input_type -> sock.v1.RemoveEmailSignInRequest
+	17,  // 60: sock.v1.IdentityService.StartEmailSignIn:input_type -> sock.v1.StartEmailSignInRequest
+	19,  // 61: sock.v1.IdentityService.VerifyEmailSignIn:input_type -> sock.v1.VerifyEmailSignInRequest
+	21,  // 62: sock.v1.IdentityService.SignInWithEmailPassword:input_type -> sock.v1.SignInWithEmailPasswordRequest
+	24,  // 63: sock.v1.IdentityService.SignInWithGoogle:input_type -> sock.v1.SignInWithGoogleRequest
+	31,  // 64: sock.v1.IdentityService.StartPasskeyRegistration:input_type -> sock.v1.StartPasskeyRegistrationRequest
+	33,  // 65: sock.v1.IdentityService.FinishPasskeyRegistration:input_type -> sock.v1.FinishPasskeyRegistrationRequest
+	41,  // 66: sock.v1.IdentityService.ListPasskeys:input_type -> sock.v1.ListPasskeysRequest
+	43,  // 67: sock.v1.IdentityService.RemovePasskey:input_type -> sock.v1.RemovePasskeyRequest
+	45,  // 68: sock.v1.IdentityService.StartPasskeySignIn:input_type -> sock.v1.StartPasskeySignInRequest
+	47,  // 69: sock.v1.IdentityService.SignInWithPasskey:input_type -> sock.v1.SignInWithPasskeyRequest
+	51,  // 70: sock.v1.IdentityService.SignOut:input_type -> sock.v1.SignOutRequest
+	12,  // 71: sock.v1.IdentityService.GetRegistrationPolicy:input_type -> sock.v1.GetRegistrationPolicyRequest
+	26,  // 72: sock.v1.IdentityService.StartTerminalSignIn:input_type -> sock.v1.StartTerminalSignInRequest
+	28,  // 73: sock.v1.IdentityService.FinishTerminalSignIn:input_type -> sock.v1.FinishTerminalSignInRequest
+	53,  // 74: sock.v1.IdentityService.GetMe:input_type -> sock.v1.GetMeRequest
+	61,  // 75: sock.v1.IdentityService.AcceptTerms:input_type -> sock.v1.AcceptTermsRequest
+	63,  // 76: sock.v1.IdentityService.GetAccounts:input_type -> sock.v1.GetAccountsRequest
+	65,  // 77: sock.v1.IdentityService.LookupHandle:input_type -> sock.v1.LookupHandleRequest
+	67,  // 78: sock.v1.IdentityService.UpdateDisplayName:input_type -> sock.v1.UpdateDisplayNameRequest
+	69,  // 79: sock.v1.IdentityService.ChangeHandle:input_type -> sock.v1.ChangeHandleRequest
+	71,  // 80: sock.v1.IdentityService.ListDevices:input_type -> sock.v1.ListDevicesRequest
+	73,  // 81: sock.v1.IdentityService.RevokeDevice:input_type -> sock.v1.RevokeDeviceRequest
+	75,  // 82: sock.v1.IdentityService.MintMachineKey:input_type -> sock.v1.MintMachineKeyRequest
+	77,  // 83: sock.v1.IdentityService.CreatePuppet:input_type -> sock.v1.CreatePuppetRequest
+	79,  // 84: sock.v1.IdentityService.ListPuppets:input_type -> sock.v1.ListPuppetsRequest
+	82,  // 85: sock.v1.IdentityService.MintPuppetToken:input_type -> sock.v1.MintPuppetTokenRequest
+	84,  // 86: sock.v1.IdentityService.ErasePuppet:input_type -> sock.v1.ErasePuppetRequest
+	86,  // 87: sock.v1.IdentityService.ArchivePuppet:input_type -> sock.v1.ArchivePuppetRequest
+	88,  // 88: sock.v1.IdentityService.UnarchivePuppet:input_type -> sock.v1.UnarchivePuppetRequest
+	90,  // 89: sock.v1.IdentityService.IssueConnectorPuppetToken:input_type -> sock.v1.IssueConnectorPuppetTokenRequest
+	92,  // 90: sock.v1.IdentityService.RevokeConnectorDevice:input_type -> sock.v1.RevokeConnectorDeviceRequest
+	94,  // 91: sock.v1.IdentityService.ExportIdentityData:input_type -> sock.v1.ExportIdentityDataRequest
+	96,  // 92: sock.v1.IdentityService.EraseAccount:input_type -> sock.v1.EraseAccountRequest
+	57,  // 93: sock.v1.IdentityService.StartCheckout:input_type -> sock.v1.StartCheckoutRequest
+	59,  // 94: sock.v1.IdentityService.OpenBillingPortal:input_type -> sock.v1.OpenBillingPortalRequest
+	5,   // 95: sock.v1.IdentityService.SignInWithApple:output_type -> sock.v1.SignInWithAppleResponse
+	7,   // 96: sock.v1.IdentityService.RegisterWithApple:output_type -> sock.v1.RegisterWithAppleResponse
+	9,   // 97: sock.v1.IdentityService.SignInWithEmail:output_type -> sock.v1.SignInWithEmailResponse
+	11,  // 98: sock.v1.IdentityService.RegisterWithEmail:output_type -> sock.v1.RegisterWithEmailResponse
+	49,  // 99: sock.v1.IdentityService.AddEmailSignIn:output_type -> sock.v1.AddEmailSignInResponse
+	37,  // 100: sock.v1.IdentityService.ListSignInIdentities:output_type -> sock.v1.ListSignInIdentitiesResponse
+	40,  // 101: sock.v1.IdentityService.RemoveEmailSignIn:output_type -> sock.v1.RemoveEmailSignInResponse
+	18,  // 102: sock.v1.IdentityService.StartEmailSignIn:output_type -> sock.v1.StartEmailSignInResponse
+	20,  // 103: sock.v1.IdentityService.VerifyEmailSignIn:output_type -> sock.v1.VerifyEmailSignInResponse
+	22,  // 104: sock.v1.IdentityService.SignInWithEmailPassword:output_type -> sock.v1.SignInWithEmailPasswordResponse
+	25,  // 105: sock.v1.IdentityService.SignInWithGoogle:output_type -> sock.v1.SignInWithGoogleResponse
+	32,  // 106: sock.v1.IdentityService.StartPasskeyRegistration:output_type -> sock.v1.StartPasskeyRegistrationResponse
+	34,  // 107: sock.v1.IdentityService.FinishPasskeyRegistration:output_type -> sock.v1.FinishPasskeyRegistrationResponse
+	42,  // 108: sock.v1.IdentityService.ListPasskeys:output_type -> sock.v1.ListPasskeysResponse
+	44,  // 109: sock.v1.IdentityService.RemovePasskey:output_type -> sock.v1.RemovePasskeyResponse
+	46,  // 110: sock.v1.IdentityService.StartPasskeySignIn:output_type -> sock.v1.StartPasskeySignInResponse
+	48,  // 111: sock.v1.IdentityService.SignInWithPasskey:output_type -> sock.v1.SignInWithPasskeyResponse
+	52,  // 112: sock.v1.IdentityService.SignOut:output_type -> sock.v1.SignOutResponse
+	13,  // 113: sock.v1.IdentityService.GetRegistrationPolicy:output_type -> sock.v1.GetRegistrationPolicyResponse
+	27,  // 114: sock.v1.IdentityService.StartTerminalSignIn:output_type -> sock.v1.StartTerminalSignInResponse
+	29,  // 115: sock.v1.IdentityService.FinishTerminalSignIn:output_type -> sock.v1.FinishTerminalSignInResponse
+	54,  // 116: sock.v1.IdentityService.GetMe:output_type -> sock.v1.GetMeResponse
+	62,  // 117: sock.v1.IdentityService.AcceptTerms:output_type -> sock.v1.AcceptTermsResponse
+	64,  // 118: sock.v1.IdentityService.GetAccounts:output_type -> sock.v1.GetAccountsResponse
+	66,  // 119: sock.v1.IdentityService.LookupHandle:output_type -> sock.v1.LookupHandleResponse
+	68,  // 120: sock.v1.IdentityService.UpdateDisplayName:output_type -> sock.v1.UpdateDisplayNameResponse
+	70,  // 121: sock.v1.IdentityService.ChangeHandle:output_type -> sock.v1.ChangeHandleResponse
+	72,  // 122: sock.v1.IdentityService.ListDevices:output_type -> sock.v1.ListDevicesResponse
+	74,  // 123: sock.v1.IdentityService.RevokeDevice:output_type -> sock.v1.RevokeDeviceResponse
+	76,  // 124: sock.v1.IdentityService.MintMachineKey:output_type -> sock.v1.MintMachineKeyResponse
+	78,  // 125: sock.v1.IdentityService.CreatePuppet:output_type -> sock.v1.CreatePuppetResponse
+	80,  // 126: sock.v1.IdentityService.ListPuppets:output_type -> sock.v1.ListPuppetsResponse
+	83,  // 127: sock.v1.IdentityService.MintPuppetToken:output_type -> sock.v1.MintPuppetTokenResponse
+	85,  // 128: sock.v1.IdentityService.ErasePuppet:output_type -> sock.v1.ErasePuppetResponse
+	87,  // 129: sock.v1.IdentityService.ArchivePuppet:output_type -> sock.v1.ArchivePuppetResponse
+	89,  // 130: sock.v1.IdentityService.UnarchivePuppet:output_type -> sock.v1.UnarchivePuppetResponse
+	91,  // 131: sock.v1.IdentityService.IssueConnectorPuppetToken:output_type -> sock.v1.IssueConnectorPuppetTokenResponse
+	93,  // 132: sock.v1.IdentityService.RevokeConnectorDevice:output_type -> sock.v1.RevokeConnectorDeviceResponse
+	95,  // 133: sock.v1.IdentityService.ExportIdentityData:output_type -> sock.v1.ExportIdentityDataResponse
+	97,  // 134: sock.v1.IdentityService.EraseAccount:output_type -> sock.v1.EraseAccountResponse
+	58,  // 135: sock.v1.IdentityService.StartCheckout:output_type -> sock.v1.StartCheckoutResponse
+	60,  // 136: sock.v1.IdentityService.OpenBillingPortal:output_type -> sock.v1.OpenBillingPortalResponse
+	95,  // [95:137] is the sub-list for method output_type
+	53,  // [53:95] is the sub-list for method input_type
+	53,  // [53:53] is the sub-list for extension type_name
+	53,  // [53:53] is the sub-list for extension extendee
+	0,   // [0:53] is the sub-list for field type_name
 }
 
 func init() { file_sock_v1_identity_proto_init() }
@@ -5701,8 +5858,8 @@ func file_sock_v1_identity_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sock_v1_identity_proto_rawDesc), len(file_sock_v1_identity_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   93,
+			NumEnums:      4,
+			NumMessages:   94,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

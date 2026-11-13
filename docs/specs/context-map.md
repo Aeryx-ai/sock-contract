@@ -43,8 +43,9 @@ Pass 11: feature flags and open registration. Pass 10: History Transfer. Pass 9:
 | Suspension | The operator's bar on an account: no device authenticates, sign-in is refused | Identity |
 | Apple grant | The refresh token Apple issues for a human's Sign in with Apple, kept only to revoke it at erasure | Identity |
 | Apple client | Which Sign in with Apple client issued a credential: the app (bundle id) or the web Services ID used by `sock login` | Identity |
-| Sock Pro | What lets a human own working puppets; active for a human while a trial, a Stripe subscription or an operator grant is, and for their puppets through them | Identity, Messaging (projected) |
-| Trial | A human's one free 7-day Sock Pro period, no card, started the first time they pass the Pro gate | Identity |
+| Sock Pro | The paid plan: active for a human while a Stripe subscription or an operator grant is, and for their puppets through them | Identity, Messaging (projected) |
+| Plan | Basic (free forever) or Pro: what a human's account allows, derived from the Pro sources | Identity, Messaging (derived) |
+| Waitlisted puppet | An unarchived puppet past its owner's plan's puppet limit, oldest covered first | Identity, Messaging (derived) |
 | Subscription (billing) | A Stripe subscription bought through Checkout, as the hub last fetched it | Identity |
 | Billing customer | The Stripe customer the hub created for a human, one at most | Identity |
 | Grant (Pro) | Free Sock Pro the operator gave a human until a date | Identity |
@@ -131,7 +132,7 @@ Apple (Sign in with Apple, APNs) and Stripe (Checkout with Managed Payments, the
 
 Stored:
 - Identity: accounts, the human or puppet half of each, devices with token hashes, unredeemed invites.
-- Identity also: terms acceptances, suspensions, Apple grants, grants awaiting revocation, sign-in buckets per client network, operator tokens with token hashes, operator token revocations, operator token sign-ins, invite mints, operator actions and their targets, Sock Pro trials and their reminder rows, billing customers, Stripe subscriptions as last fetched, billing customers awaiting deletion, Pro grants and their revocations. Never an email address or card data for billing.
+- Identity also: terms acceptances, suspensions, Apple grants, grants awaiting revocation, sign-in buckets per client network, operator tokens with token hashes, operator token revocations, operator token sign-ins, invite mints, operator actions and their targets, billing customers, Stripe subscriptions as last fetched, billing customers awaiting deletion, Pro grants and their revocations. Never an email address or card data for billing.
 - Messaging: participants and puppet owners (copied from Identity events), endpoints, push registrations, conversations with next seq, memberships, undelivered messages, deliveries, send receipts for 24h, blocks and the projected Pro entitlement, suspension and puppet archive of each account.
 - History Transfer (schema `transfer`): per live transfer the binding tag, recipient key, encapsulated key, chunk ciphertexts, chunk count at seal and `opened_at`. Nothing after `Close` or the 60-minute deadline; no account, device or secret.
 - Moderation: reports with their evidence, resolutions, report buckets per reporter.
@@ -150,7 +151,8 @@ Derived, never stored:
 - Whether a device has a live stream: replica memory only, never persisted.
 - Terms current: an acceptance row exists at the configured version.
 - Suspended: a suspension row exists.
-- Sock Pro active: `ProActiveUntil()`, the latest end of the trial, subscriptions and unrevoked grants, is after now.
+- Sock Pro active: `ProActiveUntil()`, the latest end of the subscriptions and unrevoked grants, is after now.
+- Plan and waitlisting: derived from the Pro sources, puppets and archives at each check ([plans](plans.md)).
 - Active puppet and read-only conversation: computed at post and at `ListConversations` from Messaging's projections.
 - Operator token live: no revocation row exists and `expiresAt` is in the future.
 - Report open: no resolution row exists.
