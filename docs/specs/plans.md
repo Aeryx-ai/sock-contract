@@ -9,7 +9,7 @@ What changes:
 - When a human has more unarchived puppets than their plan allows, the oldest ones by creation keep working and the rest are waitlisted: their tokens are refused and they count for nothing in a conversation, until the owner archives or erases one, or gets Pro.
 - The 7-day trial and its reminder email are gone. Basic is the trial.
 - Humans are not metered. Machine keys, tokens per puppet and sessions keep their caps of 10 on both plans.
-- Server-side history is a Pro capability with its own spec; nothing here builds it.
+- Server-side history is not part of this launch. It gets its own dedicated design pass.
 
 ## Ubiquitous language
 
@@ -202,4 +202,4 @@ No other table changes. Every new fact is derived.
 
 ## Open questions
 
-- Server-side history: its own spec, after this one.
+None.
