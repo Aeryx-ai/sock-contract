@@ -1,6 +1,6 @@
 # Sidebar sections
 
-Pass 1, for review. Context: Messaging. Decisions: sock-server ADR 57.
+Pass 2, review answers folded in. Context: Messaging. Decisions: sock-server ADR 57.
 
 What changes:
 
@@ -87,7 +87,7 @@ Enumeration: `people`, `groups`, `puppets`. Which conversations each holds is de
 
 ## SectionName
 
-Value object. Trimmed of leading and trailing white space, 1 to 1024 characters, no control characters. The constructor refuses anything else.
+Value object. Trimmed of leading and trailing white space, 1 to 1024 characters, no control characters. Unique within one human's sidebar ignoring case; two humans may use the same name. The constructor refuses anything else.
 
 ## SectionAssignment
 
@@ -343,11 +343,11 @@ First change: under the lock, when the human has no rows, insert people 0, group
 
 ## Apple consumer
 
-- **Model.** SockKit gains `Sidebar` (ordered sections, each `.type(ConversationSection)` or `.custom(id, name)`) with the default when the server has none. `ConversationSection.sectioned` gives way to `Sidebar.sectioned(items, …)`: a conversation goes in its custom section when the sidebar lists it, else in its type section. Empty type sections are dropped as today; empty custom sections show, so there is somewhere to put things (inferred; open question 2). Filter pills apply inside every section, unchanged.
+- **Model.** SockKit gains `Sidebar` (ordered sections, each `.type(ConversationSection)` or `.custom(id, name)`) with the default when the server has none. `ConversationSection.sectioned` gives way to `Sidebar.sectioned(items, …)`: a conversation goes in its custom section when the sidebar lists it, else in its type section. Empty type sections are dropped as today; empty custom sections show, so there is somewhere to put things. Filter pills apply inside every section, unchanged.
 - **Store.** `MessageStore` keeps the sidebar and each conversation's `sectionID`, written in the same transaction as the conversations from `ListConversations`.
 - **Sync.** At stream open: `GetSidebar` with the existing `ListConversations`. A `Sidebar` event replaces the stored sidebar and clears assignments to custom sections it no longer lists; a `SectionAssignment` event sets or clears one.
 - **Changes.** Applied locally at once, then sent. The response's sidebar replaces the local one; a failure reverts and shows the error banner. `FIELD_INVALID` on a reorder refetches and retries once. No outbox: like read markers, the server is the record and the next stream open reconciles.
-- **UI, both platforms.** Section header menu: Move Up, Move Down, and for a custom section Rename… and Delete. Conversation row menu: Move to Section, listing custom sections plus New Section…, and Remove from Section when assigned. Sidebar menu: New Section… and Edit Sections…, a sheet listing every section with drag to reorder (`onMove`). SwiftUI `List` cannot drag a section header itself, which is why reordering lives in the menu and the sheet.
+- **UI, both platforms.** Section header menu: Move Up, Move Down, and for a custom section Rename… and Delete. Conversation row menu: Move to Section, listing custom sections plus New Section…, and Remove from Section when assigned. Sidebar menu: New Section… and Edit Sections…, a sheet listing every section with drag to reorder (`onMove`). SwiftUI `List` cannot drag a section header itself, which is why reordering lives in the menu and the sheet. Conversations drag onto a custom section header to assign, and onto a type section header to unassign (`dropDestination` on the header; Mac and iPad).
 
 ## Rollout
 
@@ -355,16 +355,17 @@ First change: under the lock, when the human has no rows, insert people 0, group
 2. Server: migration, seven RPCs, two `ListConversations`/export fields, two stream events, black-box tests for each.
 3. Apple: consumer above.
 
-Additive throughout. `sock listen` and the `sock-mcp` channel act only on a message event, and puppets never receive these. Desktop and web show type sections until they adopt it (open question 4).
+Additive throughout. `sock listen` and the `sock-mcp` channel act only on a message event, and puppets never receive these. Desktop and web show type sections until they adopt it in the next pass.
 
 ## Required tests
 
 Server black-box: each RPC's success and each error in its listed order; a puppet token gets `CALLER_NOT_ALLOWED`; another human's custom section id gets `NOT_FOUND` from rename, delete and assign; duplicate name ignoring case gets `SECTION_NAME_TAKEN`, the 51st custom section `SECTION_LIMIT`; a stale reorder gets `FIELD_INVALID`; deleting a custom section returns its conversations to their type sections; `Leave` and erasure remove assignments and the sidebar; `ListConversations` and export carry `section_id` for the caller only; a stream of the same account receives both events, another account's neither. Apple: `Sidebar.sectioned` placement and order; store apply atomic with conversations; event apply, including clearing assignments to a deleted custom section; revert on failure.
 
-## Open questions
+## Decided in review
 
-1. Names unique per human ignoring case?
-2. Show empty custom sections, and keep hiding empty type sections?
-3. New custom sections at the top?
-4. Desktop and web: in this pass or later?
-5. Drag a conversation onto a custom section header on the Mac: v1 or later?
+1. Names: 1 to 1024 characters, unique per human ignoring case, not across humans.
+2. At most 50 custom sections on every plan.
+3. Empty custom sections show; empty type sections stay hidden.
+4. New custom sections go at the top.
+5. Desktop and web follow in the next pass.
+6. Drag a conversation onto a section header is in v1.
