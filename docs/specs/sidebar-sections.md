@@ -56,7 +56,7 @@ Entity, aggregate root. Identity is the human's account. A human with no stored 
 - Each type section appears exactly once.
 - Positions run 0 to n-1 with no gaps or repeats.
 - No two custom sections have names equal ignoring case. Two identical headings could not be told apart, and the assignment menu would list two of the same name.
-- At most 50 custom sections (inferred; open question 2).
+- At most 50 custom sections, on every plan.
 - Only a human has a sidebar.
 
 ### Relationships
@@ -87,7 +87,7 @@ Enumeration: `people`, `groups`, `puppets`. Which conversations each holds is de
 
 ## SectionName
 
-Value object. Trimmed of leading and trailing white space, 1 to 40 characters, no control characters (length inferred; open question 1). The constructor refuses anything else.
+Value object. Trimmed of leading and trailing white space, 1 to 1024 characters, no control characters. The constructor refuses anything else.
 
 ## SectionAssignment
 
@@ -293,15 +293,16 @@ CREATE TABLE messaging.custom_sections (
     section_id  uuid NOT NULL PRIMARY KEY,
     account_id  uuid NOT NULL,
     kind        text NOT NULL DEFAULT 'custom' CHECK (kind = 'custom'),
-    name        text NOT NULL CHECK (char_length(name) BETWEEN 1 AND 40 AND name = btrim(name)),
+    name        text NOT NULL CHECK (char_length(name) BETWEEN 1 AND 1024 AND name = btrim(name)),
     FOREIGN KEY (section_id, account_id, kind)
         REFERENCES messaging.sidebar_sections (id, account_id, kind) ON DELETE CASCADE,
     UNIQUE (section_id, account_id)
         -- target of messaging.section_assignments' FK
 );
 CREATE UNIQUE INDEX custom_sections_name_once
-    ON messaging.custom_sections (account_id, lower(name));
-    -- serves the name-taken check on create and rename
+    ON messaging.custom_sections (account_id, md5(lower(name)));
+    -- serves the name-taken check on create and rename. md5, not the name:
+    -- 1024 characters of UTF-8 can exceed the btree entry limit (about 2700 bytes)
 
 CREATE TABLE messaging.section_assignments (
     account_id       uuid NOT NULL,
@@ -342,7 +343,7 @@ First change: under the lock, when the human has no rows, insert people 0, group
 
 ## Apple consumer
 
-- **Model.** SockKit gains `Sidebar` (ordered sections, each `.type(ConversationSection)` or `.custom(id, name)`) with the default when the server has none. `ConversationSection.sectioned` gives way to `Sidebar.sectioned(items, …)`: a conversation goes in its custom section when the sidebar lists it, else in its type section. Empty type sections are dropped as today; empty custom sections show, so there is somewhere to put things (inferred; open question 3). Filter pills apply inside every section, unchanged.
+- **Model.** SockKit gains `Sidebar` (ordered sections, each `.type(ConversationSection)` or `.custom(id, name)`) with the default when the server has none. `ConversationSection.sectioned` gives way to `Sidebar.sectioned(items, …)`: a conversation goes in its custom section when the sidebar lists it, else in its type section. Empty type sections are dropped as today; empty custom sections show, so there is somewhere to put things (inferred; open question 2). Filter pills apply inside every section, unchanged.
 - **Store.** `MessageStore` keeps the sidebar and each conversation's `sectionID`, written in the same transaction as the conversations from `ListConversations`.
 - **Sync.** At stream open: `GetSidebar` with the existing `ListConversations`. A `Sidebar` event replaces the stored sidebar and clears assignments to custom sections it no longer lists; a `SectionAssignment` event sets or clears one.
 - **Changes.** Applied locally at once, then sent. The response's sidebar replaces the local one; a failure reverts and shows the error banner. `FIELD_INVALID` on a reorder refetches and retries once. No outbox: like read markers, the server is the record and the next stream open reconciles.
@@ -354,7 +355,7 @@ First change: under the lock, when the human has no rows, insert people 0, group
 2. Server: migration, seven RPCs, two `ListConversations`/export fields, two stream events, black-box tests for each.
 3. Apple: consumer above.
 
-Additive throughout. `sock listen` and the `sock-mcp` channel act only on a message event, and puppets never receive these. Desktop and web show type sections until they adopt it (open question 5).
+Additive throughout. `sock listen` and the `sock-mcp` channel act only on a message event, and puppets never receive these. Desktop and web show type sections until they adopt it (open question 4).
 
 ## Required tests
 
@@ -362,9 +363,8 @@ Server black-box: each RPC's success and each error in its listed order; a puppe
 
 ## Open questions
 
-1. Custom section name: 40 characters, unique ignoring case?
-2. Custom section limit: 50 on both plans, or a plan limit?
-3. Show empty custom sections, and keep hiding empty type sections?
-4. New custom sections at the top?
-5. Desktop and web: in this pass or later?
-6. Drag a conversation onto a custom section header on the Mac: v1 or later?
+1. Names unique per human ignoring case?
+2. Show empty custom sections, and keep hiding empty type sections?
+3. New custom sections at the top?
+4. Desktop and web: in this pass or later?
+5. Drag a conversation onto a custom section header on the Mac: v1 or later?
