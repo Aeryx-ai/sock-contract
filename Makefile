@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := build
-.PHONY: build swift-plugins gen-go gen-swift gen-ts test test-ts lint breaking check install redeploy
+.PHONY: build swift-plugins gen-go gen-swift gen-ts test test-ts lint breaking check install redeploy release
 
 build: gen-go gen-swift gen-ts
 	go build ./...
@@ -41,6 +41,10 @@ breaking:
 check: lint build test breaking
 	git diff --exit-code -- gen/ || (echo "generated code is stale: run make build and commit" && exit 1)
 	git status --porcelain gen/ | (! grep .) || (echo "generated code is stale: run make build and commit" && exit 1)
+
+# Next patch tag and GitHub release; CI runs it after check passes on main.
+release:
+	scripts/release-patch.sh
 
 install:
 	@echo "contract is a library; consumers pin a tag"

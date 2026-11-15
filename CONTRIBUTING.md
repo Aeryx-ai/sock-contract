@@ -115,14 +115,16 @@ The Swift vector is sealed to the Go vector's key, so Go goes first.
 
 ## Releases (maintainers)
 
-A release is a signed annotated `vX.Y.Z` tag on `main`, with the version as its message:
+A release is an annotated `vX.Y.Z` tag on `main`. The tag is the release: Go consumers fetch it through the module proxy, Swift consumers through Swift Package Manager and TypeScript consumers by git tag. The next `make breaking` compares against it.
+
+Patch releases are automatic. When `make check` passes on a push to `main`, CI's `release` job runs `make release` (`scripts/release-patch.sh`): it tags the commit with the next patch version and publishes a GitHub release with generated notes. These tags come from `github-actions[bot]` and are unsigned.
+
+Minor and major bumps are by hand. Push the tag in the same push as the commit, so the `release` job finds it already tagged and skips it:
 
 ```sh
-git tag -s v0.19.0 -m v0.19.0
-git push origin v0.19.0
+git tag -s v0.26.0 -m v0.26.0
+git push --atomic origin main v0.26.0
 ```
-
-There is no release workflow. The tag is the release: Go consumers fetch it through the module proxy, Swift consumers through Swift Package Manager and TypeScript consumers by git tag. The next `make breaking` compares against it, so tag only a `main` that passes `make check`.
 
 ## License
 

@@ -21,3 +21,25 @@ jobs:
           version: 1.68.4
           setup_only: true
       - run: make check
+
+  # Every push to main that passes check ships as the next patch tag.
+  release:
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # One at a time, so two runs never pick the same version.
+    concurrency:
+      group: release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - run: make release
+        env:
+          GH_TOKEN: ${{ github.token }}
