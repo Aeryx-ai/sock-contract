@@ -436,6 +436,30 @@ public nonisolated struct Sock_V1_SubscribeResponse: Sendable {
     set {event = .puppetHeard(newValue)}
   }
 
+  /// The caller's sidebar changed on one of its devices, the calling one
+  /// included. The whole sidebar. A hint: at most once, so clients
+  /// reconcile with GetSidebar when a stream opens. Human streams only.
+  public var sidebar: Sock_V1_Sidebar {
+    get {
+      if case .sidebar(let v)? = event {return v}
+      return Sock_V1_Sidebar()
+    }
+    set {event = .sidebar(newValue)}
+  }
+
+  /// The caller moved a conversation into or out of a custom section. Not
+  /// sent for a section's deletion: the Sidebar event drops the section and
+  /// clients clear assignments to sections it no longer lists. A hint: at
+  /// most once, so clients reconcile with ListConversations when a stream
+  /// opens. Human streams only.
+  public var sectionAssignment: Sock_V1_SectionAssignment {
+    get {
+      if case .sectionAssignment(let v)? = event {return v}
+      return Sock_V1_SectionAssignment()
+    }
+    set {event = .sectionAssignment(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Event: Equatable, Sendable {
@@ -460,6 +484,16 @@ public nonisolated struct Sock_V1_SubscribeResponse: Sendable {
     /// reconcile with ListConversations when a stream opens. The owner's
     /// human streams only.
     case puppetHeard(Sock_V1_PuppetHeard)
+    /// The caller's sidebar changed on one of its devices, the calling one
+    /// included. The whole sidebar. A hint: at most once, so clients
+    /// reconcile with GetSidebar when a stream opens. Human streams only.
+    case sidebar(Sock_V1_Sidebar)
+    /// The caller moved a conversation into or out of a custom section. Not
+    /// sent for a section's deletion: the Sidebar event drops the section and
+    /// clients clear assignments to sections it no longer lists. A hint: at
+    /// most once, so clients reconcile with ListConversations when a stream
+    /// opens. Human streams only.
+    case sectionAssignment(Sock_V1_SectionAssignment)
 
   }
 
@@ -484,6 +518,248 @@ public nonisolated struct Sock_V1_ReadMarker: Sendable {
   public var conversationID: String = String()
 
   public var readThroughSeq: Int64 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_SectionAssignment: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var conversationID: String = String()
+
+  /// Empty: unassigned, shown in its type section.
+  public var sectionID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_GetSidebarRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_GetSidebarResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var sidebar: Sock_V1_Sidebar {
+    get {_sidebar ?? Sock_V1_Sidebar()}
+    set {_sidebar = newValue}
+  }
+  /// Returns true if `sidebar` has been explicitly set.
+  public var hasSidebar: Bool {self._sidebar != nil}
+  /// Clears the value of `sidebar`. Subsequent reads from it will return its default value.
+  public mutating func clearSidebar() {self._sidebar = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _sidebar: Sock_V1_Sidebar? = nil
+}
+
+public nonisolated struct Sock_V1_CreateSectionRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// 1 to 1024 characters after trimming white space, no control characters,
+  /// unique in the caller's sidebar ignoring case.
+  public var name: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_CreateSectionResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// The new custom section, at the top of the sidebar.
+  public var section: Sock_V1_CustomSection {
+    get {_section ?? Sock_V1_CustomSection()}
+    set {_section = newValue}
+  }
+  /// Returns true if `section` has been explicitly set.
+  public var hasSection: Bool {self._section != nil}
+  /// Clears the value of `section`. Subsequent reads from it will return its default value.
+  public mutating func clearSection() {self._section = nil}
+
+  public var sidebar: Sock_V1_Sidebar {
+    get {_sidebar ?? Sock_V1_Sidebar()}
+    set {_sidebar = newValue}
+  }
+  /// Returns true if `sidebar` has been explicitly set.
+  public var hasSidebar: Bool {self._sidebar != nil}
+  /// Clears the value of `sidebar`. Subsequent reads from it will return its default value.
+  public mutating func clearSidebar() {self._sidebar = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _section: Sock_V1_CustomSection? = nil
+  fileprivate var _sidebar: Sock_V1_Sidebar? = nil
+}
+
+public nonisolated struct Sock_V1_RenameSectionRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var sectionID: String = String()
+
+  /// As CreateSectionRequest.name.
+  public var name: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_RenameSectionResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var sidebar: Sock_V1_Sidebar {
+    get {_sidebar ?? Sock_V1_Sidebar()}
+    set {_sidebar = newValue}
+  }
+  /// Returns true if `sidebar` has been explicitly set.
+  public var hasSidebar: Bool {self._sidebar != nil}
+  /// Clears the value of `sidebar`. Subsequent reads from it will return its default value.
+  public mutating func clearSidebar() {self._sidebar = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _sidebar: Sock_V1_Sidebar? = nil
+}
+
+public nonisolated struct Sock_V1_DeleteSectionRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var sectionID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_DeleteSectionResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var sidebar: Sock_V1_Sidebar {
+    get {_sidebar ?? Sock_V1_Sidebar()}
+    set {_sidebar = newValue}
+  }
+  /// Returns true if `sidebar` has been explicitly set.
+  public var hasSidebar: Bool {self._sidebar != nil}
+  /// Clears the value of `sidebar`. Subsequent reads from it will return its default value.
+  public mutating func clearSidebar() {self._sidebar = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _sidebar: Sock_V1_Sidebar? = nil
+}
+
+public nonisolated struct Sock_V1_ReorderSidebarRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Every current section exactly once, top to bottom.
+  public var order: [Sock_V1_SectionRef] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_ReorderSidebarResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var sidebar: Sock_V1_Sidebar {
+    get {_sidebar ?? Sock_V1_Sidebar()}
+    set {_sidebar = newValue}
+  }
+  /// Returns true if `sidebar` has been explicitly set.
+  public var hasSidebar: Bool {self._sidebar != nil}
+  /// Clears the value of `sidebar`. Subsequent reads from it will return its default value.
+  public mutating func clearSidebar() {self._sidebar = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _sidebar: Sock_V1_Sidebar? = nil
+}
+
+public nonisolated struct Sock_V1_AssignSectionRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var conversationID: String = String()
+
+  /// One of the caller's custom sections.
+  public var sectionID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_AssignSectionResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_UnassignSectionRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var conversationID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_UnassignSectionResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -701,9 +977,21 @@ public nonisolated struct Sock_V1_ExportMessagingDataResponse: Sendable {
   /// Accounts the caller has blocked.
   public var blockedAccountIds: [String] = []
 
+  /// The caller's sidebar.
+  public var sidebar: Sock_V1_Sidebar {
+    get {_sidebar ?? Sock_V1_Sidebar()}
+    set {_sidebar = newValue}
+  }
+  /// Returns true if `sidebar` has been explicitly set.
+  public var hasSidebar: Bool {self._sidebar != nil}
+  /// Clears the value of `sidebar`. Subsequent reads from it will return its default value.
+  public mutating func clearSidebar() {self._sidebar = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
+
+  fileprivate var _sidebar: Sock_V1_Sidebar? = nil
 }
 
 public nonisolated struct Sock_V1_BlockAccountRequest: Sendable {
@@ -1398,7 +1686,7 @@ nonisolated extension Sock_V1_SubscribeRequest: SwiftProtobuf.Message, SwiftProt
 
 nonisolated extension Sock_V1_SubscribeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SubscribeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}message\0\u{1}heartbeat\0\u{3}read_marker\0\u{1}activity\0\u{3}puppet_archive\0\u{3}puppet_heard\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}message\0\u{1}heartbeat\0\u{3}read_marker\0\u{1}activity\0\u{3}puppet_archive\0\u{3}puppet_heard\0\u{1}sidebar\0\u{3}section_assignment\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1484,6 +1772,32 @@ nonisolated extension Sock_V1_SubscribeResponse: SwiftProtobuf.Message, SwiftPro
           self.event = .puppetHeard(v)
         }
       }()
+      case 7: try {
+        var v: Sock_V1_Sidebar?
+        var hadOneofValue = false
+        if let current = self.event {
+          hadOneofValue = true
+          if case .sidebar(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.event = .sidebar(v)
+        }
+      }()
+      case 8: try {
+        var v: Sock_V1_SectionAssignment?
+        var hadOneofValue = false
+        if let current = self.event {
+          hadOneofValue = true
+          if case .sectionAssignment(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.event = .sectionAssignment(v)
+        }
+      }()
       default: break
       }
     }
@@ -1518,6 +1832,14 @@ nonisolated extension Sock_V1_SubscribeResponse: SwiftProtobuf.Message, SwiftPro
     case .puppetHeard?: try {
       guard case .puppetHeard(let v)? = self.event else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+    }()
+    case .sidebar?: try {
+      guard case .sidebar(let v)? = self.event else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    }()
+    case .sectionAssignment?: try {
+      guard case .sectionAssignment(let v)? = self.event else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
     }()
     case nil: break
     }
@@ -1580,6 +1902,463 @@ nonisolated extension Sock_V1_ReadMarker: SwiftProtobuf.Message, SwiftProtobuf._
   public static func ==(lhs: Sock_V1_ReadMarker, rhs: Sock_V1_ReadMarker) -> Bool {
     if lhs.conversationID != rhs.conversationID {return false}
     if lhs.readThroughSeq != rhs.readThroughSeq {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_SectionAssignment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SectionAssignment"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}conversation_id\0\u{3}section_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.conversationID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.sectionID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.conversationID.isEmpty {
+      try visitor.visitSingularStringField(value: self.conversationID, fieldNumber: 1)
+    }
+    if !self.sectionID.isEmpty {
+      try visitor.visitSingularStringField(value: self.sectionID, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_SectionAssignment, rhs: Sock_V1_SectionAssignment) -> Bool {
+    if lhs.conversationID != rhs.conversationID {return false}
+    if lhs.sectionID != rhs.sectionID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_GetSidebarRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetSidebarRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_GetSidebarRequest, rhs: Sock_V1_GetSidebarRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_GetSidebarResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetSidebarResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sidebar\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._sidebar) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._sidebar {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_GetSidebarResponse, rhs: Sock_V1_GetSidebarResponse) -> Bool {
+    if lhs._sidebar != rhs._sidebar {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_CreateSectionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".CreateSectionRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_CreateSectionRequest, rhs: Sock_V1_CreateSectionRequest) -> Bool {
+    if lhs.name != rhs.name {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_CreateSectionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".CreateSectionResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}section\0\u{1}sidebar\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._section) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._sidebar) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._section {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._sidebar {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_CreateSectionResponse, rhs: Sock_V1_CreateSectionResponse) -> Bool {
+    if lhs._section != rhs._section {return false}
+    if lhs._sidebar != rhs._sidebar {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_RenameSectionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".RenameSectionRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}section_id\0\u{1}name\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.sectionID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.sectionID.isEmpty {
+      try visitor.visitSingularStringField(value: self.sectionID, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_RenameSectionRequest, rhs: Sock_V1_RenameSectionRequest) -> Bool {
+    if lhs.sectionID != rhs.sectionID {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_RenameSectionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".RenameSectionResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sidebar\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._sidebar) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._sidebar {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_RenameSectionResponse, rhs: Sock_V1_RenameSectionResponse) -> Bool {
+    if lhs._sidebar != rhs._sidebar {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_DeleteSectionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DeleteSectionRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}section_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.sectionID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.sectionID.isEmpty {
+      try visitor.visitSingularStringField(value: self.sectionID, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_DeleteSectionRequest, rhs: Sock_V1_DeleteSectionRequest) -> Bool {
+    if lhs.sectionID != rhs.sectionID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_DeleteSectionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DeleteSectionResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sidebar\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._sidebar) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._sidebar {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_DeleteSectionResponse, rhs: Sock_V1_DeleteSectionResponse) -> Bool {
+    if lhs._sidebar != rhs._sidebar {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_ReorderSidebarRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ReorderSidebarRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}order\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.order) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.order.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.order, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_ReorderSidebarRequest, rhs: Sock_V1_ReorderSidebarRequest) -> Bool {
+    if lhs.order != rhs.order {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_ReorderSidebarResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ReorderSidebarResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}sidebar\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._sidebar) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._sidebar {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_ReorderSidebarResponse, rhs: Sock_V1_ReorderSidebarResponse) -> Bool {
+    if lhs._sidebar != rhs._sidebar {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_AssignSectionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".AssignSectionRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}conversation_id\0\u{3}section_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.conversationID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.sectionID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.conversationID.isEmpty {
+      try visitor.visitSingularStringField(value: self.conversationID, fieldNumber: 1)
+    }
+    if !self.sectionID.isEmpty {
+      try visitor.visitSingularStringField(value: self.sectionID, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_AssignSectionRequest, rhs: Sock_V1_AssignSectionRequest) -> Bool {
+    if lhs.conversationID != rhs.conversationID {return false}
+    if lhs.sectionID != rhs.sectionID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_AssignSectionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".AssignSectionResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_AssignSectionResponse, rhs: Sock_V1_AssignSectionResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_UnassignSectionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UnassignSectionRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}conversation_id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.conversationID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.conversationID.isEmpty {
+      try visitor.visitSingularStringField(value: self.conversationID, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_UnassignSectionRequest, rhs: Sock_V1_UnassignSectionRequest) -> Bool {
+    if lhs.conversationID != rhs.conversationID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_UnassignSectionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".UnassignSectionResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_UnassignSectionResponse, rhs: Sock_V1_UnassignSectionResponse) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1976,7 +2755,7 @@ nonisolated extension Sock_V1_ExportMessagingDataRequest: SwiftProtobuf.Message,
 
 nonisolated extension Sock_V1_ExportMessagingDataResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ExportMessagingDataResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}conversations\0\u{3}push_registered_device_ids\0\u{3}blocked_account_ids\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}conversations\0\u{3}push_registered_device_ids\0\u{3}blocked_account_ids\0\u{1}sidebar\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -1987,12 +2766,17 @@ nonisolated extension Sock_V1_ExportMessagingDataResponse: SwiftProtobuf.Message
       case 1: try { try decoder.decodeRepeatedMessageField(value: &self.conversations) }()
       case 2: try { try decoder.decodeRepeatedStringField(value: &self.pushRegisteredDeviceIds) }()
       case 3: try { try decoder.decodeRepeatedStringField(value: &self.blockedAccountIds) }()
+      case 4: try { try decoder.decodeSingularMessageField(value: &self._sidebar) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if !self.conversations.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.conversations, fieldNumber: 1)
     }
@@ -2002,6 +2786,9 @@ nonisolated extension Sock_V1_ExportMessagingDataResponse: SwiftProtobuf.Message
     if !self.blockedAccountIds.isEmpty {
       try visitor.visitRepeatedStringField(value: self.blockedAccountIds, fieldNumber: 3)
     }
+    try { if let v = self._sidebar {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -2009,6 +2796,7 @@ nonisolated extension Sock_V1_ExportMessagingDataResponse: SwiftProtobuf.Message
     if lhs.conversations != rhs.conversations {return false}
     if lhs.pushRegisteredDeviceIds != rhs.pushRegisteredDeviceIds {return false}
     if lhs.blockedAccountIds != rhs.blockedAccountIds {return false}
+    if lhs._sidebar != rhs._sidebar {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -132,6 +132,61 @@ func (ConversationKind) EnumDescriptor() ([]byte, []int) {
 	return file_sock_v1_types_proto_rawDescGZIP(), []int{1}
 }
 
+// Built-in sections. Which conversations each holds is decided by clients:
+// people for directs with humans, groups for groups, puppets for directs
+// with puppets. Each holds only conversations in no custom section.
+type TypeSection int32
+
+const (
+	TypeSection_TYPE_SECTION_UNSPECIFIED TypeSection = 0
+	TypeSection_TYPE_SECTION_PEOPLE      TypeSection = 1
+	TypeSection_TYPE_SECTION_GROUPS      TypeSection = 2
+	TypeSection_TYPE_SECTION_PUPPETS     TypeSection = 3
+)
+
+// Enum value maps for TypeSection.
+var (
+	TypeSection_name = map[int32]string{
+		0: "TYPE_SECTION_UNSPECIFIED",
+		1: "TYPE_SECTION_PEOPLE",
+		2: "TYPE_SECTION_GROUPS",
+		3: "TYPE_SECTION_PUPPETS",
+	}
+	TypeSection_value = map[string]int32{
+		"TYPE_SECTION_UNSPECIFIED": 0,
+		"TYPE_SECTION_PEOPLE":      1,
+		"TYPE_SECTION_GROUPS":      2,
+		"TYPE_SECTION_PUPPETS":     3,
+	}
+)
+
+func (x TypeSection) Enum() *TypeSection {
+	p := new(TypeSection)
+	*p = x
+	return p
+}
+
+func (x TypeSection) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TypeSection) Descriptor() protoreflect.EnumDescriptor {
+	return file_sock_v1_types_proto_enumTypes[2].Descriptor()
+}
+
+func (TypeSection) Type() protoreflect.EnumType {
+	return &file_sock_v1_types_proto_enumTypes[2]
+}
+
+func (x TypeSection) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TypeSection.Descriptor instead.
+func (TypeSection) EnumDescriptor() ([]byte, []int) {
+	return file_sock_v1_types_proto_rawDescGZIP(), []int{2}
+}
+
 type ApnsEnvironment int32
 
 const (
@@ -165,11 +220,11 @@ func (x ApnsEnvironment) String() string {
 }
 
 func (ApnsEnvironment) Descriptor() protoreflect.EnumDescriptor {
-	return file_sock_v1_types_proto_enumTypes[2].Descriptor()
+	return file_sock_v1_types_proto_enumTypes[3].Descriptor()
 }
 
 func (ApnsEnvironment) Type() protoreflect.EnumType {
-	return &file_sock_v1_types_proto_enumTypes[2]
+	return &file_sock_v1_types_proto_enumTypes[3]
 }
 
 func (x ApnsEnvironment) Number() protoreflect.EnumNumber {
@@ -178,7 +233,7 @@ func (x ApnsEnvironment) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ApnsEnvironment.Descriptor instead.
 func (ApnsEnvironment) EnumDescriptor() ([]byte, []int) {
-	return file_sock_v1_types_proto_rawDescGZIP(), []int{2}
+	return file_sock_v1_types_proto_rawDescGZIP(), []int{3}
 }
 
 // Account is a human or a puppet. Exactly one of the kind fields is set.
@@ -588,7 +643,11 @@ type Conversation struct {
 	HumansCanPost bool `protobuf:"varint,5,opt,name=humans_can_post,json=humansCanPost,proto3" json:"humans_can_post,omitempty"`
 	// When each puppet member the caller owns was last heard, for human
 	// callers only. An owned puppet member that is absent was never heard.
-	PuppetsHeard  []*PuppetHeard `protobuf:"bytes,6,rep,name=puppets_heard,json=puppetsHeard,proto3" json:"puppets_heard,omitempty"`
+	PuppetsHeard []*PuppetHeard `protobuf:"bytes,6,rep,name=puppets_heard,json=puppetsHeard,proto3" json:"puppets_heard,omitempty"`
+	// The caller's custom section for this conversation. Empty: unassigned,
+	// shown in its type section. ListConversations and ExportMessagingData
+	// only; humans only.
+	SectionId     string `protobuf:"bytes,7,opt,name=section_id,json=sectionId,proto3" json:"section_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -665,6 +724,278 @@ func (x *Conversation) GetPuppetsHeard() []*PuppetHeard {
 	return nil
 }
 
+func (x *Conversation) GetSectionId() string {
+	if x != nil {
+		return x.SectionId
+	}
+	return ""
+}
+
+// A human's ordered sidebar. A human who never changed it has People,
+// Groups, Puppets.
+type Sidebar struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Top to bottom. Each type section exactly once.
+	Sections      []*Section `protobuf:"bytes,1,rep,name=sections,proto3" json:"sections,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Sidebar) Reset() {
+	*x = Sidebar{}
+	mi := &file_sock_v1_types_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Sidebar) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Sidebar) ProtoMessage() {}
+
+func (x *Sidebar) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_types_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Sidebar.ProtoReflect.Descriptor instead.
+func (*Sidebar) Descriptor() ([]byte, []int) {
+	return file_sock_v1_types_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Sidebar) GetSections() []*Section {
+	if x != nil {
+		return x.Sections
+	}
+	return nil
+}
+
+type Section struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Section:
+	//
+	//	*Section_TypeSection
+	//	*Section_CustomSection
+	Section       isSection_Section `protobuf_oneof:"section"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Section) Reset() {
+	*x = Section{}
+	mi := &file_sock_v1_types_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Section) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Section) ProtoMessage() {}
+
+func (x *Section) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_types_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Section.ProtoReflect.Descriptor instead.
+func (*Section) Descriptor() ([]byte, []int) {
+	return file_sock_v1_types_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *Section) GetSection() isSection_Section {
+	if x != nil {
+		return x.Section
+	}
+	return nil
+}
+
+func (x *Section) GetTypeSection() TypeSection {
+	if x != nil {
+		if x, ok := x.Section.(*Section_TypeSection); ok {
+			return x.TypeSection
+		}
+	}
+	return TypeSection_TYPE_SECTION_UNSPECIFIED
+}
+
+func (x *Section) GetCustomSection() *CustomSection {
+	if x != nil {
+		if x, ok := x.Section.(*Section_CustomSection); ok {
+			return x.CustomSection
+		}
+	}
+	return nil
+}
+
+type isSection_Section interface {
+	isSection_Section()
+}
+
+type Section_TypeSection struct {
+	TypeSection TypeSection `protobuf:"varint,1,opt,name=type_section,json=typeSection,proto3,enum=sock.v1.TypeSection,oneof"`
+}
+
+type Section_CustomSection struct {
+	CustomSection *CustomSection `protobuf:"bytes,2,opt,name=custom_section,json=customSection,proto3,oneof"`
+}
+
+func (*Section_TypeSection) isSection_Section() {}
+
+func (*Section_CustomSection) isSection_Section() {}
+
+// Names a section in ReorderSidebar.
+type SectionRef struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Section:
+	//
+	//	*SectionRef_TypeSection
+	//	*SectionRef_CustomSectionId
+	Section       isSectionRef_Section `protobuf_oneof:"section"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SectionRef) Reset() {
+	*x = SectionRef{}
+	mi := &file_sock_v1_types_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SectionRef) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SectionRef) ProtoMessage() {}
+
+func (x *SectionRef) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_types_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SectionRef.ProtoReflect.Descriptor instead.
+func (*SectionRef) Descriptor() ([]byte, []int) {
+	return file_sock_v1_types_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *SectionRef) GetSection() isSectionRef_Section {
+	if x != nil {
+		return x.Section
+	}
+	return nil
+}
+
+func (x *SectionRef) GetTypeSection() TypeSection {
+	if x != nil {
+		if x, ok := x.Section.(*SectionRef_TypeSection); ok {
+			return x.TypeSection
+		}
+	}
+	return TypeSection_TYPE_SECTION_UNSPECIFIED
+}
+
+func (x *SectionRef) GetCustomSectionId() string {
+	if x != nil {
+		if x, ok := x.Section.(*SectionRef_CustomSectionId); ok {
+			return x.CustomSectionId
+		}
+	}
+	return ""
+}
+
+type isSectionRef_Section interface {
+	isSectionRef_Section()
+}
+
+type SectionRef_TypeSection struct {
+	TypeSection TypeSection `protobuf:"varint,1,opt,name=type_section,json=typeSection,proto3,enum=sock.v1.TypeSection,oneof"`
+}
+
+type SectionRef_CustomSectionId struct {
+	CustomSectionId string `protobuf:"bytes,2,opt,name=custom_section_id,json=customSectionId,proto3,oneof"`
+}
+
+func (*SectionRef_TypeSection) isSectionRef_Section() {}
+
+func (*SectionRef_CustomSectionId) isSectionRef_Section() {}
+
+// A section the human created and named.
+type CustomSection struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CustomSection) Reset() {
+	*x = CustomSection{}
+	mi := &file_sock_v1_types_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CustomSection) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CustomSection) ProtoMessage() {}
+
+func (x *CustomSection) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_types_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CustomSection.ProtoReflect.Descriptor instead.
+func (*CustomSection) Descriptor() ([]byte, []int) {
+	return file_sock_v1_types_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CustomSection) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CustomSection) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 // When the hub last heard from a consumer of a puppet: a Subscribe stream
 // open or heartbeat, or a FetchPending. Clients show the puppet as not
 // listening once last_heard_at is 75 s or more in the past.
@@ -678,7 +1009,7 @@ type PuppetHeard struct {
 
 func (x *PuppetHeard) Reset() {
 	*x = PuppetHeard{}
-	mi := &file_sock_v1_types_proto_msgTypes[6]
+	mi := &file_sock_v1_types_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -690,7 +1021,7 @@ func (x *PuppetHeard) String() string {
 func (*PuppetHeard) ProtoMessage() {}
 
 func (x *PuppetHeard) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_types_proto_msgTypes[6]
+	mi := &file_sock_v1_types_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -703,7 +1034,7 @@ func (x *PuppetHeard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PuppetHeard.ProtoReflect.Descriptor instead.
 func (*PuppetHeard) Descriptor() ([]byte, []int) {
-	return file_sock_v1_types_proto_rawDescGZIP(), []int{6}
+	return file_sock_v1_types_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *PuppetHeard) GetPuppetId() string {
@@ -745,7 +1076,7 @@ type Message struct {
 
 func (x *Message) Reset() {
 	*x = Message{}
-	mi := &file_sock_v1_types_proto_msgTypes[7]
+	mi := &file_sock_v1_types_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -757,7 +1088,7 @@ func (x *Message) String() string {
 func (*Message) ProtoMessage() {}
 
 func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_types_proto_msgTypes[7]
+	mi := &file_sock_v1_types_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -770,7 +1101,7 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
 func (*Message) Descriptor() ([]byte, []int) {
-	return file_sock_v1_types_proto_rawDescGZIP(), []int{7}
+	return file_sock_v1_types_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Message) GetId() string {
@@ -875,7 +1206,7 @@ const file_sock_v1_types_proto_rawDesc = "" +
 	"\x05label\x18\x03 \x01(\tR\x05label\x129\n" +
 	"\n" +
 	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12'\n" +
-	"\x04kind\x18\x05 \x01(\x0e2\x13.sock.v1.DeviceKindR\x04kind\"\xf9\x01\n" +
+	"\x04kind\x18\x05 \x01(\x0e2\x13.sock.v1.DeviceKindR\x04kind\"\x98\x02\n" +
 	"\fConversation\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12-\n" +
 	"\x04kind\x18\x02 \x01(\x0e2\x19.sock.v1.ConversationKindR\x04kind\x12\x1d\n" +
@@ -883,7 +1214,23 @@ const file_sock_v1_types_proto_rawDesc = "" +
 	"member_ids\x18\x03 \x03(\tR\tmemberIds\x12(\n" +
 	"\x10read_through_seq\x18\x04 \x01(\x03R\x0ereadThroughSeq\x12&\n" +
 	"\x0fhumans_can_post\x18\x05 \x01(\bR\rhumansCanPost\x129\n" +
-	"\rpuppets_heard\x18\x06 \x03(\v2\x14.sock.v1.PuppetHeardR\fpuppetsHeard\"j\n" +
+	"\rpuppets_heard\x18\x06 \x03(\v2\x14.sock.v1.PuppetHeardR\fpuppetsHeard\x12\x1d\n" +
+	"\n" +
+	"section_id\x18\a \x01(\tR\tsectionId\"7\n" +
+	"\aSidebar\x12,\n" +
+	"\bsections\x18\x01 \x03(\v2\x10.sock.v1.SectionR\bsections\"\x90\x01\n" +
+	"\aSection\x129\n" +
+	"\ftype_section\x18\x01 \x01(\x0e2\x14.sock.v1.TypeSectionH\x00R\vtypeSection\x12?\n" +
+	"\x0ecustom_section\x18\x02 \x01(\v2\x16.sock.v1.CustomSectionH\x00R\rcustomSectionB\t\n" +
+	"\asection\"\x80\x01\n" +
+	"\n" +
+	"SectionRef\x129\n" +
+	"\ftype_section\x18\x01 \x01(\x0e2\x14.sock.v1.TypeSectionH\x00R\vtypeSection\x12,\n" +
+	"\x11custom_section_id\x18\x02 \x01(\tH\x00R\x0fcustomSectionIdB\t\n" +
+	"\asection\"3\n" +
+	"\rCustomSection\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"j\n" +
 	"\vPuppetHeard\x12\x1b\n" +
 	"\tpuppet_id\x18\x01 \x01(\tR\bpuppetId\x12>\n" +
 	"\rlast_heard_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\vlastHeardAt\"\xe7\x01\n" +
@@ -906,7 +1253,12 @@ const file_sock_v1_types_proto_rawDesc = "" +
 	"\x10ConversationKind\x12!\n" +
 	"\x1dCONVERSATION_KIND_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18CONVERSATION_KIND_DIRECT\x10\x01\x12\x1b\n" +
-	"\x17CONVERSATION_KIND_GROUP\x10\x02*r\n" +
+	"\x17CONVERSATION_KIND_GROUP\x10\x02*w\n" +
+	"\vTypeSection\x12\x1c\n" +
+	"\x18TYPE_SECTION_UNSPECIFIED\x10\x00\x12\x17\n" +
+	"\x13TYPE_SECTION_PEOPLE\x10\x01\x12\x17\n" +
+	"\x13TYPE_SECTION_GROUPS\x10\x02\x12\x18\n" +
+	"\x14TYPE_SECTION_PUPPETS\x10\x03*r\n" +
 	"\x0fApnsEnvironment\x12 \n" +
 	"\x1cAPNS_ENVIRONMENT_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18APNS_ENVIRONMENT_SANDBOX\x10\x01\x12\x1f\n" +
@@ -926,37 +1278,46 @@ func file_sock_v1_types_proto_rawDescGZIP() []byte {
 	return file_sock_v1_types_proto_rawDescData
 }
 
-var file_sock_v1_types_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_sock_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_sock_v1_types_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_sock_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_sock_v1_types_proto_goTypes = []any{
 	(DeviceKind)(0),               // 0: sock.v1.DeviceKind
 	(ConversationKind)(0),         // 1: sock.v1.ConversationKind
-	(ApnsEnvironment)(0),          // 2: sock.v1.ApnsEnvironment
-	(*Account)(nil),               // 3: sock.v1.Account
-	(*Human)(nil),                 // 4: sock.v1.Human
-	(*Puppet)(nil),                // 5: sock.v1.Puppet
-	(*Connector)(nil),             // 6: sock.v1.Connector
-	(*Device)(nil),                // 7: sock.v1.Device
-	(*Conversation)(nil),          // 8: sock.v1.Conversation
-	(*PuppetHeard)(nil),           // 9: sock.v1.PuppetHeard
-	(*Message)(nil),               // 10: sock.v1.Message
-	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
+	(TypeSection)(0),              // 2: sock.v1.TypeSection
+	(ApnsEnvironment)(0),          // 3: sock.v1.ApnsEnvironment
+	(*Account)(nil),               // 4: sock.v1.Account
+	(*Human)(nil),                 // 5: sock.v1.Human
+	(*Puppet)(nil),                // 6: sock.v1.Puppet
+	(*Connector)(nil),             // 7: sock.v1.Connector
+	(*Device)(nil),                // 8: sock.v1.Device
+	(*Conversation)(nil),          // 9: sock.v1.Conversation
+	(*Sidebar)(nil),               // 10: sock.v1.Sidebar
+	(*Section)(nil),               // 11: sock.v1.Section
+	(*SectionRef)(nil),            // 12: sock.v1.SectionRef
+	(*CustomSection)(nil),         // 13: sock.v1.CustomSection
+	(*PuppetHeard)(nil),           // 14: sock.v1.PuppetHeard
+	(*Message)(nil),               // 15: sock.v1.Message
+	(*timestamppb.Timestamp)(nil), // 16: google.protobuf.Timestamp
 }
 var file_sock_v1_types_proto_depIdxs = []int32{
-	4,  // 0: sock.v1.Account.human:type_name -> sock.v1.Human
-	5,  // 1: sock.v1.Account.puppet:type_name -> sock.v1.Puppet
-	6,  // 2: sock.v1.Puppet.connector:type_name -> sock.v1.Connector
-	11, // 3: sock.v1.Device.created_at:type_name -> google.protobuf.Timestamp
+	5,  // 0: sock.v1.Account.human:type_name -> sock.v1.Human
+	6,  // 1: sock.v1.Account.puppet:type_name -> sock.v1.Puppet
+	7,  // 2: sock.v1.Puppet.connector:type_name -> sock.v1.Connector
+	16, // 3: sock.v1.Device.created_at:type_name -> google.protobuf.Timestamp
 	0,  // 4: sock.v1.Device.kind:type_name -> sock.v1.DeviceKind
 	1,  // 5: sock.v1.Conversation.kind:type_name -> sock.v1.ConversationKind
-	9,  // 6: sock.v1.Conversation.puppets_heard:type_name -> sock.v1.PuppetHeard
-	11, // 7: sock.v1.PuppetHeard.last_heard_at:type_name -> google.protobuf.Timestamp
-	11, // 8: sock.v1.Message.sent_at:type_name -> google.protobuf.Timestamp
-	9,  // [9:9] is the sub-list for method output_type
-	9,  // [9:9] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	14, // 6: sock.v1.Conversation.puppets_heard:type_name -> sock.v1.PuppetHeard
+	11, // 7: sock.v1.Sidebar.sections:type_name -> sock.v1.Section
+	2,  // 8: sock.v1.Section.type_section:type_name -> sock.v1.TypeSection
+	13, // 9: sock.v1.Section.custom_section:type_name -> sock.v1.CustomSection
+	2,  // 10: sock.v1.SectionRef.type_section:type_name -> sock.v1.TypeSection
+	16, // 11: sock.v1.PuppetHeard.last_heard_at:type_name -> google.protobuf.Timestamp
+	16, // 12: sock.v1.Message.sent_at:type_name -> google.protobuf.Timestamp
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_sock_v1_types_proto_init() }
@@ -969,6 +1330,14 @@ func file_sock_v1_types_proto_init() {
 		(*Account_Puppet)(nil),
 	}
 	file_sock_v1_types_proto_msgTypes[7].OneofWrappers = []any{
+		(*Section_TypeSection)(nil),
+		(*Section_CustomSection)(nil),
+	}
+	file_sock_v1_types_proto_msgTypes[8].OneofWrappers = []any{
+		(*SectionRef_TypeSection)(nil),
+		(*SectionRef_CustomSectionId)(nil),
+	}
+	file_sock_v1_types_proto_msgTypes[11].OneofWrappers = []any{
 		(*Message_Text)(nil),
 	}
 	type x struct{}
@@ -976,8 +1345,8 @@ func file_sock_v1_types_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sock_v1_types_proto_rawDesc), len(file_sock_v1_types_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   8,
+			NumEnums:      4,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

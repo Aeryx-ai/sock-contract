@@ -116,6 +116,48 @@ message Conversation {
   // When each puppet member the caller owns was last heard, for human
   // callers only. An owned puppet member that is absent was never heard.
   repeated PuppetHeard puppets_heard = 6;
+  // The caller's custom section for this conversation. Empty: unassigned,
+  // shown in its type section. ListConversations and ExportMessagingData
+  // only; humans only.
+  string section_id = 7;
+}
+
+// A human's ordered sidebar. A human who never changed it has People,
+// Groups, Puppets.
+message Sidebar {
+  // Top to bottom. Each type section exactly once.
+  repeated Section sections = 1;
+}
+
+message Section {
+  oneof section {
+    TypeSection type_section = 1;
+    CustomSection custom_section = 2;
+  }
+}
+
+// Names a section in ReorderSidebar.
+message SectionRef {
+  oneof section {
+    TypeSection type_section = 1;
+    string custom_section_id = 2;
+  }
+}
+
+// A section the human created and named.
+message CustomSection {
+  string id = 1;
+  string name = 2;
+}
+
+// Built-in sections. Which conversations each holds is decided by clients:
+// people for directs with humans, groups for groups, puppets for directs
+// with puppets. Each holds only conversations in no custom section.
+enum TypeSection {
+  TYPE_SECTION_UNSPECIFIED = 0;
+  TYPE_SECTION_PEOPLE = 1;
+  TYPE_SECTION_GROUPS = 2;
+  TYPE_SECTION_PUPPETS = 3;
 }
 
 // When the hub last heard from a consumer of a puppet: a Subscribe stream

@@ -6,7 +6,7 @@ import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobu
 import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-import type { ApnsEnvironment, Conversation, Message as Message$1, PuppetHeard } from "./types_pb";
+import type { ApnsEnvironment, Conversation, CustomSection, Message as Message$1, PuppetHeard, SectionRef, Sidebar } from "./types_pb";
 import { file_sock_v1_types } from "./types_pb";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sock/v1/messaging.proto.
  */
 export const file_sock_v1_messaging: GenFile = /*@__PURE__*/
-  fileDesc("Chdzb2NrL3YxL21lc3NhZ2luZy5wcm90bxIHc29jay52MSImChNDcmVhdGVEaXJlY3RSZXF1ZXN0Eg8KB3BlZXJfaWQYASABKAkiQwoUQ3JlYXRlRGlyZWN0UmVzcG9uc2USKwoMY29udmVyc2F0aW9uGAEgASgLMhUuc29jay52MS5Db252ZXJzYXRpb24iKAoSQ3JlYXRlR3JvdXBSZXF1ZXN0EhIKCm1lbWJlcl9pZHMYASADKAkiQgoTQ3JlYXRlR3JvdXBSZXNwb25zZRIrCgxjb252ZXJzYXRpb24YASABKAsyFS5zb2NrLnYxLkNvbnZlcnNhdGlvbiI/ChBBZGRNZW1iZXJSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRISCgphY2NvdW50X2lkGAIgASgJIkAKEUFkZE1lbWJlclJlc3BvbnNlEisKDGNvbnZlcnNhdGlvbhgBIAEoCzIVLnNvY2sudjEuQ29udmVyc2F0aW9uIkIKE1JlbW92ZU1lbWJlclJlcXVlc3QSFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEhIKCmFjY291bnRfaWQYAiABKAkiQwoUUmVtb3ZlTWVtYmVyUmVzcG9uc2USKwoMY29udmVyc2F0aW9uGAEgASgLMhUuc29jay52MS5Db252ZXJzYXRpb24iJwoMTGVhdmVSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCSIPCg1MZWF2ZVJlc3BvbnNlIhoKGExpc3RDb252ZXJzYXRpb25zUmVxdWVzdCJJChlMaXN0Q29udmVyc2F0aW9uc1Jlc3BvbnNlEiwKDWNvbnZlcnNhdGlvbnMYASADKAsyFS5zb2NrLnYxLkNvbnZlcnNhdGlvbiJECg9NYXJrUmVhZFJlcXVlc3QSFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEhgKEHJlYWRfdGhyb3VnaF9zZXEYAiABKAMiLAoQTWFya1JlYWRSZXNwb25zZRIYChByZWFkX3Rocm91Z2hfc2VxGAEgASgDIk0KC1NlbmRSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRIMCgR0ZXh0GAIgASgJEhcKD2lkZW1wb3RlbmN5X2tleRgDIAEoCSIxCgxTZW5kUmVzcG9uc2USIQoHbWVzc2FnZRgBIAEoCzIQLnNvY2sudjEuTWVzc2FnZSI7ChJOb3RpZnlPd25lclJlcXVlc3QSDAoEdGV4dBgBIAEoCRIXCg9pZGVtcG90ZW5jeV9rZXkYAiABKAkiOAoTTm90aWZ5T3duZXJSZXNwb25zZRIhCgdtZXNzYWdlGAEgASgLMhAuc29jay52MS5NZXNzYWdlIhIKEFN1YnNjcmliZVJlcXVlc3QinQIKEVN1YnNjcmliZVJlc3BvbnNlEiMKB21lc3NhZ2UYASABKAsyEC5zb2NrLnYxLk1lc3NhZ2VIABInCgloZWFydGJlYXQYAiABKAsyEi5zb2NrLnYxLkhlYXJ0YmVhdEgAEioKC3JlYWRfbWFya2VyGAMgASgLMhMuc29jay52MS5SZWFkTWFya2VySAASJQoIYWN0aXZpdHkYBCABKAsyES5zb2NrLnYxLkFjdGl2aXR5SAASMAoOcHVwcGV0X2FyY2hpdmUYBSABKAsyFi5zb2NrLnYxLlB1cHBldEFyY2hpdmVIABIsCgxwdXBwZXRfaGVhcmQYBiABKAsyFC5zb2NrLnYxLlB1cHBldEhlYXJkSABCBwoFZXZlbnQiCwoJSGVhcnRiZWF0Ij8KClJlYWRNYXJrZXISFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEhgKEHJlYWRfdGhyb3VnaF9zZXEYAiABKAMiVAoSU2V0QWN0aXZpdHlSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRIlCgVzdGF0ZRgCIAEoDjIWLnNvY2sudjEuQWN0aXZpdHlTdGF0ZSJFChNTZXRBY3Rpdml0eVJlc3BvbnNlEi4KCmV4cGlyZXNfYXQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIo4BCghBY3Rpdml0eRIXCg9jb252ZXJzYXRpb25faWQYASABKAkSEgoKYWNjb3VudF9pZBgCIAEoCRIlCgVzdGF0ZRgDIAEoDjIWLnNvY2sudjEuQWN0aXZpdHlTdGF0ZRIuCgpleHBpcmVzX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCI0Cg1QdXBwZXRBcmNoaXZlEhEKCXB1cHBldF9pZBgBIAEoCRIQCghhcmNoaXZlZBgCIAEoCCIkChNGZXRjaFBlbmRpbmdSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFIjoKFEZldGNoUGVuZGluZ1Jlc3BvbnNlEiIKCG1lc3NhZ2VzGAEgAygLMhAuc29jay52MS5NZXNzYWdlIiEKCkFja1JlcXVlc3QSEwoLbWVzc2FnZV9pZHMYASADKAkiDQoLQWNrUmVzcG9uc2UiQgoOUmVsZWFzZVJlcXVlc3QSEwoLbWVzc2FnZV9pZHMYASADKAkSGwoTcmV0cnlfYWZ0ZXJfc2Vjb25kcxgCIAEoBSIRCg9SZWxlYXNlUmVzcG9uc2UiWAoTUmVnaXN0ZXJQdXNoUmVxdWVzdBISCgphcG5zX3Rva2VuGAEgASgMEi0KC2Vudmlyb25tZW50GAIgASgOMhguc29jay52MS5BcG5zRW52aXJvbm1lbnQiFgoUUmVnaXN0ZXJQdXNoUmVzcG9uc2UiHAoaRXhwb3J0TWVzc2FnaW5nRGF0YVJlcXVlc3QijAEKG0V4cG9ydE1lc3NhZ2luZ0RhdGFSZXNwb25zZRIsCg1jb252ZXJzYXRpb25zGAEgAygLMhUuc29jay52MS5Db252ZXJzYXRpb24SIgoacHVzaF9yZWdpc3RlcmVkX2RldmljZV9pZHMYAiADKAkSGwoTYmxvY2tlZF9hY2NvdW50X2lkcxgDIAMoCSIpChNCbG9ja0FjY291bnRSZXF1ZXN0EhIKCmFjY291bnRfaWQYASABKAkiFgoUQmxvY2tBY2NvdW50UmVzcG9uc2UiKwoVVW5ibG9ja0FjY291bnRSZXF1ZXN0EhIKCmFjY291bnRfaWQYASABKAkiGAoWVW5ibG9ja0FjY291bnRSZXNwb25zZSIcChpMaXN0QmxvY2tlZEFjY291bnRzUmVxdWVzdCJHChtMaXN0QmxvY2tlZEFjY291bnRzUmVzcG9uc2USKAoHYmxvY2tlZBgBIAMoCzIXLnNvY2sudjEuQmxvY2tlZEFjY291bnQiVAoOQmxvY2tlZEFjY291bnQSEgoKYWNjb3VudF9pZBgBIAEoCRIuCgpibG9ja2VkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCpkCg1BY3Rpdml0eVN0YXRlEh4KGkFDVElWSVRZX1NUQVRFX1VOU1BFQ0lGSUVEEAASGgoWQUNUSVZJVFlfU1RBVEVfV09SS0lORxABEhcKE0FDVElWSVRZX1NUQVRFX0lETEUQAjKyCwoQTWVzc2FnaW5nU2VydmljZRJNCgxDcmVhdGVEaXJlY3QSHC5zb2NrLnYxLkNyZWF0ZURpcmVjdFJlcXVlc3QaHS5zb2NrLnYxLkNyZWF0ZURpcmVjdFJlc3BvbnNlIgASSgoLQ3JlYXRlR3JvdXASGy5zb2NrLnYxLkNyZWF0ZUdyb3VwUmVxdWVzdBocLnNvY2sudjEuQ3JlYXRlR3JvdXBSZXNwb25zZSIAEkQKCUFkZE1lbWJlchIZLnNvY2sudjEuQWRkTWVtYmVyUmVxdWVzdBoaLnNvY2sudjEuQWRkTWVtYmVyUmVzcG9uc2UiABJNCgxSZW1vdmVNZW1iZXISHC5zb2NrLnYxLlJlbW92ZU1lbWJlclJlcXVlc3QaHS5zb2NrLnYxLlJlbW92ZU1lbWJlclJlc3BvbnNlIgASOAoFTGVhdmUSFS5zb2NrLnYxLkxlYXZlUmVxdWVzdBoWLnNvY2sudjEuTGVhdmVSZXNwb25zZSIAElwKEUxpc3RDb252ZXJzYXRpb25zEiEuc29jay52MS5MaXN0Q29udmVyc2F0aW9uc1JlcXVlc3QaIi5zb2NrLnYxLkxpc3RDb252ZXJzYXRpb25zUmVzcG9uc2UiABJBCghNYXJrUmVhZBIYLnNvY2sudjEuTWFya1JlYWRSZXF1ZXN0Ghkuc29jay52MS5NYXJrUmVhZFJlc3BvbnNlIgASNQoEU2VuZBIULnNvY2sudjEuU2VuZFJlcXVlc3QaFS5zb2NrLnYxLlNlbmRSZXNwb25zZSIAEkoKC05vdGlmeU93bmVyEhsuc29jay52MS5Ob3RpZnlPd25lclJlcXVlc3QaHC5zb2NrLnYxLk5vdGlmeU93bmVyUmVzcG9uc2UiABJGCglTdWJzY3JpYmUSGS5zb2NrLnYxLlN1YnNjcmliZVJlcXVlc3QaGi5zb2NrLnYxLlN1YnNjcmliZVJlc3BvbnNlIgAwARJNCgxGZXRjaFBlbmRpbmcSHC5zb2NrLnYxLkZldGNoUGVuZGluZ1JlcXVlc3QaHS5zb2NrLnYxLkZldGNoUGVuZGluZ1Jlc3BvbnNlIgASMgoDQWNrEhMuc29jay52MS5BY2tSZXF1ZXN0GhQuc29jay52MS5BY2tSZXNwb25zZSIAEj4KB1JlbGVhc2USFy5zb2NrLnYxLlJlbGVhc2VSZXF1ZXN0Ghguc29jay52MS5SZWxlYXNlUmVzcG9uc2UiABJKCgtTZXRBY3Rpdml0eRIbLnNvY2sudjEuU2V0QWN0aXZpdHlSZXF1ZXN0Ghwuc29jay52MS5TZXRBY3Rpdml0eVJlc3BvbnNlIgASTQoMUmVnaXN0ZXJQdXNoEhwuc29jay52MS5SZWdpc3RlclB1c2hSZXF1ZXN0Gh0uc29jay52MS5SZWdpc3RlclB1c2hSZXNwb25zZSIAEmIKE0V4cG9ydE1lc3NhZ2luZ0RhdGESIy5zb2NrLnYxLkV4cG9ydE1lc3NhZ2luZ0RhdGFSZXF1ZXN0GiQuc29jay52MS5FeHBvcnRNZXNzYWdpbmdEYXRhUmVzcG9uc2UiABJNCgxCbG9ja0FjY291bnQSHC5zb2NrLnYxLkJsb2NrQWNjb3VudFJlcXVlc3QaHS5zb2NrLnYxLkJsb2NrQWNjb3VudFJlc3BvbnNlIgASUwoOVW5ibG9ja0FjY291bnQSHi5zb2NrLnYxLlVuYmxvY2tBY2NvdW50UmVxdWVzdBofLnNvY2sudjEuVW5ibG9ja0FjY291bnRSZXNwb25zZSIAEmIKE0xpc3RCbG9ja2VkQWNjb3VudHMSIy5zb2NrLnYxLkxpc3RCbG9ja2VkQWNjb3VudHNSZXF1ZXN0GiQuc29jay52MS5MaXN0QmxvY2tlZEFjY291bnRzUmVzcG9uc2UiAEI5WjdnaXRodWIuY29tL2Flcnl4LWFpL3NvY2stY29udHJhY3QvZ2VuL2dvL3NvY2svdjE7c29ja3YxYgZwcm90bzM", [file_google_protobuf_timestamp, file_sock_v1_types]);
+  fileDesc("Chdzb2NrL3YxL21lc3NhZ2luZy5wcm90bxIHc29jay52MSImChNDcmVhdGVEaXJlY3RSZXF1ZXN0Eg8KB3BlZXJfaWQYASABKAkiQwoUQ3JlYXRlRGlyZWN0UmVzcG9uc2USKwoMY29udmVyc2F0aW9uGAEgASgLMhUuc29jay52MS5Db252ZXJzYXRpb24iKAoSQ3JlYXRlR3JvdXBSZXF1ZXN0EhIKCm1lbWJlcl9pZHMYASADKAkiQgoTQ3JlYXRlR3JvdXBSZXNwb25zZRIrCgxjb252ZXJzYXRpb24YASABKAsyFS5zb2NrLnYxLkNvbnZlcnNhdGlvbiI/ChBBZGRNZW1iZXJSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRISCgphY2NvdW50X2lkGAIgASgJIkAKEUFkZE1lbWJlclJlc3BvbnNlEisKDGNvbnZlcnNhdGlvbhgBIAEoCzIVLnNvY2sudjEuQ29udmVyc2F0aW9uIkIKE1JlbW92ZU1lbWJlclJlcXVlc3QSFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEhIKCmFjY291bnRfaWQYAiABKAkiQwoUUmVtb3ZlTWVtYmVyUmVzcG9uc2USKwoMY29udmVyc2F0aW9uGAEgASgLMhUuc29jay52MS5Db252ZXJzYXRpb24iJwoMTGVhdmVSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCSIPCg1MZWF2ZVJlc3BvbnNlIhoKGExpc3RDb252ZXJzYXRpb25zUmVxdWVzdCJJChlMaXN0Q29udmVyc2F0aW9uc1Jlc3BvbnNlEiwKDWNvbnZlcnNhdGlvbnMYASADKAsyFS5zb2NrLnYxLkNvbnZlcnNhdGlvbiJECg9NYXJrUmVhZFJlcXVlc3QSFwoPY29udmVyc2F0aW9uX2lkGAEgASgJEhgKEHJlYWRfdGhyb3VnaF9zZXEYAiABKAMiLAoQTWFya1JlYWRSZXNwb25zZRIYChByZWFkX3Rocm91Z2hfc2VxGAEgASgDIk0KC1NlbmRSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRIMCgR0ZXh0GAIgASgJEhcKD2lkZW1wb3RlbmN5X2tleRgDIAEoCSIxCgxTZW5kUmVzcG9uc2USIQoHbWVzc2FnZRgBIAEoCzIQLnNvY2sudjEuTWVzc2FnZSI7ChJOb3RpZnlPd25lclJlcXVlc3QSDAoEdGV4dBgBIAEoCRIXCg9pZGVtcG90ZW5jeV9rZXkYAiABKAkiOAoTTm90aWZ5T3duZXJSZXNwb25zZRIhCgdtZXNzYWdlGAEgASgLMhAuc29jay52MS5NZXNzYWdlIhIKEFN1YnNjcmliZVJlcXVlc3Qi/AIKEVN1YnNjcmliZVJlc3BvbnNlEiMKB21lc3NhZ2UYASABKAsyEC5zb2NrLnYxLk1lc3NhZ2VIABInCgloZWFydGJlYXQYAiABKAsyEi5zb2NrLnYxLkhlYXJ0YmVhdEgAEioKC3JlYWRfbWFya2VyGAMgASgLMhMuc29jay52MS5SZWFkTWFya2VySAASJQoIYWN0aXZpdHkYBCABKAsyES5zb2NrLnYxLkFjdGl2aXR5SAASMAoOcHVwcGV0X2FyY2hpdmUYBSABKAsyFi5zb2NrLnYxLlB1cHBldEFyY2hpdmVIABIsCgxwdXBwZXRfaGVhcmQYBiABKAsyFC5zb2NrLnYxLlB1cHBldEhlYXJkSAASIwoHc2lkZWJhchgHIAEoCzIQLnNvY2sudjEuU2lkZWJhckgAEjgKEnNlY3Rpb25fYXNzaWdubWVudBgIIAEoCzIaLnNvY2sudjEuU2VjdGlvbkFzc2lnbm1lbnRIAEIHCgVldmVudCILCglIZWFydGJlYXQiPwoKUmVhZE1hcmtlchIXCg9jb252ZXJzYXRpb25faWQYASABKAkSGAoQcmVhZF90aHJvdWdoX3NlcRgCIAEoAyJAChFTZWN0aW9uQXNzaWdubWVudBIXCg9jb252ZXJzYXRpb25faWQYASABKAkSEgoKc2VjdGlvbl9pZBgCIAEoCSITChFHZXRTaWRlYmFyUmVxdWVzdCI3ChJHZXRTaWRlYmFyUmVzcG9uc2USIQoHc2lkZWJhchgBIAEoCzIQLnNvY2sudjEuU2lkZWJhciIkChRDcmVhdGVTZWN0aW9uUmVxdWVzdBIMCgRuYW1lGAEgASgJImMKFUNyZWF0ZVNlY3Rpb25SZXNwb25zZRInCgdzZWN0aW9uGAEgASgLMhYuc29jay52MS5DdXN0b21TZWN0aW9uEiEKB3NpZGViYXIYAiABKAsyEC5zb2NrLnYxLlNpZGViYXIiOAoUUmVuYW1lU2VjdGlvblJlcXVlc3QSEgoKc2VjdGlvbl9pZBgBIAEoCRIMCgRuYW1lGAIgASgJIjoKFVJlbmFtZVNlY3Rpb25SZXNwb25zZRIhCgdzaWRlYmFyGAEgASgLMhAuc29jay52MS5TaWRlYmFyIioKFERlbGV0ZVNlY3Rpb25SZXF1ZXN0EhIKCnNlY3Rpb25faWQYASABKAkiOgoVRGVsZXRlU2VjdGlvblJlc3BvbnNlEiEKB3NpZGViYXIYASABKAsyEC5zb2NrLnYxLlNpZGViYXIiOwoVUmVvcmRlclNpZGViYXJSZXF1ZXN0EiIKBW9yZGVyGAEgAygLMhMuc29jay52MS5TZWN0aW9uUmVmIjsKFlJlb3JkZXJTaWRlYmFyUmVzcG9uc2USIQoHc2lkZWJhchgBIAEoCzIQLnNvY2sudjEuU2lkZWJhciJDChRBc3NpZ25TZWN0aW9uUmVxdWVzdBIXCg9jb252ZXJzYXRpb25faWQYASABKAkSEgoKc2VjdGlvbl9pZBgCIAEoCSIXChVBc3NpZ25TZWN0aW9uUmVzcG9uc2UiMQoWVW5hc3NpZ25TZWN0aW9uUmVxdWVzdBIXCg9jb252ZXJzYXRpb25faWQYASABKAkiGQoXVW5hc3NpZ25TZWN0aW9uUmVzcG9uc2UiVAoSU2V0QWN0aXZpdHlSZXF1ZXN0EhcKD2NvbnZlcnNhdGlvbl9pZBgBIAEoCRIlCgVzdGF0ZRgCIAEoDjIWLnNvY2sudjEuQWN0aXZpdHlTdGF0ZSJFChNTZXRBY3Rpdml0eVJlc3BvbnNlEi4KCmV4cGlyZXNfYXQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIo4BCghBY3Rpdml0eRIXCg9jb252ZXJzYXRpb25faWQYASABKAkSEgoKYWNjb3VudF9pZBgCIAEoCRIlCgVzdGF0ZRgDIAEoDjIWLnNvY2sudjEuQWN0aXZpdHlTdGF0ZRIuCgpleHBpcmVzX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCI0Cg1QdXBwZXRBcmNoaXZlEhEKCXB1cHBldF9pZBgBIAEoCRIQCghhcmNoaXZlZBgCIAEoCCIkChNGZXRjaFBlbmRpbmdSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFIjoKFEZldGNoUGVuZGluZ1Jlc3BvbnNlEiIKCG1lc3NhZ2VzGAEgAygLMhAuc29jay52MS5NZXNzYWdlIiEKCkFja1JlcXVlc3QSEwoLbWVzc2FnZV9pZHMYASADKAkiDQoLQWNrUmVzcG9uc2UiQgoOUmVsZWFzZVJlcXVlc3QSEwoLbWVzc2FnZV9pZHMYASADKAkSGwoTcmV0cnlfYWZ0ZXJfc2Vjb25kcxgCIAEoBSIRCg9SZWxlYXNlUmVzcG9uc2UiWAoTUmVnaXN0ZXJQdXNoUmVxdWVzdBISCgphcG5zX3Rva2VuGAEgASgMEi0KC2Vudmlyb25tZW50GAIgASgOMhguc29jay52MS5BcG5zRW52aXJvbm1lbnQiFgoUUmVnaXN0ZXJQdXNoUmVzcG9uc2UiHAoaRXhwb3J0TWVzc2FnaW5nRGF0YVJlcXVlc3QirwEKG0V4cG9ydE1lc3NhZ2luZ0RhdGFSZXNwb25zZRIsCg1jb252ZXJzYXRpb25zGAEgAygLMhUuc29jay52MS5Db252ZXJzYXRpb24SIgoacHVzaF9yZWdpc3RlcmVkX2RldmljZV9pZHMYAiADKAkSGwoTYmxvY2tlZF9hY2NvdW50X2lkcxgDIAMoCRIhCgdzaWRlYmFyGAQgASgLMhAuc29jay52MS5TaWRlYmFyIikKE0Jsb2NrQWNjb3VudFJlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCSIWChRCbG9ja0FjY291bnRSZXNwb25zZSIrChVVbmJsb2NrQWNjb3VudFJlcXVlc3QSEgoKYWNjb3VudF9pZBgBIAEoCSIYChZVbmJsb2NrQWNjb3VudFJlc3BvbnNlIhwKGkxpc3RCbG9ja2VkQWNjb3VudHNSZXF1ZXN0IkcKG0xpc3RCbG9ja2VkQWNjb3VudHNSZXNwb25zZRIoCgdibG9ja2VkGAEgAygLMhcuc29jay52MS5CbG9ja2VkQWNjb3VudCJUCg5CbG9ja2VkQWNjb3VudBISCgphY2NvdW50X2lkGAEgASgJEi4KCmJsb2NrZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wKmQKDUFjdGl2aXR5U3RhdGUSHgoaQUNUSVZJVFlfU1RBVEVfVU5TUEVDSUZJRUQQABIaChZBQ1RJVklUWV9TVEFURV9XT1JLSU5HEAESFwoTQUNUSVZJVFlfU1RBVEVfSURMRRACMvAPChBNZXNzYWdpbmdTZXJ2aWNlEk0KDENyZWF0ZURpcmVjdBIcLnNvY2sudjEuQ3JlYXRlRGlyZWN0UmVxdWVzdBodLnNvY2sudjEuQ3JlYXRlRGlyZWN0UmVzcG9uc2UiABJKCgtDcmVhdGVHcm91cBIbLnNvY2sudjEuQ3JlYXRlR3JvdXBSZXF1ZXN0Ghwuc29jay52MS5DcmVhdGVHcm91cFJlc3BvbnNlIgASRAoJQWRkTWVtYmVyEhkuc29jay52MS5BZGRNZW1iZXJSZXF1ZXN0Ghouc29jay52MS5BZGRNZW1iZXJSZXNwb25zZSIAEk0KDFJlbW92ZU1lbWJlchIcLnNvY2sudjEuUmVtb3ZlTWVtYmVyUmVxdWVzdBodLnNvY2sudjEuUmVtb3ZlTWVtYmVyUmVzcG9uc2UiABI4CgVMZWF2ZRIVLnNvY2sudjEuTGVhdmVSZXF1ZXN0GhYuc29jay52MS5MZWF2ZVJlc3BvbnNlIgASXAoRTGlzdENvbnZlcnNhdGlvbnMSIS5zb2NrLnYxLkxpc3RDb252ZXJzYXRpb25zUmVxdWVzdBoiLnNvY2sudjEuTGlzdENvbnZlcnNhdGlvbnNSZXNwb25zZSIAEkEKCE1hcmtSZWFkEhguc29jay52MS5NYXJrUmVhZFJlcXVlc3QaGS5zb2NrLnYxLk1hcmtSZWFkUmVzcG9uc2UiABJHCgpHZXRTaWRlYmFyEhouc29jay52MS5HZXRTaWRlYmFyUmVxdWVzdBobLnNvY2sudjEuR2V0U2lkZWJhclJlc3BvbnNlIgASUAoNQ3JlYXRlU2VjdGlvbhIdLnNvY2sudjEuQ3JlYXRlU2VjdGlvblJlcXVlc3QaHi5zb2NrLnYxLkNyZWF0ZVNlY3Rpb25SZXNwb25zZSIAElAKDVJlbmFtZVNlY3Rpb24SHS5zb2NrLnYxLlJlbmFtZVNlY3Rpb25SZXF1ZXN0Gh4uc29jay52MS5SZW5hbWVTZWN0aW9uUmVzcG9uc2UiABJQCg1EZWxldGVTZWN0aW9uEh0uc29jay52MS5EZWxldGVTZWN0aW9uUmVxdWVzdBoeLnNvY2sudjEuRGVsZXRlU2VjdGlvblJlc3BvbnNlIgASUwoOUmVvcmRlclNpZGViYXISHi5zb2NrLnYxLlJlb3JkZXJTaWRlYmFyUmVxdWVzdBofLnNvY2sudjEuUmVvcmRlclNpZGViYXJSZXNwb25zZSIAElAKDUFzc2lnblNlY3Rpb24SHS5zb2NrLnYxLkFzc2lnblNlY3Rpb25SZXF1ZXN0Gh4uc29jay52MS5Bc3NpZ25TZWN0aW9uUmVzcG9uc2UiABJWCg9VbmFzc2lnblNlY3Rpb24SHy5zb2NrLnYxLlVuYXNzaWduU2VjdGlvblJlcXVlc3QaIC5zb2NrLnYxLlVuYXNzaWduU2VjdGlvblJlc3BvbnNlIgASNQoEU2VuZBIULnNvY2sudjEuU2VuZFJlcXVlc3QaFS5zb2NrLnYxLlNlbmRSZXNwb25zZSIAEkoKC05vdGlmeU93bmVyEhsuc29jay52MS5Ob3RpZnlPd25lclJlcXVlc3QaHC5zb2NrLnYxLk5vdGlmeU93bmVyUmVzcG9uc2UiABJGCglTdWJzY3JpYmUSGS5zb2NrLnYxLlN1YnNjcmliZVJlcXVlc3QaGi5zb2NrLnYxLlN1YnNjcmliZVJlc3BvbnNlIgAwARJNCgxGZXRjaFBlbmRpbmcSHC5zb2NrLnYxLkZldGNoUGVuZGluZ1JlcXVlc3QaHS5zb2NrLnYxLkZldGNoUGVuZGluZ1Jlc3BvbnNlIgASMgoDQWNrEhMuc29jay52MS5BY2tSZXF1ZXN0GhQuc29jay52MS5BY2tSZXNwb25zZSIAEj4KB1JlbGVhc2USFy5zb2NrLnYxLlJlbGVhc2VSZXF1ZXN0Ghguc29jay52MS5SZWxlYXNlUmVzcG9uc2UiABJKCgtTZXRBY3Rpdml0eRIbLnNvY2sudjEuU2V0QWN0aXZpdHlSZXF1ZXN0Ghwuc29jay52MS5TZXRBY3Rpdml0eVJlc3BvbnNlIgASTQoMUmVnaXN0ZXJQdXNoEhwuc29jay52MS5SZWdpc3RlclB1c2hSZXF1ZXN0Gh0uc29jay52MS5SZWdpc3RlclB1c2hSZXNwb25zZSIAEmIKE0V4cG9ydE1lc3NhZ2luZ0RhdGESIy5zb2NrLnYxLkV4cG9ydE1lc3NhZ2luZ0RhdGFSZXF1ZXN0GiQuc29jay52MS5FeHBvcnRNZXNzYWdpbmdEYXRhUmVzcG9uc2UiABJNCgxCbG9ja0FjY291bnQSHC5zb2NrLnYxLkJsb2NrQWNjb3VudFJlcXVlc3QaHS5zb2NrLnYxLkJsb2NrQWNjb3VudFJlc3BvbnNlIgASUwoOVW5ibG9ja0FjY291bnQSHi5zb2NrLnYxLlVuYmxvY2tBY2NvdW50UmVxdWVzdBofLnNvY2sudjEuVW5ibG9ja0FjY291bnRSZXNwb25zZSIAEmIKE0xpc3RCbG9ja2VkQWNjb3VudHMSIy5zb2NrLnYxLkxpc3RCbG9ja2VkQWNjb3VudHNSZXF1ZXN0GiQuc29jay52MS5MaXN0QmxvY2tlZEFjY291bnRzUmVzcG9uc2UiAEI5WjdnaXRodWIuY29tL2Flcnl4LWFpL3NvY2stY29udHJhY3QvZ2VuL2dvL3NvY2svdjE7c29ja3YxYgZwcm90bzM", [file_google_protobuf_timestamp, file_sock_v1_types]);
 
 /**
  * @generated from message sock.v1.CreateDirectRequest
@@ -442,6 +442,28 @@ export type SubscribeResponse = Message<"sock.v1.SubscribeResponse"> & {
      */
     value: PuppetHeard;
     case: "puppetHeard";
+  } | {
+    /**
+     * The caller's sidebar changed on one of its devices, the calling one
+     * included. The whole sidebar. A hint: at most once, so clients
+     * reconcile with GetSidebar when a stream opens. Human streams only.
+     *
+     * @generated from field: sock.v1.Sidebar sidebar = 7;
+     */
+    value: Sidebar;
+    case: "sidebar";
+  } | {
+    /**
+     * The caller moved a conversation into or out of a custom section. Not
+     * sent for a section's deletion: the Sidebar event drops the section and
+     * clients clear assignments to sections it no longer lists. A hint: at
+     * most once, so clients reconcile with ListConversations when a stream
+     * opens. Human streams only.
+     *
+     * @generated from field: sock.v1.SectionAssignment section_assignment = 8;
+     */
+    value: SectionAssignment;
+    case: "sectionAssignment";
   } | { case: undefined; value?: undefined };
 };
 
@@ -488,6 +510,282 @@ export const ReadMarkerSchema: GenMessage<ReadMarker> = /*@__PURE__*/
   messageDesc(file_sock_v1_messaging, 21);
 
 /**
+ * @generated from message sock.v1.SectionAssignment
+ */
+export type SectionAssignment = Message<"sock.v1.SectionAssignment"> & {
+  /**
+   * @generated from field: string conversation_id = 1;
+   */
+  conversationId: string;
+
+  /**
+   * Empty: unassigned, shown in its type section.
+   *
+   * @generated from field: string section_id = 2;
+   */
+  sectionId: string;
+};
+
+/**
+ * Describes the message sock.v1.SectionAssignment.
+ * Use `create(SectionAssignmentSchema)` to create a new message.
+ */
+export const SectionAssignmentSchema: GenMessage<SectionAssignment> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 22);
+
+/**
+ * @generated from message sock.v1.GetSidebarRequest
+ */
+export type GetSidebarRequest = Message<"sock.v1.GetSidebarRequest"> & {
+};
+
+/**
+ * Describes the message sock.v1.GetSidebarRequest.
+ * Use `create(GetSidebarRequestSchema)` to create a new message.
+ */
+export const GetSidebarRequestSchema: GenMessage<GetSidebarRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 23);
+
+/**
+ * @generated from message sock.v1.GetSidebarResponse
+ */
+export type GetSidebarResponse = Message<"sock.v1.GetSidebarResponse"> & {
+  /**
+   * @generated from field: sock.v1.Sidebar sidebar = 1;
+   */
+  sidebar?: Sidebar | undefined;
+};
+
+/**
+ * Describes the message sock.v1.GetSidebarResponse.
+ * Use `create(GetSidebarResponseSchema)` to create a new message.
+ */
+export const GetSidebarResponseSchema: GenMessage<GetSidebarResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 24);
+
+/**
+ * @generated from message sock.v1.CreateSectionRequest
+ */
+export type CreateSectionRequest = Message<"sock.v1.CreateSectionRequest"> & {
+  /**
+   * 1 to 1024 characters after trimming white space, no control characters,
+   * unique in the caller's sidebar ignoring case.
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message sock.v1.CreateSectionRequest.
+ * Use `create(CreateSectionRequestSchema)` to create a new message.
+ */
+export const CreateSectionRequestSchema: GenMessage<CreateSectionRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 25);
+
+/**
+ * @generated from message sock.v1.CreateSectionResponse
+ */
+export type CreateSectionResponse = Message<"sock.v1.CreateSectionResponse"> & {
+  /**
+   * The new custom section, at the top of the sidebar.
+   *
+   * @generated from field: sock.v1.CustomSection section = 1;
+   */
+  section?: CustomSection | undefined;
+
+  /**
+   * @generated from field: sock.v1.Sidebar sidebar = 2;
+   */
+  sidebar?: Sidebar | undefined;
+};
+
+/**
+ * Describes the message sock.v1.CreateSectionResponse.
+ * Use `create(CreateSectionResponseSchema)` to create a new message.
+ */
+export const CreateSectionResponseSchema: GenMessage<CreateSectionResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 26);
+
+/**
+ * @generated from message sock.v1.RenameSectionRequest
+ */
+export type RenameSectionRequest = Message<"sock.v1.RenameSectionRequest"> & {
+  /**
+   * @generated from field: string section_id = 1;
+   */
+  sectionId: string;
+
+  /**
+   * As CreateSectionRequest.name.
+   *
+   * @generated from field: string name = 2;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message sock.v1.RenameSectionRequest.
+ * Use `create(RenameSectionRequestSchema)` to create a new message.
+ */
+export const RenameSectionRequestSchema: GenMessage<RenameSectionRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 27);
+
+/**
+ * @generated from message sock.v1.RenameSectionResponse
+ */
+export type RenameSectionResponse = Message<"sock.v1.RenameSectionResponse"> & {
+  /**
+   * @generated from field: sock.v1.Sidebar sidebar = 1;
+   */
+  sidebar?: Sidebar | undefined;
+};
+
+/**
+ * Describes the message sock.v1.RenameSectionResponse.
+ * Use `create(RenameSectionResponseSchema)` to create a new message.
+ */
+export const RenameSectionResponseSchema: GenMessage<RenameSectionResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 28);
+
+/**
+ * @generated from message sock.v1.DeleteSectionRequest
+ */
+export type DeleteSectionRequest = Message<"sock.v1.DeleteSectionRequest"> & {
+  /**
+   * @generated from field: string section_id = 1;
+   */
+  sectionId: string;
+};
+
+/**
+ * Describes the message sock.v1.DeleteSectionRequest.
+ * Use `create(DeleteSectionRequestSchema)` to create a new message.
+ */
+export const DeleteSectionRequestSchema: GenMessage<DeleteSectionRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 29);
+
+/**
+ * @generated from message sock.v1.DeleteSectionResponse
+ */
+export type DeleteSectionResponse = Message<"sock.v1.DeleteSectionResponse"> & {
+  /**
+   * @generated from field: sock.v1.Sidebar sidebar = 1;
+   */
+  sidebar?: Sidebar | undefined;
+};
+
+/**
+ * Describes the message sock.v1.DeleteSectionResponse.
+ * Use `create(DeleteSectionResponseSchema)` to create a new message.
+ */
+export const DeleteSectionResponseSchema: GenMessage<DeleteSectionResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 30);
+
+/**
+ * @generated from message sock.v1.ReorderSidebarRequest
+ */
+export type ReorderSidebarRequest = Message<"sock.v1.ReorderSidebarRequest"> & {
+  /**
+   * Every current section exactly once, top to bottom.
+   *
+   * @generated from field: repeated sock.v1.SectionRef order = 1;
+   */
+  order: SectionRef[];
+};
+
+/**
+ * Describes the message sock.v1.ReorderSidebarRequest.
+ * Use `create(ReorderSidebarRequestSchema)` to create a new message.
+ */
+export const ReorderSidebarRequestSchema: GenMessage<ReorderSidebarRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 31);
+
+/**
+ * @generated from message sock.v1.ReorderSidebarResponse
+ */
+export type ReorderSidebarResponse = Message<"sock.v1.ReorderSidebarResponse"> & {
+  /**
+   * @generated from field: sock.v1.Sidebar sidebar = 1;
+   */
+  sidebar?: Sidebar | undefined;
+};
+
+/**
+ * Describes the message sock.v1.ReorderSidebarResponse.
+ * Use `create(ReorderSidebarResponseSchema)` to create a new message.
+ */
+export const ReorderSidebarResponseSchema: GenMessage<ReorderSidebarResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 32);
+
+/**
+ * @generated from message sock.v1.AssignSectionRequest
+ */
+export type AssignSectionRequest = Message<"sock.v1.AssignSectionRequest"> & {
+  /**
+   * @generated from field: string conversation_id = 1;
+   */
+  conversationId: string;
+
+  /**
+   * One of the caller's custom sections.
+   *
+   * @generated from field: string section_id = 2;
+   */
+  sectionId: string;
+};
+
+/**
+ * Describes the message sock.v1.AssignSectionRequest.
+ * Use `create(AssignSectionRequestSchema)` to create a new message.
+ */
+export const AssignSectionRequestSchema: GenMessage<AssignSectionRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 33);
+
+/**
+ * @generated from message sock.v1.AssignSectionResponse
+ */
+export type AssignSectionResponse = Message<"sock.v1.AssignSectionResponse"> & {
+};
+
+/**
+ * Describes the message sock.v1.AssignSectionResponse.
+ * Use `create(AssignSectionResponseSchema)` to create a new message.
+ */
+export const AssignSectionResponseSchema: GenMessage<AssignSectionResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 34);
+
+/**
+ * @generated from message sock.v1.UnassignSectionRequest
+ */
+export type UnassignSectionRequest = Message<"sock.v1.UnassignSectionRequest"> & {
+  /**
+   * @generated from field: string conversation_id = 1;
+   */
+  conversationId: string;
+};
+
+/**
+ * Describes the message sock.v1.UnassignSectionRequest.
+ * Use `create(UnassignSectionRequestSchema)` to create a new message.
+ */
+export const UnassignSectionRequestSchema: GenMessage<UnassignSectionRequest> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 35);
+
+/**
+ * @generated from message sock.v1.UnassignSectionResponse
+ */
+export type UnassignSectionResponse = Message<"sock.v1.UnassignSectionResponse"> & {
+};
+
+/**
+ * Describes the message sock.v1.UnassignSectionResponse.
+ * Use `create(UnassignSectionResponseSchema)` to create a new message.
+ */
+export const UnassignSectionResponseSchema: GenMessage<UnassignSectionResponse> = /*@__PURE__*/
+  messageDesc(file_sock_v1_messaging, 36);
+
+/**
  * @generated from message sock.v1.SetActivityRequest
  */
 export type SetActivityRequest = Message<"sock.v1.SetActivityRequest"> & {
@@ -509,7 +807,7 @@ export type SetActivityRequest = Message<"sock.v1.SetActivityRequest"> & {
  * Use `create(SetActivityRequestSchema)` to create a new message.
  */
 export const SetActivityRequestSchema: GenMessage<SetActivityRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 22);
+  messageDesc(file_sock_v1_messaging, 37);
 
 /**
  * @generated from message sock.v1.SetActivityResponse
@@ -529,7 +827,7 @@ export type SetActivityResponse = Message<"sock.v1.SetActivityResponse"> & {
  * Use `create(SetActivityResponseSchema)` to create a new message.
  */
 export const SetActivityResponseSchema: GenMessage<SetActivityResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 23);
+  messageDesc(file_sock_v1_messaging, 38);
 
 /**
  * @generated from message sock.v1.Activity
@@ -568,7 +866,7 @@ export type Activity = Message<"sock.v1.Activity"> & {
  * Use `create(ActivitySchema)` to create a new message.
  */
 export const ActivitySchema: GenMessage<Activity> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 24);
+  messageDesc(file_sock_v1_messaging, 39);
 
 /**
  * @generated from message sock.v1.PuppetArchive
@@ -592,7 +890,7 @@ export type PuppetArchive = Message<"sock.v1.PuppetArchive"> & {
  * Use `create(PuppetArchiveSchema)` to create a new message.
  */
 export const PuppetArchiveSchema: GenMessage<PuppetArchive> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 25);
+  messageDesc(file_sock_v1_messaging, 40);
 
 /**
  * @generated from message sock.v1.FetchPendingRequest
@@ -611,7 +909,7 @@ export type FetchPendingRequest = Message<"sock.v1.FetchPendingRequest"> & {
  * Use `create(FetchPendingRequestSchema)` to create a new message.
  */
 export const FetchPendingRequestSchema: GenMessage<FetchPendingRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 26);
+  messageDesc(file_sock_v1_messaging, 41);
 
 /**
  * @generated from message sock.v1.FetchPendingResponse
@@ -630,7 +928,7 @@ export type FetchPendingResponse = Message<"sock.v1.FetchPendingResponse"> & {
  * Use `create(FetchPendingResponseSchema)` to create a new message.
  */
 export const FetchPendingResponseSchema: GenMessage<FetchPendingResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 27);
+  messageDesc(file_sock_v1_messaging, 42);
 
 /**
  * @generated from message sock.v1.AckRequest
@@ -649,7 +947,7 @@ export type AckRequest = Message<"sock.v1.AckRequest"> & {
  * Use `create(AckRequestSchema)` to create a new message.
  */
 export const AckRequestSchema: GenMessage<AckRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 28);
+  messageDesc(file_sock_v1_messaging, 43);
 
 /**
  * @generated from message sock.v1.AckResponse
@@ -662,7 +960,7 @@ export type AckResponse = Message<"sock.v1.AckResponse"> & {
  * Use `create(AckResponseSchema)` to create a new message.
  */
 export const AckResponseSchema: GenMessage<AckResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 29);
+  messageDesc(file_sock_v1_messaging, 44);
 
 /**
  * @generated from message sock.v1.ReleaseRequest
@@ -688,7 +986,7 @@ export type ReleaseRequest = Message<"sock.v1.ReleaseRequest"> & {
  * Use `create(ReleaseRequestSchema)` to create a new message.
  */
 export const ReleaseRequestSchema: GenMessage<ReleaseRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 30);
+  messageDesc(file_sock_v1_messaging, 45);
 
 /**
  * @generated from message sock.v1.ReleaseResponse
@@ -701,7 +999,7 @@ export type ReleaseResponse = Message<"sock.v1.ReleaseResponse"> & {
  * Use `create(ReleaseResponseSchema)` to create a new message.
  */
 export const ReleaseResponseSchema: GenMessage<ReleaseResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 31);
+  messageDesc(file_sock_v1_messaging, 46);
 
 /**
  * @generated from message sock.v1.RegisterPushRequest
@@ -727,7 +1025,7 @@ export type RegisterPushRequest = Message<"sock.v1.RegisterPushRequest"> & {
  * Use `create(RegisterPushRequestSchema)` to create a new message.
  */
 export const RegisterPushRequestSchema: GenMessage<RegisterPushRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 32);
+  messageDesc(file_sock_v1_messaging, 47);
 
 /**
  * @generated from message sock.v1.RegisterPushResponse
@@ -740,7 +1038,7 @@ export type RegisterPushResponse = Message<"sock.v1.RegisterPushResponse"> & {
  * Use `create(RegisterPushResponseSchema)` to create a new message.
  */
 export const RegisterPushResponseSchema: GenMessage<RegisterPushResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 33);
+  messageDesc(file_sock_v1_messaging, 48);
 
 /**
  * @generated from message sock.v1.ExportMessagingDataRequest
@@ -753,7 +1051,7 @@ export type ExportMessagingDataRequest = Message<"sock.v1.ExportMessagingDataReq
  * Use `create(ExportMessagingDataRequestSchema)` to create a new message.
  */
 export const ExportMessagingDataRequestSchema: GenMessage<ExportMessagingDataRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 34);
+  messageDesc(file_sock_v1_messaging, 49);
 
 /**
  * Messaging's half of the GDPR export. No message content: the server holds
@@ -781,6 +1079,13 @@ export type ExportMessagingDataResponse = Message<"sock.v1.ExportMessagingDataRe
    * @generated from field: repeated string blocked_account_ids = 3;
    */
   blockedAccountIds: string[];
+
+  /**
+   * The caller's sidebar.
+   *
+   * @generated from field: sock.v1.Sidebar sidebar = 4;
+   */
+  sidebar?: Sidebar | undefined;
 };
 
 /**
@@ -788,7 +1093,7 @@ export type ExportMessagingDataResponse = Message<"sock.v1.ExportMessagingDataRe
  * Use `create(ExportMessagingDataResponseSchema)` to create a new message.
  */
 export const ExportMessagingDataResponseSchema: GenMessage<ExportMessagingDataResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 35);
+  messageDesc(file_sock_v1_messaging, 50);
 
 /**
  * @generated from message sock.v1.BlockAccountRequest
@@ -808,7 +1113,7 @@ export type BlockAccountRequest = Message<"sock.v1.BlockAccountRequest"> & {
  * Use `create(BlockAccountRequestSchema)` to create a new message.
  */
 export const BlockAccountRequestSchema: GenMessage<BlockAccountRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 36);
+  messageDesc(file_sock_v1_messaging, 51);
 
 /**
  * @generated from message sock.v1.BlockAccountResponse
@@ -821,7 +1126,7 @@ export type BlockAccountResponse = Message<"sock.v1.BlockAccountResponse"> & {
  * Use `create(BlockAccountResponseSchema)` to create a new message.
  */
 export const BlockAccountResponseSchema: GenMessage<BlockAccountResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 37);
+  messageDesc(file_sock_v1_messaging, 52);
 
 /**
  * @generated from message sock.v1.UnblockAccountRequest
@@ -838,7 +1143,7 @@ export type UnblockAccountRequest = Message<"sock.v1.UnblockAccountRequest"> & {
  * Use `create(UnblockAccountRequestSchema)` to create a new message.
  */
 export const UnblockAccountRequestSchema: GenMessage<UnblockAccountRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 38);
+  messageDesc(file_sock_v1_messaging, 53);
 
 /**
  * @generated from message sock.v1.UnblockAccountResponse
@@ -851,7 +1156,7 @@ export type UnblockAccountResponse = Message<"sock.v1.UnblockAccountResponse"> &
  * Use `create(UnblockAccountResponseSchema)` to create a new message.
  */
 export const UnblockAccountResponseSchema: GenMessage<UnblockAccountResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 39);
+  messageDesc(file_sock_v1_messaging, 54);
 
 /**
  * @generated from message sock.v1.ListBlockedAccountsRequest
@@ -864,7 +1169,7 @@ export type ListBlockedAccountsRequest = Message<"sock.v1.ListBlockedAccountsReq
  * Use `create(ListBlockedAccountsRequestSchema)` to create a new message.
  */
 export const ListBlockedAccountsRequestSchema: GenMessage<ListBlockedAccountsRequest> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 40);
+  messageDesc(file_sock_v1_messaging, 55);
 
 /**
  * @generated from message sock.v1.ListBlockedAccountsResponse
@@ -881,7 +1186,7 @@ export type ListBlockedAccountsResponse = Message<"sock.v1.ListBlockedAccountsRe
  * Use `create(ListBlockedAccountsResponseSchema)` to create a new message.
  */
 export const ListBlockedAccountsResponseSchema: GenMessage<ListBlockedAccountsResponse> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 41);
+  messageDesc(file_sock_v1_messaging, 56);
 
 /**
  * @generated from message sock.v1.BlockedAccount
@@ -903,7 +1208,7 @@ export type BlockedAccount = Message<"sock.v1.BlockedAccount"> & {
  * Use `create(BlockedAccountSchema)` to create a new message.
  */
 export const BlockedAccountSchema: GenMessage<BlockedAccount> = /*@__PURE__*/
-  messageDesc(file_sock_v1_messaging, 42);
+  messageDesc(file_sock_v1_messaging, 57);
 
 /**
  * @generated from enum sock.v1.ActivityState
@@ -998,6 +1303,68 @@ export const MessagingService: GenService<{
     methodKind: "unary";
     input: typeof MarkReadRequestSchema;
     output: typeof MarkReadResponseSchema;
+  },
+  /**
+   * The caller's sidebar: section order and custom sections. Human devices
+   * only; each human has their own.
+   *
+   * @generated from rpc sock.v1.MessagingService.GetSidebar
+   */
+  getSidebar: {
+    methodKind: "unary";
+    input: typeof GetSidebarRequestSchema;
+    output: typeof GetSidebarResponseSchema;
+  },
+  /**
+   * @generated from rpc sock.v1.MessagingService.CreateSection
+   */
+  createSection: {
+    methodKind: "unary";
+    input: typeof CreateSectionRequestSchema;
+    output: typeof CreateSectionResponseSchema;
+  },
+  /**
+   * @generated from rpc sock.v1.MessagingService.RenameSection
+   */
+  renameSection: {
+    methodKind: "unary";
+    input: typeof RenameSectionRequestSchema;
+    output: typeof RenameSectionResponseSchema;
+  },
+  /**
+   * @generated from rpc sock.v1.MessagingService.DeleteSection
+   */
+  deleteSection: {
+    methodKind: "unary";
+    input: typeof DeleteSectionRequestSchema;
+    output: typeof DeleteSectionResponseSchema;
+  },
+  /**
+   * @generated from rpc sock.v1.MessagingService.ReorderSidebar
+   */
+  reorderSidebar: {
+    methodKind: "unary";
+    input: typeof ReorderSidebarRequestSchema;
+    output: typeof ReorderSidebarResponseSchema;
+  },
+  /**
+   * Put one conversation in one of the caller's custom sections, or take it
+   * out. Human devices only.
+   *
+   * @generated from rpc sock.v1.MessagingService.AssignSection
+   */
+  assignSection: {
+    methodKind: "unary";
+    input: typeof AssignSectionRequestSchema;
+    output: typeof AssignSectionResponseSchema;
+  },
+  /**
+   * @generated from rpc sock.v1.MessagingService.UnassignSection
+   */
+  unassignSection: {
+    methodKind: "unary";
+    input: typeof UnassignSectionRequestSchema;
+    output: typeof UnassignSectionResponseSchema;
   },
   /**
    * @generated from rpc sock.v1.MessagingService.Send

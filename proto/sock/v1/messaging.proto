@@ -19,6 +19,17 @@ service MessagingService {
   rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse) {}
   // Advance the caller's read marker in one conversation. Human devices only.
   rpc MarkRead(MarkReadRequest) returns (MarkReadResponse) {}
+  // The caller's sidebar: section order and custom sections. Human devices
+  // only; each human has their own.
+  rpc GetSidebar(GetSidebarRequest) returns (GetSidebarResponse) {}
+  rpc CreateSection(CreateSectionRequest) returns (CreateSectionResponse) {}
+  rpc RenameSection(RenameSectionRequest) returns (RenameSectionResponse) {}
+  rpc DeleteSection(DeleteSectionRequest) returns (DeleteSectionResponse) {}
+  rpc ReorderSidebar(ReorderSidebarRequest) returns (ReorderSidebarResponse) {}
+  // Put one conversation in one of the caller's custom sections, or take it
+  // out. Human devices only.
+  rpc AssignSection(AssignSectionRequest) returns (AssignSectionResponse) {}
+  rpc UnassignSection(UnassignSectionRequest) returns (UnassignSectionResponse) {}
 
   rpc Send(SendRequest) returns (SendResponse) {}
   rpc NotifyOwner(NotifyOwnerRequest) returns (NotifyOwnerResponse) {}
@@ -144,6 +155,16 @@ message SubscribeResponse {
     // reconcile with ListConversations when a stream opens. The owner's
     // human streams only.
     PuppetHeard puppet_heard = 6;
+    // The caller's sidebar changed on one of its devices, the calling one
+    // included. The whole sidebar. A hint: at most once, so clients
+    // reconcile with GetSidebar when a stream opens. Human streams only.
+    Sidebar sidebar = 7;
+    // The caller moved a conversation into or out of a custom section. Not
+    // sent for a section's deletion: the Sidebar event drops the section and
+    // clients clear assignments to sections it no longer lists. A hint: at
+    // most once, so clients reconcile with ListConversations when a stream
+    // opens. Human streams only.
+    SectionAssignment section_assignment = 8;
   }
 }
 message Heartbeat {}
@@ -151,6 +172,63 @@ message ReadMarker {
   string conversation_id = 1;
   int64 read_through_seq = 2;
 }
+message SectionAssignment {
+  string conversation_id = 1;
+  // Empty: unassigned, shown in its type section.
+  string section_id = 2;
+}
+
+message GetSidebarRequest {}
+message GetSidebarResponse {
+  Sidebar sidebar = 1;
+}
+
+message CreateSectionRequest {
+  // 1 to 1024 characters after trimming white space, no control characters,
+  // unique in the caller's sidebar ignoring case.
+  string name = 1;
+}
+message CreateSectionResponse {
+  // The new custom section, at the top of the sidebar.
+  CustomSection section = 1;
+  Sidebar sidebar = 2;
+}
+
+message RenameSectionRequest {
+  string section_id = 1;
+  // As CreateSectionRequest.name.
+  string name = 2;
+}
+message RenameSectionResponse {
+  Sidebar sidebar = 1;
+}
+
+message DeleteSectionRequest {
+  string section_id = 1;
+}
+message DeleteSectionResponse {
+  Sidebar sidebar = 1;
+}
+
+message ReorderSidebarRequest {
+  // Every current section exactly once, top to bottom.
+  repeated SectionRef order = 1;
+}
+message ReorderSidebarResponse {
+  Sidebar sidebar = 1;
+}
+
+message AssignSectionRequest {
+  string conversation_id = 1;
+  // One of the caller's custom sections.
+  string section_id = 2;
+}
+message AssignSectionResponse {}
+
+message UnassignSectionRequest {
+  string conversation_id = 1;
+}
+message UnassignSectionResponse {}
 
 enum ActivityState {
   ACTIVITY_STATE_UNSPECIFIED = 0;
@@ -228,6 +306,8 @@ message ExportMessagingDataResponse {
   repeated string push_registered_device_ids = 2;
   // Accounts the caller has blocked.
   repeated string blocked_account_ids = 3;
+  // The caller's sidebar.
+  Sidebar sidebar = 4;
 }
 
 message BlockAccountRequest {

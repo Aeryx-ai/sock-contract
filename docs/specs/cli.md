@@ -98,6 +98,13 @@ Local only: these commands call no RPC. The service they install runs `sock list
 - `ReceiveHistory`: the apps' phone-to-desktop history transfer; a CLI holds no history to send or import.
 - `CloseHistoryTransfer`: the apps' phone-to-desktop history transfer; a CLI holds no history to send or import.
 - `MarkRead`: reports a human's read position; the CLI has no read state, unread is an app concept.
+- `GetSidebar`: arranges a human's app sidebar; the CLI has no sidebar.
+- `CreateSection`: arranges a human's app sidebar; the CLI has no sidebar.
+- `RenameSection`: arranges a human's app sidebar; the CLI has no sidebar.
+- `DeleteSection`: arranges a human's app sidebar; the CLI has no sidebar.
+- `ReorderSidebar`: arranges a human's app sidebar; the CLI has no sidebar.
+- `AssignSection`: arranges a human's app sidebar; the CLI has no sidebar.
+- `UnassignSection`: arranges a human's app sidebar; the CLI has no sidebar.
 - `NotifyOwner`: puppet only; reached by `sock send` without `--conversation`, as today.
 - `OperatorService`: the operator is not a human; it has its own CLI and console.
 - `SignInWithEmail`: the apps' email sign-in; `sock login` signs in through the hub's terminal sign-in instead ([terminal sign-in](terminal-sign-in.md)).

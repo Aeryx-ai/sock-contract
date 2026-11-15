@@ -36,6 +36,31 @@ public protocol Sock_V1_MessagingServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `markRead`(request: Sock_V1_MarkReadRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_MarkReadResponse>
 
+    /// The caller's sidebar: section order and custom sections. Human devices
+    /// only; each human has their own.
+    @available(iOS 13, *)
+    func `getSidebar`(request: Sock_V1_GetSidebarRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_GetSidebarResponse>
+
+    @available(iOS 13, *)
+    func `createSection`(request: Sock_V1_CreateSectionRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_CreateSectionResponse>
+
+    @available(iOS 13, *)
+    func `renameSection`(request: Sock_V1_RenameSectionRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_RenameSectionResponse>
+
+    @available(iOS 13, *)
+    func `deleteSection`(request: Sock_V1_DeleteSectionRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_DeleteSectionResponse>
+
+    @available(iOS 13, *)
+    func `reorderSidebar`(request: Sock_V1_ReorderSidebarRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_ReorderSidebarResponse>
+
+    /// Put one conversation in one of the caller's custom sections, or take it
+    /// out. Human devices only.
+    @available(iOS 13, *)
+    func `assignSection`(request: Sock_V1_AssignSectionRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_AssignSectionResponse>
+
+    @available(iOS 13, *)
+    func `unassignSection`(request: Sock_V1_UnassignSectionRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_UnassignSectionResponse>
+
     @available(iOS 13, *)
     func `send`(request: Sock_V1_SendRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_SendResponse>
 
@@ -121,6 +146,41 @@ public final class Sock_V1_MessagingServiceClient: Sock_V1_MessagingServiceClien
     }
 
     @available(iOS 13, *)
+    public func `getSidebar`(request: Sock_V1_GetSidebarRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_GetSidebarResponse> {
+        return await self.client.unary(path: "/sock.v1.MessagingService/GetSidebar", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `createSection`(request: Sock_V1_CreateSectionRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_CreateSectionResponse> {
+        return await self.client.unary(path: "/sock.v1.MessagingService/CreateSection", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `renameSection`(request: Sock_V1_RenameSectionRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_RenameSectionResponse> {
+        return await self.client.unary(path: "/sock.v1.MessagingService/RenameSection", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `deleteSection`(request: Sock_V1_DeleteSectionRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_DeleteSectionResponse> {
+        return await self.client.unary(path: "/sock.v1.MessagingService/DeleteSection", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `reorderSidebar`(request: Sock_V1_ReorderSidebarRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_ReorderSidebarResponse> {
+        return await self.client.unary(path: "/sock.v1.MessagingService/ReorderSidebar", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `assignSection`(request: Sock_V1_AssignSectionRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_AssignSectionResponse> {
+        return await self.client.unary(path: "/sock.v1.MessagingService/AssignSection", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `unassignSection`(request: Sock_V1_UnassignSectionRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_UnassignSectionResponse> {
+        return await self.client.unary(path: "/sock.v1.MessagingService/UnassignSection", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
     public func `send`(request: Sock_V1_SendRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_SendResponse> {
         return await self.client.unary(path: "/sock.v1.MessagingService/Send", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -189,6 +249,13 @@ public final class Sock_V1_MessagingServiceClient: Sock_V1_MessagingServiceClien
             public static let leave = Connect.MethodSpec(name: "Leave", service: "sock.v1.MessagingService", type: .unary)
             public static let listConversations = Connect.MethodSpec(name: "ListConversations", service: "sock.v1.MessagingService", type: .unary)
             public static let markRead = Connect.MethodSpec(name: "MarkRead", service: "sock.v1.MessagingService", type: .unary)
+            public static let getSidebar = Connect.MethodSpec(name: "GetSidebar", service: "sock.v1.MessagingService", type: .unary)
+            public static let createSection = Connect.MethodSpec(name: "CreateSection", service: "sock.v1.MessagingService", type: .unary)
+            public static let renameSection = Connect.MethodSpec(name: "RenameSection", service: "sock.v1.MessagingService", type: .unary)
+            public static let deleteSection = Connect.MethodSpec(name: "DeleteSection", service: "sock.v1.MessagingService", type: .unary)
+            public static let reorderSidebar = Connect.MethodSpec(name: "ReorderSidebar", service: "sock.v1.MessagingService", type: .unary)
+            public static let assignSection = Connect.MethodSpec(name: "AssignSection", service: "sock.v1.MessagingService", type: .unary)
+            public static let unassignSection = Connect.MethodSpec(name: "UnassignSection", service: "sock.v1.MessagingService", type: .unary)
             public static let send = Connect.MethodSpec(name: "Send", service: "sock.v1.MessagingService", type: .unary)
             public static let notifyOwner = Connect.MethodSpec(name: "NotifyOwner", service: "sock.v1.MessagingService", type: .unary)
             public static let subscribe = Connect.MethodSpec(name: "Subscribe", service: "sock.v1.MessagingService", type: .serverStream)

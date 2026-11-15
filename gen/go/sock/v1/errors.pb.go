@@ -123,6 +123,7 @@ const (
 	// removes the oldest session and is never refused. Subscribe: a fifth open
 	// stream on one device and replica ends the device's oldest stream with
 	// this reason; a client does not reconnect a stream that ended so.
+	// CreateSection at 50 custom sections: delete one first.
 	ErrorReason_ERROR_REASON_LIMIT_REACHED ErrorReason = 61
 	// already_exists: the connector puppet's device is already issued for this
 	// grant (IssueConnectorPuppetToken). RevokeConnectorDevice first, then
@@ -162,6 +163,9 @@ const (
 	// minutes (RemoveEmailSignIn, StartPasskeyRegistration). Sign in again,
 	// then retry.
 	ErrorReason_ERROR_REASON_RECENT_SIGN_IN_REQUIRED ErrorReason = 72
+	// already_exists: the caller already has a custom section with this name,
+	// ignoring case (CreateSection, RenameSection).
+	ErrorReason_ERROR_REASON_SECTION_NAME_TAKEN ErrorReason = 73
 )
 
 // Enum value maps for ErrorReason.
@@ -206,6 +210,7 @@ var (
 		70: "ERROR_REASON_TERMINAL_SIGN_IN_INVALID",
 		71: "ERROR_REASON_LAST_SIGN_IN_IDENTITY",
 		72: "ERROR_REASON_RECENT_SIGN_IN_REQUIRED",
+		73: "ERROR_REASON_SECTION_NAME_TAKEN",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED":                 0,
@@ -247,6 +252,7 @@ var (
 		"ERROR_REASON_TERMINAL_SIGN_IN_INVALID":    70,
 		"ERROR_REASON_LAST_SIGN_IN_IDENTITY":       71,
 		"ERROR_REASON_RECENT_SIGN_IN_REQUIRED":     72,
+		"ERROR_REASON_SECTION_NAME_TAKEN":          73,
 	}
 )
 
@@ -330,8 +336,7 @@ const file_sock_v1_errors_proto_rawDesc = "" +
 	"\n" +
 	"\x14sock/v1/errors.proto\x12\asock.v1\"9\n" +
 	"\tErrorInfo\x12,\n" +
-	"\x06reason\x18\x01 \x01(\x0e2\x14.sock.v1.ErrorReasonR\x06reason*\xee\n" +
-	"\n" +
+	"\x06reason\x18\x01 \x01(\x0e2\x14.sock.v1.ErrorReasonR\x06reason*\x93\v\n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aERROR_REASON_TOKEN_INVALID\x10\x01\x12$\n" +
@@ -372,7 +377,8 @@ const file_sock_v1_errors_proto_rawDesc = "" +
 	"\x1dERROR_REASON_PASSWORD_INVALID\x10E\x12)\n" +
 	"%ERROR_REASON_TERMINAL_SIGN_IN_INVALID\x10F\x12&\n" +
 	"\"ERROR_REASON_LAST_SIGN_IN_IDENTITY\x10G\x12(\n" +
-	"$ERROR_REASON_RECENT_SIGN_IN_REQUIRED\x10HB\x90\x01\n" +
+	"$ERROR_REASON_RECENT_SIGN_IN_REQUIRED\x10H\x12#\n" +
+	"\x1fERROR_REASON_SECTION_NAME_TAKEN\x10IB\x90\x01\n" +
 	"\vcom.sock.v1B\vErrorsProtoP\x01Z7github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1\xa2\x02\x03SXX\xaa\x02\aSock.V1\xca\x02\aSock\\V1\xe2\x02\x13Sock\\V1\\GPBMetadata\xea\x02\bSock::V1b\x06proto3"
 
 var (

@@ -53,6 +53,27 @@ const (
 	// MessagingServiceMarkReadProcedure is the fully-qualified name of the MessagingService's MarkRead
 	// RPC.
 	MessagingServiceMarkReadProcedure = "/sock.v1.MessagingService/MarkRead"
+	// MessagingServiceGetSidebarProcedure is the fully-qualified name of the MessagingService's
+	// GetSidebar RPC.
+	MessagingServiceGetSidebarProcedure = "/sock.v1.MessagingService/GetSidebar"
+	// MessagingServiceCreateSectionProcedure is the fully-qualified name of the MessagingService's
+	// CreateSection RPC.
+	MessagingServiceCreateSectionProcedure = "/sock.v1.MessagingService/CreateSection"
+	// MessagingServiceRenameSectionProcedure is the fully-qualified name of the MessagingService's
+	// RenameSection RPC.
+	MessagingServiceRenameSectionProcedure = "/sock.v1.MessagingService/RenameSection"
+	// MessagingServiceDeleteSectionProcedure is the fully-qualified name of the MessagingService's
+	// DeleteSection RPC.
+	MessagingServiceDeleteSectionProcedure = "/sock.v1.MessagingService/DeleteSection"
+	// MessagingServiceReorderSidebarProcedure is the fully-qualified name of the MessagingService's
+	// ReorderSidebar RPC.
+	MessagingServiceReorderSidebarProcedure = "/sock.v1.MessagingService/ReorderSidebar"
+	// MessagingServiceAssignSectionProcedure is the fully-qualified name of the MessagingService's
+	// AssignSection RPC.
+	MessagingServiceAssignSectionProcedure = "/sock.v1.MessagingService/AssignSection"
+	// MessagingServiceUnassignSectionProcedure is the fully-qualified name of the MessagingService's
+	// UnassignSection RPC.
+	MessagingServiceUnassignSectionProcedure = "/sock.v1.MessagingService/UnassignSection"
 	// MessagingServiceSendProcedure is the fully-qualified name of the MessagingService's Send RPC.
 	MessagingServiceSendProcedure = "/sock.v1.MessagingService/Send"
 	// MessagingServiceNotifyOwnerProcedure is the fully-qualified name of the MessagingService's
@@ -99,6 +120,17 @@ type MessagingServiceClient interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
 	// Advance the caller's read marker in one conversation. Human devices only.
 	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
+	// The caller's sidebar: section order and custom sections. Human devices
+	// only; each human has their own.
+	GetSidebar(context.Context, *connect.Request[v1.GetSidebarRequest]) (*connect.Response[v1.GetSidebarResponse], error)
+	CreateSection(context.Context, *connect.Request[v1.CreateSectionRequest]) (*connect.Response[v1.CreateSectionResponse], error)
+	RenameSection(context.Context, *connect.Request[v1.RenameSectionRequest]) (*connect.Response[v1.RenameSectionResponse], error)
+	DeleteSection(context.Context, *connect.Request[v1.DeleteSectionRequest]) (*connect.Response[v1.DeleteSectionResponse], error)
+	ReorderSidebar(context.Context, *connect.Request[v1.ReorderSidebarRequest]) (*connect.Response[v1.ReorderSidebarResponse], error)
+	// Put one conversation in one of the caller's custom sections, or take it
+	// out. Human devices only.
+	AssignSection(context.Context, *connect.Request[v1.AssignSectionRequest]) (*connect.Response[v1.AssignSectionResponse], error)
+	UnassignSection(context.Context, *connect.Request[v1.UnassignSectionRequest]) (*connect.Response[v1.UnassignSectionResponse], error)
 	Send(context.Context, *connect.Request[v1.SendRequest]) (*connect.Response[v1.SendResponse], error)
 	NotifyOwner(context.Context, *connect.Request[v1.NotifyOwnerRequest]) (*connect.Response[v1.NotifyOwnerResponse], error)
 	Subscribe(context.Context, *connect.Request[v1.SubscribeRequest]) (*connect.ServerStreamForClient[v1.SubscribeResponse], error)
@@ -168,6 +200,48 @@ func NewMessagingServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			httpClient,
 			baseURL+MessagingServiceMarkReadProcedure,
 			connect.WithSchema(messagingServiceMethods.ByName("MarkRead")),
+			connect.WithClientOptions(opts...),
+		),
+		getSidebar: connect.NewClient[v1.GetSidebarRequest, v1.GetSidebarResponse](
+			httpClient,
+			baseURL+MessagingServiceGetSidebarProcedure,
+			connect.WithSchema(messagingServiceMethods.ByName("GetSidebar")),
+			connect.WithClientOptions(opts...),
+		),
+		createSection: connect.NewClient[v1.CreateSectionRequest, v1.CreateSectionResponse](
+			httpClient,
+			baseURL+MessagingServiceCreateSectionProcedure,
+			connect.WithSchema(messagingServiceMethods.ByName("CreateSection")),
+			connect.WithClientOptions(opts...),
+		),
+		renameSection: connect.NewClient[v1.RenameSectionRequest, v1.RenameSectionResponse](
+			httpClient,
+			baseURL+MessagingServiceRenameSectionProcedure,
+			connect.WithSchema(messagingServiceMethods.ByName("RenameSection")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteSection: connect.NewClient[v1.DeleteSectionRequest, v1.DeleteSectionResponse](
+			httpClient,
+			baseURL+MessagingServiceDeleteSectionProcedure,
+			connect.WithSchema(messagingServiceMethods.ByName("DeleteSection")),
+			connect.WithClientOptions(opts...),
+		),
+		reorderSidebar: connect.NewClient[v1.ReorderSidebarRequest, v1.ReorderSidebarResponse](
+			httpClient,
+			baseURL+MessagingServiceReorderSidebarProcedure,
+			connect.WithSchema(messagingServiceMethods.ByName("ReorderSidebar")),
+			connect.WithClientOptions(opts...),
+		),
+		assignSection: connect.NewClient[v1.AssignSectionRequest, v1.AssignSectionResponse](
+			httpClient,
+			baseURL+MessagingServiceAssignSectionProcedure,
+			connect.WithSchema(messagingServiceMethods.ByName("AssignSection")),
+			connect.WithClientOptions(opts...),
+		),
+		unassignSection: connect.NewClient[v1.UnassignSectionRequest, v1.UnassignSectionResponse](
+			httpClient,
+			baseURL+MessagingServiceUnassignSectionProcedure,
+			connect.WithSchema(messagingServiceMethods.ByName("UnassignSection")),
 			connect.WithClientOptions(opts...),
 		),
 		send: connect.NewClient[v1.SendRequest, v1.SendResponse](
@@ -254,6 +328,13 @@ type messagingServiceClient struct {
 	leave               *connect.Client[v1.LeaveRequest, v1.LeaveResponse]
 	listConversations   *connect.Client[v1.ListConversationsRequest, v1.ListConversationsResponse]
 	markRead            *connect.Client[v1.MarkReadRequest, v1.MarkReadResponse]
+	getSidebar          *connect.Client[v1.GetSidebarRequest, v1.GetSidebarResponse]
+	createSection       *connect.Client[v1.CreateSectionRequest, v1.CreateSectionResponse]
+	renameSection       *connect.Client[v1.RenameSectionRequest, v1.RenameSectionResponse]
+	deleteSection       *connect.Client[v1.DeleteSectionRequest, v1.DeleteSectionResponse]
+	reorderSidebar      *connect.Client[v1.ReorderSidebarRequest, v1.ReorderSidebarResponse]
+	assignSection       *connect.Client[v1.AssignSectionRequest, v1.AssignSectionResponse]
+	unassignSection     *connect.Client[v1.UnassignSectionRequest, v1.UnassignSectionResponse]
 	send                *connect.Client[v1.SendRequest, v1.SendResponse]
 	notifyOwner         *connect.Client[v1.NotifyOwnerRequest, v1.NotifyOwnerResponse]
 	subscribe           *connect.Client[v1.SubscribeRequest, v1.SubscribeResponse]
@@ -301,6 +382,41 @@ func (c *messagingServiceClient) ListConversations(ctx context.Context, req *con
 // MarkRead calls sock.v1.MessagingService.MarkRead.
 func (c *messagingServiceClient) MarkRead(ctx context.Context, req *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error) {
 	return c.markRead.CallUnary(ctx, req)
+}
+
+// GetSidebar calls sock.v1.MessagingService.GetSidebar.
+func (c *messagingServiceClient) GetSidebar(ctx context.Context, req *connect.Request[v1.GetSidebarRequest]) (*connect.Response[v1.GetSidebarResponse], error) {
+	return c.getSidebar.CallUnary(ctx, req)
+}
+
+// CreateSection calls sock.v1.MessagingService.CreateSection.
+func (c *messagingServiceClient) CreateSection(ctx context.Context, req *connect.Request[v1.CreateSectionRequest]) (*connect.Response[v1.CreateSectionResponse], error) {
+	return c.createSection.CallUnary(ctx, req)
+}
+
+// RenameSection calls sock.v1.MessagingService.RenameSection.
+func (c *messagingServiceClient) RenameSection(ctx context.Context, req *connect.Request[v1.RenameSectionRequest]) (*connect.Response[v1.RenameSectionResponse], error) {
+	return c.renameSection.CallUnary(ctx, req)
+}
+
+// DeleteSection calls sock.v1.MessagingService.DeleteSection.
+func (c *messagingServiceClient) DeleteSection(ctx context.Context, req *connect.Request[v1.DeleteSectionRequest]) (*connect.Response[v1.DeleteSectionResponse], error) {
+	return c.deleteSection.CallUnary(ctx, req)
+}
+
+// ReorderSidebar calls sock.v1.MessagingService.ReorderSidebar.
+func (c *messagingServiceClient) ReorderSidebar(ctx context.Context, req *connect.Request[v1.ReorderSidebarRequest]) (*connect.Response[v1.ReorderSidebarResponse], error) {
+	return c.reorderSidebar.CallUnary(ctx, req)
+}
+
+// AssignSection calls sock.v1.MessagingService.AssignSection.
+func (c *messagingServiceClient) AssignSection(ctx context.Context, req *connect.Request[v1.AssignSectionRequest]) (*connect.Response[v1.AssignSectionResponse], error) {
+	return c.assignSection.CallUnary(ctx, req)
+}
+
+// UnassignSection calls sock.v1.MessagingService.UnassignSection.
+func (c *messagingServiceClient) UnassignSection(ctx context.Context, req *connect.Request[v1.UnassignSectionRequest]) (*connect.Response[v1.UnassignSectionResponse], error) {
+	return c.unassignSection.CallUnary(ctx, req)
 }
 
 // Send calls sock.v1.MessagingService.Send.
@@ -373,6 +489,17 @@ type MessagingServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
 	// Advance the caller's read marker in one conversation. Human devices only.
 	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
+	// The caller's sidebar: section order and custom sections. Human devices
+	// only; each human has their own.
+	GetSidebar(context.Context, *connect.Request[v1.GetSidebarRequest]) (*connect.Response[v1.GetSidebarResponse], error)
+	CreateSection(context.Context, *connect.Request[v1.CreateSectionRequest]) (*connect.Response[v1.CreateSectionResponse], error)
+	RenameSection(context.Context, *connect.Request[v1.RenameSectionRequest]) (*connect.Response[v1.RenameSectionResponse], error)
+	DeleteSection(context.Context, *connect.Request[v1.DeleteSectionRequest]) (*connect.Response[v1.DeleteSectionResponse], error)
+	ReorderSidebar(context.Context, *connect.Request[v1.ReorderSidebarRequest]) (*connect.Response[v1.ReorderSidebarResponse], error)
+	// Put one conversation in one of the caller's custom sections, or take it
+	// out. Human devices only.
+	AssignSection(context.Context, *connect.Request[v1.AssignSectionRequest]) (*connect.Response[v1.AssignSectionResponse], error)
+	UnassignSection(context.Context, *connect.Request[v1.UnassignSectionRequest]) (*connect.Response[v1.UnassignSectionResponse], error)
 	Send(context.Context, *connect.Request[v1.SendRequest]) (*connect.Response[v1.SendResponse], error)
 	NotifyOwner(context.Context, *connect.Request[v1.NotifyOwnerRequest]) (*connect.Response[v1.NotifyOwnerResponse], error)
 	Subscribe(context.Context, *connect.Request[v1.SubscribeRequest], *connect.ServerStream[v1.SubscribeResponse]) error
@@ -438,6 +565,48 @@ func NewMessagingServiceHandler(svc MessagingServiceHandler, opts ...connect.Han
 		MessagingServiceMarkReadProcedure,
 		svc.MarkRead,
 		connect.WithSchema(messagingServiceMethods.ByName("MarkRead")),
+		connect.WithHandlerOptions(opts...),
+	)
+	messagingServiceGetSidebarHandler := connect.NewUnaryHandler(
+		MessagingServiceGetSidebarProcedure,
+		svc.GetSidebar,
+		connect.WithSchema(messagingServiceMethods.ByName("GetSidebar")),
+		connect.WithHandlerOptions(opts...),
+	)
+	messagingServiceCreateSectionHandler := connect.NewUnaryHandler(
+		MessagingServiceCreateSectionProcedure,
+		svc.CreateSection,
+		connect.WithSchema(messagingServiceMethods.ByName("CreateSection")),
+		connect.WithHandlerOptions(opts...),
+	)
+	messagingServiceRenameSectionHandler := connect.NewUnaryHandler(
+		MessagingServiceRenameSectionProcedure,
+		svc.RenameSection,
+		connect.WithSchema(messagingServiceMethods.ByName("RenameSection")),
+		connect.WithHandlerOptions(opts...),
+	)
+	messagingServiceDeleteSectionHandler := connect.NewUnaryHandler(
+		MessagingServiceDeleteSectionProcedure,
+		svc.DeleteSection,
+		connect.WithSchema(messagingServiceMethods.ByName("DeleteSection")),
+		connect.WithHandlerOptions(opts...),
+	)
+	messagingServiceReorderSidebarHandler := connect.NewUnaryHandler(
+		MessagingServiceReorderSidebarProcedure,
+		svc.ReorderSidebar,
+		connect.WithSchema(messagingServiceMethods.ByName("ReorderSidebar")),
+		connect.WithHandlerOptions(opts...),
+	)
+	messagingServiceAssignSectionHandler := connect.NewUnaryHandler(
+		MessagingServiceAssignSectionProcedure,
+		svc.AssignSection,
+		connect.WithSchema(messagingServiceMethods.ByName("AssignSection")),
+		connect.WithHandlerOptions(opts...),
+	)
+	messagingServiceUnassignSectionHandler := connect.NewUnaryHandler(
+		MessagingServiceUnassignSectionProcedure,
+		svc.UnassignSection,
+		connect.WithSchema(messagingServiceMethods.ByName("UnassignSection")),
 		connect.WithHandlerOptions(opts...),
 	)
 	messagingServiceSendHandler := connect.NewUnaryHandler(
@@ -528,6 +697,20 @@ func NewMessagingServiceHandler(svc MessagingServiceHandler, opts ...connect.Han
 			messagingServiceListConversationsHandler.ServeHTTP(w, r)
 		case MessagingServiceMarkReadProcedure:
 			messagingServiceMarkReadHandler.ServeHTTP(w, r)
+		case MessagingServiceGetSidebarProcedure:
+			messagingServiceGetSidebarHandler.ServeHTTP(w, r)
+		case MessagingServiceCreateSectionProcedure:
+			messagingServiceCreateSectionHandler.ServeHTTP(w, r)
+		case MessagingServiceRenameSectionProcedure:
+			messagingServiceRenameSectionHandler.ServeHTTP(w, r)
+		case MessagingServiceDeleteSectionProcedure:
+			messagingServiceDeleteSectionHandler.ServeHTTP(w, r)
+		case MessagingServiceReorderSidebarProcedure:
+			messagingServiceReorderSidebarHandler.ServeHTTP(w, r)
+		case MessagingServiceAssignSectionProcedure:
+			messagingServiceAssignSectionHandler.ServeHTTP(w, r)
+		case MessagingServiceUnassignSectionProcedure:
+			messagingServiceUnassignSectionHandler.ServeHTTP(w, r)
 		case MessagingServiceSendProcedure:
 			messagingServiceSendHandler.ServeHTTP(w, r)
 		case MessagingServiceNotifyOwnerProcedure:
@@ -587,6 +770,34 @@ func (UnimplementedMessagingServiceHandler) ListConversations(context.Context, *
 
 func (UnimplementedMessagingServiceHandler) MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.MessagingService.MarkRead is not implemented"))
+}
+
+func (UnimplementedMessagingServiceHandler) GetSidebar(context.Context, *connect.Request[v1.GetSidebarRequest]) (*connect.Response[v1.GetSidebarResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.MessagingService.GetSidebar is not implemented"))
+}
+
+func (UnimplementedMessagingServiceHandler) CreateSection(context.Context, *connect.Request[v1.CreateSectionRequest]) (*connect.Response[v1.CreateSectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.MessagingService.CreateSection is not implemented"))
+}
+
+func (UnimplementedMessagingServiceHandler) RenameSection(context.Context, *connect.Request[v1.RenameSectionRequest]) (*connect.Response[v1.RenameSectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.MessagingService.RenameSection is not implemented"))
+}
+
+func (UnimplementedMessagingServiceHandler) DeleteSection(context.Context, *connect.Request[v1.DeleteSectionRequest]) (*connect.Response[v1.DeleteSectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.MessagingService.DeleteSection is not implemented"))
+}
+
+func (UnimplementedMessagingServiceHandler) ReorderSidebar(context.Context, *connect.Request[v1.ReorderSidebarRequest]) (*connect.Response[v1.ReorderSidebarResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.MessagingService.ReorderSidebar is not implemented"))
+}
+
+func (UnimplementedMessagingServiceHandler) AssignSection(context.Context, *connect.Request[v1.AssignSectionRequest]) (*connect.Response[v1.AssignSectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.MessagingService.AssignSection is not implemented"))
+}
+
+func (UnimplementedMessagingServiceHandler) UnassignSection(context.Context, *connect.Request[v1.UnassignSectionRequest]) (*connect.Response[v1.UnassignSectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.MessagingService.UnassignSection is not implemented"))
 }
 
 func (UnimplementedMessagingServiceHandler) Send(context.Context, *connect.Request[v1.SendRequest]) (*connect.Response[v1.SendResponse], error) {

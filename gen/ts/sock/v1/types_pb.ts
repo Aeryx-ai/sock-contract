@@ -12,7 +12,7 @@ import type { Message as Message$1 } from "@bufbuild/protobuf";
  * Describes the file sock/v1/types.proto.
  */
 export const file_sock_v1_types: GenFile = /*@__PURE__*/
-  fileDesc("ChNzb2NrL3YxL3R5cGVzLnByb3RvEgdzb2NrLnYxIncKB0FjY291bnQSCgoCaWQYASABKAkSFAoMZGlzcGxheV9uYW1lGAIgASgJEh8KBWh1bWFuGAMgASgLMg4uc29jay52MS5IdW1hbkgAEiEKBnB1cHBldBgEIAEoCzIPLnNvY2sudjEuUHVwcGV0SABCBgoEa2luZCIXCgVIdW1hbhIOCgZoYW5kbGUYASABKAkicwoGUHVwcGV0EhAKCG93bmVyX2lkGAEgASgJEgwKBG5hbWUYAiABKAkSDgoGc3lzdGVtGAMgASgIEiUKCWNvbm5lY3RvchgEIAEoCzISLnNvY2sudjEuQ29ubmVjdG9yEhIKCndhaXRsaXN0ZWQYBSABKAgiQAoJQ29ubmVjdG9yEhMKC2NsaWVudF9uYW1lGAEgASgJEhAKCHZlcmlmaWVkGAIgASgIEgwKBGxpdmUYAyABKAgiigEKBkRldmljZRIKCgJpZBgBIAEoCRISCgphY2NvdW50X2lkGAIgASgJEg0KBWxhYmVsGAMgASgJEi4KCmNyZWF0ZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEiEKBGtpbmQYBSABKA4yEy5zb2NrLnYxLkRldmljZUtpbmQitwEKDENvbnZlcnNhdGlvbhIKCgJpZBgBIAEoCRInCgRraW5kGAIgASgOMhkuc29jay52MS5Db252ZXJzYXRpb25LaW5kEhIKCm1lbWJlcl9pZHMYAyADKAkSGAoQcmVhZF90aHJvdWdoX3NlcRgEIAEoAxIXCg9odW1hbnNfY2FuX3Bvc3QYBSABKAgSKwoNcHVwcGV0c19oZWFyZBgGIAMoCzIULnNvY2sudjEuUHVwcGV0SGVhcmQiUwoLUHVwcGV0SGVhcmQSEQoJcHVwcGV0X2lkGAEgASgJEjEKDWxhc3RfaGVhcmRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIqkBCgdNZXNzYWdlEgoKAmlkGAEgASgJEhcKD2NvbnZlcnNhdGlvbl9pZBgCIAEoCRILCgNzZXEYAyABKAMSEQoJc2VuZGVyX2lkGAQgASgJEisKB3NlbnRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEg4KBHRleHQYCiABKAlIABIUCgxldmlkZW5jZV90YWcYBiABKAxCBgoEYm9keSp9CgpEZXZpY2VLaW5kEhsKF0RFVklDRV9LSU5EX1VOU1BFQ0lGSUVEEAASFwoTREVWSUNFX0tJTkRfU0VTU0lPThABEhwKGERFVklDRV9LSU5EX1BVUFBFVF9UT0tFThACEhsKF0RFVklDRV9LSU5EX01BQ0hJTkVfS0VZEAMqcAoQQ29udmVyc2F0aW9uS2luZBIhCh1DT05WRVJTQVRJT05fS0lORF9VTlNQRUNJRklFRBAAEhwKGENPTlZFUlNBVElPTl9LSU5EX0RJUkVDVBABEhsKF0NPTlZFUlNBVElPTl9LSU5EX0dST1VQEAIqcgoPQXBuc0Vudmlyb25tZW50EiAKHEFQTlNfRU5WSVJPTk1FTlRfVU5TUEVDSUZJRUQQABIcChhBUE5TX0VOVklST05NRU5UX1NBTkRCT1gQARIfChtBUE5TX0VOVklST05NRU5UX1BST0RVQ1RJT04QAkI5WjdnaXRodWIuY29tL2Flcnl4LWFpL3NvY2stY29udHJhY3QvZ2VuL2dvL3NvY2svdjE7c29ja3YxYgZwcm90bzM", [file_google_protobuf_timestamp]);
+  fileDesc("ChNzb2NrL3YxL3R5cGVzLnByb3RvEgdzb2NrLnYxIncKB0FjY291bnQSCgoCaWQYASABKAkSFAoMZGlzcGxheV9uYW1lGAIgASgJEh8KBWh1bWFuGAMgASgLMg4uc29jay52MS5IdW1hbkgAEiEKBnB1cHBldBgEIAEoCzIPLnNvY2sudjEuUHVwcGV0SABCBgoEa2luZCIXCgVIdW1hbhIOCgZoYW5kbGUYASABKAkicwoGUHVwcGV0EhAKCG93bmVyX2lkGAEgASgJEgwKBG5hbWUYAiABKAkSDgoGc3lzdGVtGAMgASgIEiUKCWNvbm5lY3RvchgEIAEoCzISLnNvY2sudjEuQ29ubmVjdG9yEhIKCndhaXRsaXN0ZWQYBSABKAgiQAoJQ29ubmVjdG9yEhMKC2NsaWVudF9uYW1lGAEgASgJEhAKCHZlcmlmaWVkGAIgASgIEgwKBGxpdmUYAyABKAgiigEKBkRldmljZRIKCgJpZBgBIAEoCRISCgphY2NvdW50X2lkGAIgASgJEg0KBWxhYmVsGAMgASgJEi4KCmNyZWF0ZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEiEKBGtpbmQYBSABKA4yEy5zb2NrLnYxLkRldmljZUtpbmQiywEKDENvbnZlcnNhdGlvbhIKCgJpZBgBIAEoCRInCgRraW5kGAIgASgOMhkuc29jay52MS5Db252ZXJzYXRpb25LaW5kEhIKCm1lbWJlcl9pZHMYAyADKAkSGAoQcmVhZF90aHJvdWdoX3NlcRgEIAEoAxIXCg9odW1hbnNfY2FuX3Bvc3QYBSABKAgSKwoNcHVwcGV0c19oZWFyZBgGIAMoCzIULnNvY2sudjEuUHVwcGV0SGVhcmQSEgoKc2VjdGlvbl9pZBgHIAEoCSItCgdTaWRlYmFyEiIKCHNlY3Rpb25zGAEgAygLMhAuc29jay52MS5TZWN0aW9uInQKB1NlY3Rpb24SLAoMdHlwZV9zZWN0aW9uGAEgASgOMhQuc29jay52MS5UeXBlU2VjdGlvbkgAEjAKDmN1c3RvbV9zZWN0aW9uGAIgASgLMhYuc29jay52MS5DdXN0b21TZWN0aW9uSABCCQoHc2VjdGlvbiJiCgpTZWN0aW9uUmVmEiwKDHR5cGVfc2VjdGlvbhgBIAEoDjIULnNvY2sudjEuVHlwZVNlY3Rpb25IABIbChFjdXN0b21fc2VjdGlvbl9pZBgCIAEoCUgAQgkKB3NlY3Rpb24iKQoNQ3VzdG9tU2VjdGlvbhIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJIlMKC1B1cHBldEhlYXJkEhEKCXB1cHBldF9pZBgBIAEoCRIxCg1sYXN0X2hlYXJkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCKpAQoHTWVzc2FnZRIKCgJpZBgBIAEoCRIXCg9jb252ZXJzYXRpb25faWQYAiABKAkSCwoDc2VxGAMgASgDEhEKCXNlbmRlcl9pZBgEIAEoCRIrCgdzZW50X2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIOCgR0ZXh0GAogASgJSAASFAoMZXZpZGVuY2VfdGFnGAYgASgMQgYKBGJvZHkqfQoKRGV2aWNlS2luZBIbChdERVZJQ0VfS0lORF9VTlNQRUNJRklFRBAAEhcKE0RFVklDRV9LSU5EX1NFU1NJT04QARIcChhERVZJQ0VfS0lORF9QVVBQRVRfVE9LRU4QAhIbChdERVZJQ0VfS0lORF9NQUNISU5FX0tFWRADKnAKEENvbnZlcnNhdGlvbktpbmQSIQodQ09OVkVSU0FUSU9OX0tJTkRfVU5TUEVDSUZJRUQQABIcChhDT05WRVJTQVRJT05fS0lORF9ESVJFQ1QQARIbChdDT05WRVJTQVRJT05fS0lORF9HUk9VUBACKncKC1R5cGVTZWN0aW9uEhwKGFRZUEVfU0VDVElPTl9VTlNQRUNJRklFRBAAEhcKE1RZUEVfU0VDVElPTl9QRU9QTEUQARIXChNUWVBFX1NFQ1RJT05fR1JPVVBTEAISGAoUVFlQRV9TRUNUSU9OX1BVUFBFVFMQAypyCg9BcG5zRW52aXJvbm1lbnQSIAocQVBOU19FTlZJUk9OTUVOVF9VTlNQRUNJRklFRBAAEhwKGEFQTlNfRU5WSVJPTk1FTlRfU0FOREJPWBABEh8KG0FQTlNfRU5WSVJPTk1FTlRfUFJPRFVDVElPThACQjlaN2dpdGh1Yi5jb20vYWVyeXgtYWkvc29jay1jb250cmFjdC9nZW4vZ28vc29jay92MTtzb2NrdjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * Account is a human or a puppet. Exactly one of the kind fields is set.
@@ -271,6 +271,15 @@ export type Conversation = Message$1<"sock.v1.Conversation"> & {
    * @generated from field: repeated sock.v1.PuppetHeard puppets_heard = 6;
    */
   puppetsHeard: PuppetHeard[];
+
+  /**
+   * The caller's custom section for this conversation. Empty: unassigned,
+   * shown in its type section. ListConversations and ExportMessagingData
+   * only; humans only.
+   *
+   * @generated from field: string section_id = 7;
+   */
+  sectionId: string;
 };
 
 /**
@@ -279,6 +288,112 @@ export type Conversation = Message$1<"sock.v1.Conversation"> & {
  */
 export const ConversationSchema: GenMessage<Conversation> = /*@__PURE__*/
   messageDesc(file_sock_v1_types, 5);
+
+/**
+ * A human's ordered sidebar. A human who never changed it has People,
+ * Groups, Puppets.
+ *
+ * @generated from message sock.v1.Sidebar
+ */
+export type Sidebar = Message$1<"sock.v1.Sidebar"> & {
+  /**
+   * Top to bottom. Each type section exactly once.
+   *
+   * @generated from field: repeated sock.v1.Section sections = 1;
+   */
+  sections: Section[];
+};
+
+/**
+ * Describes the message sock.v1.Sidebar.
+ * Use `create(SidebarSchema)` to create a new message.
+ */
+export const SidebarSchema: GenMessage<Sidebar> = /*@__PURE__*/
+  messageDesc(file_sock_v1_types, 6);
+
+/**
+ * @generated from message sock.v1.Section
+ */
+export type Section = Message$1<"sock.v1.Section"> & {
+  /**
+   * @generated from oneof sock.v1.Section.section
+   */
+  section: {
+    /**
+     * @generated from field: sock.v1.TypeSection type_section = 1;
+     */
+    value: TypeSection;
+    case: "typeSection";
+  } | {
+    /**
+     * @generated from field: sock.v1.CustomSection custom_section = 2;
+     */
+    value: CustomSection;
+    case: "customSection";
+  } | { case: undefined; value?: undefined };
+};
+
+/**
+ * Describes the message sock.v1.Section.
+ * Use `create(SectionSchema)` to create a new message.
+ */
+export const SectionSchema: GenMessage<Section> = /*@__PURE__*/
+  messageDesc(file_sock_v1_types, 7);
+
+/**
+ * Names a section in ReorderSidebar.
+ *
+ * @generated from message sock.v1.SectionRef
+ */
+export type SectionRef = Message$1<"sock.v1.SectionRef"> & {
+  /**
+   * @generated from oneof sock.v1.SectionRef.section
+   */
+  section: {
+    /**
+     * @generated from field: sock.v1.TypeSection type_section = 1;
+     */
+    value: TypeSection;
+    case: "typeSection";
+  } | {
+    /**
+     * @generated from field: string custom_section_id = 2;
+     */
+    value: string;
+    case: "customSectionId";
+  } | { case: undefined; value?: undefined };
+};
+
+/**
+ * Describes the message sock.v1.SectionRef.
+ * Use `create(SectionRefSchema)` to create a new message.
+ */
+export const SectionRefSchema: GenMessage<SectionRef> = /*@__PURE__*/
+  messageDesc(file_sock_v1_types, 8);
+
+/**
+ * A section the human created and named.
+ *
+ * @generated from message sock.v1.CustomSection
+ */
+export type CustomSection = Message$1<"sock.v1.CustomSection"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message sock.v1.CustomSection.
+ * Use `create(CustomSectionSchema)` to create a new message.
+ */
+export const CustomSectionSchema: GenMessage<CustomSection> = /*@__PURE__*/
+  messageDesc(file_sock_v1_types, 9);
 
 /**
  * When the hub last heard from a consumer of a puppet: a Subscribe stream
@@ -304,7 +419,7 @@ export type PuppetHeard = Message$1<"sock.v1.PuppetHeard"> & {
  * Use `create(PuppetHeardSchema)` to create a new message.
  */
 export const PuppetHeardSchema: GenMessage<PuppetHeard> = /*@__PURE__*/
-  messageDesc(file_sock_v1_types, 6);
+  messageDesc(file_sock_v1_types, 10);
 
 /**
  * @generated from message sock.v1.Message
@@ -370,7 +485,7 @@ export type Message = Message$1<"sock.v1.Message"> & {
  * Use `create(MessageSchema)` to create a new message.
  */
 export const MessageSchema: GenMessage<Message> = /*@__PURE__*/
-  messageDesc(file_sock_v1_types, 7);
+  messageDesc(file_sock_v1_types, 11);
 
 /**
  * DeviceKind says what a device is. The token prefix and the kind
@@ -445,6 +560,41 @@ export const ConversationKindSchema: GenEnum<ConversationKind> = /*@__PURE__*/
   enumDesc(file_sock_v1_types, 1);
 
 /**
+ * Built-in sections. Which conversations each holds is decided by clients:
+ * people for directs with humans, groups for groups, puppets for directs
+ * with puppets. Each holds only conversations in no custom section.
+ *
+ * @generated from enum sock.v1.TypeSection
+ */
+export enum TypeSection {
+  /**
+   * @generated from enum value: TYPE_SECTION_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: TYPE_SECTION_PEOPLE = 1;
+   */
+  PEOPLE = 1,
+
+  /**
+   * @generated from enum value: TYPE_SECTION_GROUPS = 2;
+   */
+  GROUPS = 2,
+
+  /**
+   * @generated from enum value: TYPE_SECTION_PUPPETS = 3;
+   */
+  PUPPETS = 3,
+}
+
+/**
+ * Describes the enum sock.v1.TypeSection.
+ */
+export const TypeSectionSchema: GenEnum<TypeSection> = /*@__PURE__*/
+  enumDesc(file_sock_v1_types, 2);
+
+/**
  * @generated from enum sock.v1.ApnsEnvironment
  */
 export enum ApnsEnvironment {
@@ -468,5 +618,5 @@ export enum ApnsEnvironment {
  * Describes the enum sock.v1.ApnsEnvironment.
  */
 export const ApnsEnvironmentSchema: GenEnum<ApnsEnvironment> = /*@__PURE__*/
-  enumDesc(file_sock_v1_types, 2);
+  enumDesc(file_sock_v1_types, 3);
 

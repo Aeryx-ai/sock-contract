@@ -1,6 +1,6 @@
 # sock v1 domain model
 
-Pass 10: feature flags. Pass 9: History Transfer. Pass 8. Language: [context map](context-map.md).
+Pass 11: sidebar sections. Pass 10: feature flags. Pass 9: History Transfer. Pass 8. Language: [context map](context-map.md).
 
 ## Contexts
 
@@ -10,7 +10,7 @@ flowchart TB
         Account; Device; Invite; InviteMint; OperatorToken; OperatorAction; OAuthClient; ConnectorGrant
     end
     subgraph MS["Messaging (core)"]
-        Participant; Block; Endpoint; PushRegistration; Conversation; ReadMarker; Message; Delivery; SendReceipt; IdentityWatermark
+        Participant; Block; Endpoint; PushRegistration; Conversation; ReadMarker; Sidebar; SectionAssignment; Message; Delivery; SendReceipt; IdentityWatermark
     end
     subgraph HT["History Transfer (supporting)"]
         HistoryTransfer
@@ -941,6 +941,69 @@ Entity, aggregate root. A human's read position in one conversation (fields, inv
 | `Participant` (human) | references | n to 1 |
 | `Conversation` | references | n to 1; at most one per member |
 | `Membership` | derived-from | 0 or 1 to 1 |
+
+## Sidebar
+
+Entity, aggregate root. A human's ordered sections; identity is the account. No stored rows is the default: People, Groups, Puppets; the first change stores it ([sidebar sections](sidebar-sections.md)).
+
+### Fields
+
+| Field | Type | Meaning |
+|---|---|---|
+| `accountId` | UUID | The human. Never a puppet |
+| `sections` | ordered list of `Section`, 3 or more | Owned. Top to bottom |
+
+### Behaviors
+
+- `CreateSection(name)`: adds a custom section at the top.
+- `RenameSection(id, name)`.
+- `DeleteSection(id)`: its conversations return to their type sections.
+- `Reorder(order)`: `order` names every current section exactly once; anything else is refused.
+
+### Invariants
+
+- Each type section exactly once; positions 0 to n-1 with no gaps.
+- Custom section names unique within the sidebar ignoring case.
+- At most 50 custom sections.
+
+### Relationships
+
+| With | Kind | Cardinality |
+|---|---|---|
+| `Participant` (human) | references | 1 to 1 |
+| `Section` | has-a | 1 to n, n ≥ 3 |
+
+## Section
+
+Entity owned by `Sidebar`. A sum: a type section (`TypeSection`: `people`, `groups`, `puppets`; identity is the type) or a custom section (`id` UUID, server-generated; `name`: `SectionName`, 1 to 1024 characters, trimmed, no control characters).
+
+## SectionAssignment
+
+Entity, aggregate root. Identity is (account, conversation): the human's custom section for one conversation. The `SectionAssigning` domain service checks membership and that the section is the caller's, then writes it.
+
+### Fields
+
+| Field | Type | Meaning |
+|---|---|---|
+| `accountId` | UUID | The human |
+| `conversationId` | UUID | The conversation assigned |
+| `sectionId` | UUID | A custom section in this human's sidebar |
+
+### Behaviors
+
+- `Assign(sectionId)`: creates or moves. Idempotent.
+- `Unassign()`: deletes. Idempotent.
+
+### Invariants
+
+- Only a member, and only a human, has one; deleted with the membership and with the section.
+
+### Relationships
+
+| With | Kind | Cardinality |
+|---|---|---|
+| `Membership` | derived-from | 0 or 1 to 1 |
+| `Section` (custom) | references | n to 1 |
 
 ## Message
 

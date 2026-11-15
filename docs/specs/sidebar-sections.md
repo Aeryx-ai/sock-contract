@@ -1,6 +1,6 @@
 # Sidebar sections
 
-Pass 2, review answers folded in. Context: Messaging. Decisions: sock-server ADR 57.
+Pass 2, approved. Context: Messaging. Decisions: sock-server ADR 57.
 
 What changes:
 
@@ -146,7 +146,7 @@ Every new RPC: `MessagingService`, Connect POST, `Authorization: Bearer sock_st_
 | RPC | Request | Response | Errors, in order | Idempotency | Domain behavior, event |
 |---|---|---|---|---|---|
 | `GetSidebar` | none | `sidebar` | `CALLER_NOT_ALLOWED` | read | read; none |
-| `CreateSection` | `name` | `section`, `sidebar` | `CALLER_NOT_ALLOWED`, `FIELD_INVALID` (name), `SECTION_NAME_TAKEN`, `SECTION_LIMIT` | not idempotent; a retry after a lost reply gets `SECTION_NAME_TAKEN` and the client refetches | `Sidebar.CreateSection`; `SidebarChanged` |
+| `CreateSection` | `name` | `section`, `sidebar` | `CALLER_NOT_ALLOWED`, `FIELD_INVALID` (name), `SECTION_NAME_TAKEN`, `LIMIT_REACHED` | not idempotent; a retry after a lost reply gets `SECTION_NAME_TAKEN` and the client refetches | `Sidebar.CreateSection`; `SidebarChanged` |
 | `RenameSection` | `section_id`, `name` | `sidebar` | `CALLER_NOT_ALLOWED`, `FIELD_INVALID` (id, name), `NOT_FOUND` (no such custom section of the caller's), `SECTION_NAME_TAKEN` (another custom section; the same one is a no-op) | idempotent | `Sidebar.RenameSection`; `SidebarChanged` when the name changed |
 | `DeleteSection` | `section_id` | `sidebar` | `CALLER_NOT_ALLOWED`, `FIELD_INVALID` (id), `NOT_FOUND` | not idempotent: a repeat gets `NOT_FOUND`, which clients treat as done | `Sidebar.DeleteSection`; `SidebarChanged` |
 | `ReorderSidebar` | `order`: repeated `SectionRef` | `sidebar` | `CALLER_NOT_ALLOWED`, `FIELD_INVALID` (not every current section exactly once; the client refetches) | idempotent | `Sidebar.Reorder`; `SidebarChanged` when the order changed |
@@ -229,7 +229,7 @@ message Section {
 message SectionRef {
   oneof section {
     TypeSection type_section = 1;
-    string section_id = 2;
+    string custom_section_id = 2;
   }
 }
 message CustomSection {
@@ -249,7 +249,6 @@ string section_id = 7;
 
 // errors.proto
 ERROR_REASON_SECTION_NAME_TAKEN = 73;
-ERROR_REASON_SECTION_LIMIT = 74;
 ```
 
 ## Events
@@ -359,7 +358,7 @@ Additive throughout. `sock listen` and the `sock-mcp` channel act only on a mess
 
 ## Required tests
 
-Server black-box: each RPC's success and each error in its listed order; a puppet token gets `CALLER_NOT_ALLOWED`; another human's custom section id gets `NOT_FOUND` from rename, delete and assign; duplicate name ignoring case gets `SECTION_NAME_TAKEN`, the 51st custom section `SECTION_LIMIT`; a stale reorder gets `FIELD_INVALID`; deleting a custom section returns its conversations to their type sections; `Leave` and erasure remove assignments and the sidebar; `ListConversations` and export carry `section_id` for the caller only; a stream of the same account receives both events, another account's neither. Apple: `Sidebar.sectioned` placement and order; store apply atomic with conversations; event apply, including clearing assignments to a deleted custom section; revert on failure.
+Server black-box: each RPC's success and each error in its listed order; a puppet token gets `CALLER_NOT_ALLOWED`; another human's custom section id gets `NOT_FOUND` from rename, delete and assign; duplicate name ignoring case gets `SECTION_NAME_TAKEN`, the 51st custom section `LIMIT_REACHED`; a stale reorder gets `FIELD_INVALID`; deleting a custom section returns its conversations to their type sections; `Leave` and erasure remove assignments and the sidebar; `ListConversations` and export carry `section_id` for the caller only; a stream of the same account receives both events, another account's neither. Apple: `Sidebar.sectioned` placement and order; store apply atomic with conversations; event apply, including clearing assignments to a deleted custom section; revert on failure.
 
 ## Decided in review
 

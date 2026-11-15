@@ -122,6 +122,7 @@ enum ErrorReason {
   // removes the oldest session and is never refused. Subscribe: a fifth open
   // stream on one device and replica ends the device's oldest stream with
   // this reason; a client does not reconnect a stream that ended so.
+  // CreateSection at 50 custom sections: delete one first.
   ERROR_REASON_LIMIT_REACHED = 61;
 
   // already_exists: the connector puppet's device is already issued for this
@@ -163,4 +164,7 @@ enum ErrorReason {
   // minutes (RemoveEmailSignIn, StartPasskeyRegistration). Sign in again,
   // then retry.
   ERROR_REASON_RECENT_SIGN_IN_REQUIRED = 72;
+  // already_exists: the caller already has a custom section with this name,
+  // ignoring case (CreateSection, RenameSection).
+  ERROR_REASON_SECTION_NAME_TAKEN = 73;
 }
