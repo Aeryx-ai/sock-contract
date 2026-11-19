@@ -27,13 +27,13 @@ Changes to [domain-model](domain-model.md). Unchanged objects are not repeated.
 
 Entity, aggregate root. One browser's read access to one human's inbox.
 
-Fields: `id` (UUID, made by the database), `secretHash` (32 bytes), `humanId`, `workosSessionId` (the `sid` of the access token `authenticate` returned, so sign-out can end the AuthKit session too), `createdAt`, `expiresAt` (one hour after `createdAt`).
+Fields: `id` (UUID, made by the database), `secretHash` (32 bytes), `humanId`, `createdAt`, `expiresAt` (one hour after `createdAt`).
 
 Behaviors:
 
 - `Open(signedIn SignedInEmail)` (factory): resolves the WorkOS user to a human by `email_identities.provider_user_id` under the trust rule `SignInWithEmail` applies (a method that proves the address, or a password the hub trusts for that human), refuses a suspended or archived human, and returns the session and its cookie value, once. Deletes expired sessions first, so none is swept by a timer.
 - `Resolve(cookieHash, now)`: the live session with that hash whose human is not suspended or archived. A suspended human's sessions are deleted on the first request that finds them.
-- `Close()`: deletes the session (sign-out) and returns its `workosSessionId`.
+- `Close()`: deletes the session (sign-out).
 - `Account.Suspend` (changed): deletes the human's inbox sessions in the same transaction that revokes their devices, so a session cannot outlive a suspension that is later reinstated.
 
 Invariants:
@@ -81,9 +81,9 @@ On every listener. Every response carries `webpage.Headers` with `Cache-Control:
 
 | Route | Request | Response |
 |---|---|---|
-| `GET /inbox` | No body. Optional `__Host-sock-inbox` | A cookie naming a live session: draws the session's inbox bucket (6 a minute, in memory per replica, as ADR 46's limits); over it, `429` page with `Retry-After`; else `200`, the inbox page (below). No cookie, or one naming nothing: the request's `__Host-sock-inbox-signin` reused when present and well formed, else a fresh one (`Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, `Max-Age=900`), any stale `__Host-sock-inbox` expired, and `200` page: "Sign in to see messages waiting for you" with one link to WorkOS's `/user_management/authorize`, `provider=authkit`, `screen_hint=sign-in`, `redirect_uri` the inbox callback, `state` = base64url(SHA-256(the sign-in cookie)), and the challenge of `InboxVerifier(state)`. A session whose human is now suspended or archived: deleted, cookie expired, `403` page "This account is suspended". Not rate limited: it reads one row by a unique hash |
+| `GET /inbox` | No body. Optional `__Host-sock-inbox` | A cookie naming a live session: draws the session's inbox bucket (6 a minute, in memory per replica, as ADR 46's limits); over it, `429` page with `Retry-After`; else `200`, the inbox page (below). No cookie, or one naming nothing: the request's `__Host-sock-inbox-signin` reused when present and well formed, else a fresh one (`Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, `Max-Age=900`), any stale `__Host-sock-inbox` expired, and `200` page: "Sign in to see messages waiting for you" with one link to WorkOS's `/user_management/authorize`, `provider=authkit`, `screen_hint=sign-in`, `max_age=0` (AuthKit asks for a fresh sign-in even when its own session is live, so a shared browser never hands over the previous WorkOS user), `redirect_uri` the inbox callback, `state` = base64url(SHA-256(the sign-in cookie)), and the challenge of `InboxVerifier(state)`. A session whose human is now suspended or archived: deleted, cookie expired, `403` page "This account is suspended". Not rate limited: it reads one row by a unique hash |
 | `GET /workos/inbox-callback` | WorkOS's redirect: `state` (43 base64url characters), and either `code` (1 to 512 printable ASCII) or `error` matching `^[a-z_]{1,64}$`, never both. Draws the anonymous network bucket | Only when the request carries `__Host-sock-inbox-signin` whose SHA-256, base64url, equals `state` (constant time), checked before the code is spent or the `error` branch is taken; without that, the fixed `400`. `code`: redeemed with WorkOS (5 seconds) using `InboxVerifier(state)`; `InboxSession.Open`; `__Host-sock-inbox` set, the sign-in cookie expired, `303` to `/inbox`. `error`: the sign-in cookie expired, `200` page "Sign-in was cancelled" with a link back to `/inbox`. WorkOS unreachable: `503` page. A WorkOS user with no human, or a password the hub does not trust: `200` page "No Sock account uses that sign-in", which says a person who signed up with Apple in the app adds email sign-in there first (ADR 37), with a link to `https://joinsock.com`; sign-in cookie expired. Suspended or archived human: `403` page. A refused code, or an impersonated session (`ErrImpersonated`): `400`, sign-in cookie expired |
-| `POST /inbox/sign-out` | Form, body at most 16 KiB, no fields. `Origin`, when sent, must be `https://<hub host>`. `__Host-sock-inbox` | `InboxSession.Close` for the session the cookie names, if any; cookie expired; `303` to WorkOS's session logout for the closed session's `workosSessionId`, returning to `/inbox`, so the next person on a shared browser is asked to sign in rather than handed the previous WorkOS user. No session: `303` to `/inbox` |
+| `POST /inbox/sign-out` | Form, body at most 16 KiB, no fields. `Origin`, when sent, must be `https://<hub host>`. `__Host-sock-inbox` | `InboxSession.Close` for the session the cookie names, if any; cookie expired; `303` to `/inbox`. Always the same answer, so it reveals nothing |
 
 ### The inbox page
 
@@ -117,8 +117,6 @@ CREATE TABLE identity.inbox_sessions (
     human_id    uuid        NOT NULL REFERENCES identity.humans (account_id) ON DELETE CASCADE,
         -- CASCADE: erasing a human ends their sessions
     created_at  timestamptz NOT NULL DEFAULT now(),
-    workos_session_id text  NOT NULL CHECK (workos_session_id ~ '^session_[A-Za-z0-9]{1,64}$'),
-        -- the AuthKit session sign-out ends. No FK: not a row here
     expires_at  timestamptz NOT NULL,
         -- one hour after created_at, set by Open
     CHECK (expires_at > created_at)
@@ -161,7 +159,7 @@ LIMIT $2;
 | The inbox changing what devices receive | `WaitingFor` is a plain `SELECT`; it does not call `EnsureCaller`, and the session is no endpoint, so `Post` and backfill never see it |
 | A password sign-in for an address nobody verified | `Open` applies `SignInWithEmail`'s trust rule; an untrusted password gets the "No Sock account uses that sign-in" page |
 | A suspended human keeping read access | `Suspend` deletes the human's inbox sessions in its transaction; `Resolve` also checks suspension and archive on every request |
-| The next person on a shared browser landing in the previous human's inbox through AuthKit's own session | Sign-out ends the WorkOS session as well as the hub's; the page header names the signed-in human. A browser closed without signing out keeps both until they expire: the accepted residual of any web sign-in |
+| The next person on a shared browser landing in the previous human's inbox through AuthKit's own session | Every inbox sign-in link carries `max_age=0`, so AuthKit asks for credentials whatever session it holds; the page header names the signed-in human. A browser left signed in to the inbox keeps that session for its hour: the accepted residual of any web sign-in |
 | Message content or names faking page structure with control or bidi characters | Replaced with U+FFFD before rendering |
 | A removed member reading a group's current membership | Members are shown only for conversations the human still belongs to |
 | Reloading the inbox as a load attack | The per-session bucket, and `WaitingFor` reads only the human's deliveries |
@@ -197,7 +195,7 @@ Black-box tests under `blackbox/`, with the fake WorkOS and the `browserDo` help
 - A removed group member sees the group's waiting message labeled "A conversation you left", with no members.
 - A body and a display name carrying U+202E render with U+FFFD in its place.
 - A seventh signed-in `GET /inbox` within a minute is `429`.
-- Sign-out redirects to the fake WorkOS logout with the session id from `authenticate`.
+- The AuthKit link carries `max_age=0`.
 - A system puppet's message shows its name and "Sock", never its owner.
 - A body containing `<script>` renders escaped.
 - An expired session gets the signed-out page (move `created_at` and `expires_at` back together with `psql`, as `blackbox/operator_test.go` does, or the `CHECK` refuses the update).
@@ -206,5 +204,4 @@ Black-box tests under `blackbox/`, with the fake WorkOS and the `browserDo` help
 
 `sock-mcpd`'s tools do not name the inbox: the ChatGPT app's reviewer notes carry the URL. A link in `sock_send`'s result would show an empty page to anyone whose app already took the message.
 
-- WorkOS's logout endpoint and the `sid` claim are as WorkOS documents them for AuthKit; the builder confirms both against WorkOS's docs and the fake gains the logout route.
 
