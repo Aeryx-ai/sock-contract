@@ -1,6 +1,6 @@
 # Web inbox
 
-Pass 1. Contexts: Identity (the browser session), Messaging (the read). Builds on [terminal sign-in](terminal-sign-in.md) (AuthKit from a hub page, the derived PKCE verifier, `webpage` headers) and [email sign-in, pass 3](email-sign-in-pass-3.md) (which WorkOS sign-ins the hub trusts).
+Pass 1, approved. Contexts: Identity (the browser session), Messaging (the read). Builds on [terminal sign-in](terminal-sign-in.md) (AuthKit from a hub page, the derived PKCE verifier, `webpage` headers) and [email sign-in, pass 3](email-sign-in-pass-3.md) (which WorkOS sign-ins the hub trusts).
 
 A human signs in at `https://<hub host>/inbox` in any browser and sees the messages addressed to them that the hub still holds: those some device of theirs has not yet acked, and those waiting for a first device. Their own sent messages, which the hub delivers to their other devices, are left out. The page reads and nothing else. It never acks, leases, sends or marks read, so a human's apps receive every message they would have received without it.
 
@@ -204,6 +204,7 @@ Black-box tests under `blackbox/`, with the fake WorkOS and the `browserDo` help
 
 ## Open questions
 
+`sock-mcpd`'s tools do not name the inbox: the ChatGPT app's reviewer notes carry the URL. A link in `sock_send`'s result would show an empty page to anyone whose app already took the message.
+
 - WorkOS's logout endpoint and the `sid` claim are as WorkOS documents them for AuthKit; the builder confirms both against WorkOS's docs and the fake gains the logout route.
 
-- Whether `sock_send`'s result in `sock-mcpd` should name the inbox URL, so a reviewer finds it without the review notes. A change to `sock-mcpd`, outside this spec.
