@@ -1,6 +1,6 @@
 # Plans: Basic free forever, Pro for more
 
-Pass 3, approved. Contexts: Identity, Messaging. Changes [Sock Pro billing](sock-pro-billing.md) and [domain-model](domain-model.md); unchanged objects are not repeated.
+Pass 3, approved. Limits, waitlisting and `SOCK_PRO_REQUIRED` changed by [entitlements](entitlements.md) and [limits and overrides](limits-and-overrides.md). Contexts: Identity, Messaging. Changes [Sock Pro billing](sock-pro-billing.md) and [domain-model](domain-model.md); unchanged objects are not repeated.
 
 What changes:
 
