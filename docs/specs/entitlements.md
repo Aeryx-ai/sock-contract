@@ -352,11 +352,11 @@ Modules:
 - Two plans.
 - Modules live in sock-server behind an import boundary; no repo split now.
 - Smart notifications is the first module.
+- Pro stays $14.99 a month or $149.99 a year.
 
 ## Open questions
 
 - `Notice.text`: rules like "a puppet mentions a failed deployment" need the body. Alternative: rules match sender and conversation only.
 - Whether each feature also gets a platform flag for staged rollout. Without one, registering the module is the switch.
-- Pro's price, with only new features in it: $14.99 a month today, $6 in the shortlist.
 - Pro's 50 puppets, 100 members and 300 sends drop to 10, 20 and 60. How many Pro humans exist, and whether they get notice or overrides.
 - `Escalate` maps to APNs `interruption-level: time-sensitive`, which needs the Time Sensitive Notifications entitlement in the apps.

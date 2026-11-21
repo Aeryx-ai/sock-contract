@@ -6,7 +6,7 @@ What changes:
 
 - The launch limits (10 puppets, 20 group members, 60 puppet sends a minute) become operator settings beside feature flags: stored in Postgres, set from the console and `sock-admin`, audited, applied on every replica through `NOTIFY` with no deploy.
 - The operator can override any limit or flag for one human. A limit override wins over the platform value, higher or lower. A flag override is for rollout and betas only; it never makes a Basic human entitled to a Pro feature.
-- A human can request a higher limit, with a reason. The operator approves with a value they choose, which sets an override, or declines.
+- A human can request a higher limit, with a reason. The operator approves with a value they choose, which sets an override, or declines. A human with email sign-in gets an email either way. After a decline, the same limit can be asked for again in 30 days.
 
 ## Ubiquitous language
 
@@ -21,6 +21,7 @@ What changes:
 | Limit request | A human's ask for a higher value of one limit key, with a reason | Stored |
 | Limit request decision | The operator's answer: approved with a granted value, or declined | Stored, as its own fact |
 | Pending | A limit request with no decision | Derived |
+| Decision mail | The one attempt to email the requester the decision, and how it ended | Stored, as its own fact |
 
 ## Domain model
 
@@ -36,7 +37,7 @@ Enumeration, declared in the hub with a description and a ceiling. A migration s
 | `group_members` | Members of a group | 1000 |
 | `puppet_sends_per_minute` | Messages each of the human's puppets sends a minute | 6000 |
 
-The ceiling stops a mistyped value; raising one is a code change. Ceilings are inferred, see open questions.
+The ceiling stops a mistyped value; raising one is a code change.
 
 #### Limit
 
@@ -109,7 +110,7 @@ Value object, derived for one human. Replaces `kernel.LaunchLimits` from [entitl
 
 Read through `Settings.LimitsOf(human)`, which Identity serves from memory (below). Identity's `AdmitPuppet` uses the human's `puppets`. Messaging uses:
 
-- `Conversation.StartGroup`, `AddMember`: the highest `groupMembers` among the group's human members, including the human being added. Inferred, see open questions.
+- `Conversation.StartGroup`, `AddMember`: the highest `groupMembers` among the group's human members, including the human being added.
 - `Post(puppet sender, ...)`: the owner's `puppetSendsPerMinute`.
 
 #### LimitRequest
@@ -127,9 +128,10 @@ Entity, aggregate root. Created by the human, decided once by the operator.
 
 Behaviors:
 
-- `Request(human, key, requested, reason)` (factory, `RequestLimitIncrease`): refused `FIELD_INVALID` when `requested` is not above the human's effective limit or is above the key's ceiling, or `reason` is out of bounds. Refused `LIMIT_REQUEST_PENDING` when the human has a pending request for `key`.
-- `Approve(operatorTokenId, granted)` (`ApproveLimitRequest`): records an approved decision with `granted` and calls `LimitOverride.Set(granted)` in the same transaction. A repeat approve with the same `granted` is a no-op that reports the earlier decision. Refused when a decision exists otherwise.
-- `Decline(operatorTokenId)` (`DeclineLimitRequest`): records a declined decision. A repeat decline is a no-op. Refused when approved.
+- `Request(human, key, requested, reason)` (factory, `RequestLimitIncrease`): refused `FIELD_INVALID` when `requested` is not above the human's effective limit or is above the key's ceiling, or `reason` is out of bounds. Refused `LIMIT_REQUEST_PENDING` when the human has a pending request for `key`, and `LIMIT_REQUEST_TOO_SOON` when their last request for `key` was declined less than 30 days ago.
+- `Approve(operatorTokenId, granted)` (`ApproveLimitRequest`): records an approved decision with `granted`, calls `LimitOverride.Set(granted)` and emits `LimitRequestDecided`, in the same transaction. A repeat approve with the same `granted` is a no-op that reports the earlier decision. Refused when a decision exists otherwise.
+- `Decline(operatorTokenId)` (`DeclineLimitRequest`): records a declined decision and emits `LimitRequestDecided`. A repeat decline is a no-op and emits nothing. Refused when approved.
+- `RecordMail(outcome, detail)` (`LimitRequestMailer`): records the `LimitRequestMail`. Refused without a decision, and when one exists.
 
 Approve writes two aggregates, the request and the override, in one transaction. Same context, and an approval without its override would tell the human something false.
 
@@ -137,6 +139,8 @@ Invariants:
 
 - At most one pending request per `(accountId, key)`, checked under the human's row lock.
 - At most one decision per request.
+- No request for `(accountId, key)` within 30 days of a declined decision on one, checked under the same lock.
+- At most one decision mail per request, and only once decided.
 - `granted` is between 1 and the key's ceiling. It may differ from `requested`: the operator picks.
 
 Relationships:
@@ -144,6 +148,7 @@ Relationships:
 | With | Kind | Cardinality |
 |---|---|---|
 | `LimitRequestDecision` | has-a | 1 to 0..1 |
+| `LimitRequestMail` | has-a | 1 to 0..1 |
 | Human (`Account`) | references | n to 1 |
 | `LimitOverride` | references, through `Approve` | n to 0..1 |
 
@@ -159,7 +164,7 @@ stateDiagram-v2
     pending --> [*]: the human is erased
 ```
 
-Anything not drawn is refused. A new request for the same key is allowed once the last one is decided.
+Anything not drawn is refused. A new request for the same key is allowed once the last one is approved, or 30 days after it is declined.
 
 #### LimitRequestDecision
 
@@ -178,6 +183,18 @@ Value object, owned by an approved `LimitRequestDecision`, absent on a declined 
 | Field | Type | Meaning |
 |---|---|---|
 | `granted` | int | The value the override was set to |
+
+#### LimitRequestMail
+
+Entity, owned by `LimitRequest`, the shape of `InviteRequestDelivery`.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `outcome` | `sent`, `rejected` or `noAddress` | `noAddress`: the human has no email sign-in, so nothing was sent; they see the decision in the apps |
+| `detail` | text, up to 64 characters | For `sent` and `rejected`, Cloudflare's status or error code; empty for `noAddress` |
+| `mailedAt` | Timestamp | Database clock |
+
+The mail names the limit, the decision and, when approved, the granted value. It says nothing of the reason and links nowhere a code could be entered.
 
 #### OperatorAction (changed)
 
@@ -200,6 +217,7 @@ erDiagram
     FEATURE_FLAG ||--o{ FEATURE_FLAG_OVERRIDE : "overridden by"
     LIMIT ||--o{ LIMIT_REQUEST : "asked about in"
     LIMIT_REQUEST ||--o| LIMIT_REQUEST_DECISION : "has-a"
+    LIMIT_REQUEST ||--o| LIMIT_REQUEST_MAIL : "has-a"
     LIMIT_REQUEST_DECISION ||--o| LIMIT_GRANT : "has-a, when approved"
 ```
 
@@ -278,14 +296,14 @@ Puppets and machine keys cannot request limits.
 
 ## API
 
-New error reason `LIMIT_REQUEST_PENDING` (`already_exists`): the human has a pending request for this key. `LIMIT_REACHED` and `GROUP_FULL` messages add "request more with `sock limits request`" or the apps' button.
+New error reasons `LIMIT_REQUEST_PENDING` (`already_exists`): the human has a pending request for this key; `LIMIT_REQUEST_TOO_SOON` (`failed_precondition`): their last request for this key was declined less than 30 days ago, and the message names the date they can ask again. `LIMIT_REACHED` and `GROUP_FULL` messages add "request more with `sock limits request`" or the apps' button.
 
 ### IdentityService (human)
 
 | RPC | Caller | Authentication | Authorization | Request | Response | Errors | Idempotency | Domain behavior |
 |---|---|---|---|---|---|---|---|---|
 | `GetMe` (changed) | Human, puppet | As today | Self | none | `limits`: the human's effective limits, or the puppet owner's | none | Read | `Settings.LimitsOf` |
-| `RequestLimitIncrease` (new) | Human | Human session | Self | `key` `LimitKey`, `requested` int32, `reason` string | `request` `LimitRequest` | `FIELD_INVALID` (`key`, `requested`, `reason`), `LIMIT_REQUEST_PENDING` | Not idempotent; a retry after success gets `LIMIT_REQUEST_PENDING` | `LimitRequest.Request` |
+| `RequestLimitIncrease` (new) | Human | Human session | Self | `key` `LimitKey`, `requested` int32, `reason` string | `request` `LimitRequest` | `FIELD_INVALID` (`key`, `requested`, `reason`), `LIMIT_REQUEST_PENDING`, `LIMIT_REQUEST_TOO_SOON` | Not idempotent; a retry after success gets `LIMIT_REQUEST_PENDING` | `LimitRequest.Request` |
 | `ListMyLimitRequests` (new) | Human | Human session | Self | none | `requests`: the caller's requests, newest first, each with `key`, `requested`, `reason`, `created_at`, `state` (`pending`, `approved`, `declined`), `granted` when approved, `decided_at` when decided | none | Read | none |
 
 ### OperatorService
@@ -307,7 +325,11 @@ New error reason `LIMIT_REQUEST_PENDING` (`already_exists`): the human has a pen
 
 ## Domain events
 
-None. Limits, overrides and requests are Identity's own rows; Messaging reads limits from the in-memory settings, and the `limits` notification is cache invalidation, not an event. The requester learns of a decision from `ListMyLimitRequests` and their new `GetMe.limits`.
+| Event | Emitting aggregate | Transition | Payload | Consumers | Delivery | Boundary | Domain service |
+|---|---|---|---|---|---|---|---|
+| `LimitRequestDecided` | LimitRequest | `Approve` or `Decline`, only when it records the decision | `request_id` UUID. No address, no values: read when handled | `LimitRequestMailer`: loads the request, its decision and the human's email sign-in; with none, records `noAddress`; otherwise sends and records `sent` or `rejected`. A request already holding a mail completes without sending; a request erased or swept completes without sending. A crash after Cloudflare accepts and before the row commits sends twice, accepted | Its own leased, unordered outbox, `identity.limit_mail_outbox`, as invite mail: at least once, backoff, `Retry-After` honored, dead letter after 20 attempts. Never `identity.outbox` | Internal | `LimitRequestMailer` (LimitRequest, the human's email identity read, the mail provider) |
+
+Limits and overrides emit nothing: Messaging reads limits from the in-memory settings, and the `limits` notification is cache invalidation.
 
 ## Data layer
 
@@ -364,11 +386,26 @@ CREATE TABLE identity.limit_request_decisions (
 CREATE INDEX limit_request_decisions_outcome_idx ON identity.limit_request_decisions (outcome, decided_at);
     -- serves ListLimitRequests' state filter and the decided sweep
 
+CREATE TABLE identity.limit_mail_outcomes (name text PRIMARY KEY);
+INSERT INTO identity.limit_mail_outcomes (name) VALUES ('sent'), ('rejected'), ('noAddress');
+
+CREATE TABLE identity.limit_request_mails (
+    request_id uuid        PRIMARY KEY REFERENCES identity.limit_request_decisions (request_id) ON DELETE CASCADE,
+        -- at most one, and only for a decided request; the mailer inserts
+        -- ON CONFLICT DO NOTHING
+    outcome    text        NOT NULL REFERENCES identity.limit_mail_outcomes (name) ON DELETE RESTRICT,
+    detail     text        NOT NULL CHECK (char_length(detail) <= 64),
+    mailed_at  timestamptz NOT NULL DEFAULT now(),
+    CHECK ((outcome IN ('sent', 'rejected')) = (detail <> ''))
+);
+
 CREATE TABLE identity.limit_grants (
     request_id uuid    PRIMARY KEY REFERENCES identity.limit_request_decisions (request_id) ON DELETE CASCADE,
     granted    integer NOT NULL CHECK (granted >= 1)
 );
 ```
+
+`identity.limit_mail_outbox` copies `identity.invite_mail_outbox`'s shape.
 
 A deferred constraint trigger keeps `limit_grants` in step with `limit_request_decisions`: a grant exactly when the outcome is `approved`.
 
@@ -404,7 +441,7 @@ Writes confirm on a terminal; `--yes` off one.
 
 | Threat | Mitigation |
 |---|---|
-| Request spam | One pending request per key, three keys, reason capped at 500 characters, human callers only, behind the human rate limit |
+| Request spam | One pending request per key, three keys, 30 days after a decline, reason capped at 500 characters, human callers only, behind the human rate limit |
 | A mistyped limit or grant | The per-key ceiling, the console's and `sock-admin`'s confirmation, and the audit |
 | A flag override used to give away a Pro feature | `Plan.Includes` never reads flags |
 | A stale replica enforcing an old limit | Bounded by the listener's reconnect, as flags |
@@ -418,8 +455,9 @@ Writes confirm on a terminal; `--yes` off one.
 | `LimitOverride.Set`, `Clear` | `SetLimitOverride`, `ClearLimitOverride`, `ApproveLimitRequest` | none | `limit_overrides` upsert or delete, audit insert |
 | `FeatureFlagOverride.Set`, `Clear` | `SetFeatureFlagOverride`, `ClearFeatureFlagOverride` | none | `feature_flag_overrides`, audit insert |
 | `LimitRequest.Request` | `RequestLimitIncrease` | none | `limit_requests` insert |
-| `LimitRequest.Approve` | `ApproveLimitRequest` | none | `limit_request_decisions`, `limit_grants`, `limit_overrides` in one transaction |
-| `LimitRequest.Decline` | `DeclineLimitRequest` | none | `limit_request_decisions` |
+| `LimitRequest.Approve` | `ApproveLimitRequest` | `LimitRequestDecided` | `limit_request_decisions`, `limit_grants`, `limit_overrides`, `limit_mail_outbox` in one transaction |
+| `LimitRequest.Decline` | `DeclineLimitRequest` | `LimitRequestDecided` | `limit_request_decisions`, `limit_mail_outbox` |
+| `LimitRequest.RecordMail` | none | consumes `LimitRequestDecided` | `limit_request_mails` |
 | Effective limit read | `GetMe`, `CreatePuppet`, `UnarchivePuppet`, `CreateGroup`, `AddMember`, `Send` | none | Memory, loaded from the tables above |
 | Human erased | Existing | Existing | `ON DELETE CASCADE` into overrides and requests; `Account.Erase` deletes the audit rows naming the human |
 | Decided request swept | none | none | `limit_requests` delete, cascading |
@@ -430,11 +468,11 @@ Writes confirm on a terminal; `--yes` off one.
 - A limit override wins over the platform value, higher or lower.
 - The operator picks the granted value.
 - Flag overrides are for rollout and betas, never entitlement.
+- A group's limit is the highest among its human members.
+- Ceilings: 1000 puppets, 1000 group members, 6000 sends a minute.
+- 30 days after a decline before the same limit can be asked for again.
+- The requester gets an email when a request is decided.
 
 ## Open questions
 
-- A group's limit: the highest among its human members (above) or the creator's. Groups have no owner today.
-- Ceilings of 1000, 1000 and 6000 a minute.
-- Whether a human waits after a decline before asking again for the same key.
-- Whether the requester gets an email when a request is decided.
 - Whether puppets get their own overrides (one busy puppet's send rate) or only their owner.
