@@ -157,6 +157,12 @@ const (
 	// IdentityServiceOpenBillingPortalProcedure is the fully-qualified name of the IdentityService's
 	// OpenBillingPortal RPC.
 	IdentityServiceOpenBillingPortalProcedure = "/sock.v1.IdentityService/OpenBillingPortal"
+	// IdentityServiceRequestLimitIncreaseProcedure is the fully-qualified name of the IdentityService's
+	// RequestLimitIncrease RPC.
+	IdentityServiceRequestLimitIncreaseProcedure = "/sock.v1.IdentityService/RequestLimitIncrease"
+	// IdentityServiceListMyLimitRequestsProcedure is the fully-qualified name of the IdentityService's
+	// ListMyLimitRequests RPC.
+	IdentityServiceListMyLimitRequestsProcedure = "/sock.v1.IdentityService/ListMyLimitRequests"
 )
 
 // IdentityServiceClient is a client for the sock.v1.IdentityService service.
@@ -223,6 +229,10 @@ type IdentityServiceClient interface {
 	// Both open a page in the browser; the app re-reads GetMe on return.
 	StartCheckout(context.Context, *connect.Request[v1.StartCheckoutRequest]) (*connect.Response[v1.StartCheckoutResponse], error)
 	OpenBillingPortal(context.Context, *connect.Request[v1.OpenBillingPortalRequest]) (*connect.Response[v1.OpenBillingPortalResponse], error)
+	// Asking the operator for a higher limit (docs/specs/limits-and-overrides.md).
+	// Human sessions only.
+	RequestLimitIncrease(context.Context, *connect.Request[v1.RequestLimitIncreaseRequest]) (*connect.Response[v1.RequestLimitIncreaseResponse], error)
+	ListMyLimitRequests(context.Context, *connect.Request[v1.ListMyLimitRequestsRequest]) (*connect.Response[v1.ListMyLimitRequestsResponse], error)
 }
 
 // NewIdentityServiceClient constructs a client for the sock.v1.IdentityService service. By default,
@@ -488,6 +498,18 @@ func NewIdentityServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(identityServiceMethods.ByName("OpenBillingPortal")),
 			connect.WithClientOptions(opts...),
 		),
+		requestLimitIncrease: connect.NewClient[v1.RequestLimitIncreaseRequest, v1.RequestLimitIncreaseResponse](
+			httpClient,
+			baseURL+IdentityServiceRequestLimitIncreaseProcedure,
+			connect.WithSchema(identityServiceMethods.ByName("RequestLimitIncrease")),
+			connect.WithClientOptions(opts...),
+		),
+		listMyLimitRequests: connect.NewClient[v1.ListMyLimitRequestsRequest, v1.ListMyLimitRequestsResponse](
+			httpClient,
+			baseURL+IdentityServiceListMyLimitRequestsProcedure,
+			connect.WithSchema(identityServiceMethods.ByName("ListMyLimitRequests")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -535,6 +557,8 @@ type identityServiceClient struct {
 	eraseAccount              *connect.Client[v1.EraseAccountRequest, v1.EraseAccountResponse]
 	startCheckout             *connect.Client[v1.StartCheckoutRequest, v1.StartCheckoutResponse]
 	openBillingPortal         *connect.Client[v1.OpenBillingPortalRequest, v1.OpenBillingPortalResponse]
+	requestLimitIncrease      *connect.Client[v1.RequestLimitIncreaseRequest, v1.RequestLimitIncreaseResponse]
+	listMyLimitRequests       *connect.Client[v1.ListMyLimitRequestsRequest, v1.ListMyLimitRequestsResponse]
 }
 
 // SignInWithApple calls sock.v1.IdentityService.SignInWithApple.
@@ -747,6 +771,16 @@ func (c *identityServiceClient) OpenBillingPortal(ctx context.Context, req *conn
 	return c.openBillingPortal.CallUnary(ctx, req)
 }
 
+// RequestLimitIncrease calls sock.v1.IdentityService.RequestLimitIncrease.
+func (c *identityServiceClient) RequestLimitIncrease(ctx context.Context, req *connect.Request[v1.RequestLimitIncreaseRequest]) (*connect.Response[v1.RequestLimitIncreaseResponse], error) {
+	return c.requestLimitIncrease.CallUnary(ctx, req)
+}
+
+// ListMyLimitRequests calls sock.v1.IdentityService.ListMyLimitRequests.
+func (c *identityServiceClient) ListMyLimitRequests(ctx context.Context, req *connect.Request[v1.ListMyLimitRequestsRequest]) (*connect.Response[v1.ListMyLimitRequestsResponse], error) {
+	return c.listMyLimitRequests.CallUnary(ctx, req)
+}
+
 // IdentityServiceHandler is an implementation of the sock.v1.IdentityService service.
 type IdentityServiceHandler interface {
 	SignInWithApple(context.Context, *connect.Request[v1.SignInWithAppleRequest]) (*connect.Response[v1.SignInWithAppleResponse], error)
@@ -811,6 +845,10 @@ type IdentityServiceHandler interface {
 	// Both open a page in the browser; the app re-reads GetMe on return.
 	StartCheckout(context.Context, *connect.Request[v1.StartCheckoutRequest]) (*connect.Response[v1.StartCheckoutResponse], error)
 	OpenBillingPortal(context.Context, *connect.Request[v1.OpenBillingPortalRequest]) (*connect.Response[v1.OpenBillingPortalResponse], error)
+	// Asking the operator for a higher limit (docs/specs/limits-and-overrides.md).
+	// Human sessions only.
+	RequestLimitIncrease(context.Context, *connect.Request[v1.RequestLimitIncreaseRequest]) (*connect.Response[v1.RequestLimitIncreaseResponse], error)
+	ListMyLimitRequests(context.Context, *connect.Request[v1.ListMyLimitRequestsRequest]) (*connect.Response[v1.ListMyLimitRequestsResponse], error)
 }
 
 // NewIdentityServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -1072,6 +1110,18 @@ func NewIdentityServiceHandler(svc IdentityServiceHandler, opts ...connect.Handl
 		connect.WithSchema(identityServiceMethods.ByName("OpenBillingPortal")),
 		connect.WithHandlerOptions(opts...),
 	)
+	identityServiceRequestLimitIncreaseHandler := connect.NewUnaryHandler(
+		IdentityServiceRequestLimitIncreaseProcedure,
+		svc.RequestLimitIncrease,
+		connect.WithSchema(identityServiceMethods.ByName("RequestLimitIncrease")),
+		connect.WithHandlerOptions(opts...),
+	)
+	identityServiceListMyLimitRequestsHandler := connect.NewUnaryHandler(
+		IdentityServiceListMyLimitRequestsProcedure,
+		svc.ListMyLimitRequests,
+		connect.WithSchema(identityServiceMethods.ByName("ListMyLimitRequests")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/sock.v1.IdentityService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case IdentityServiceSignInWithAppleProcedure:
@@ -1158,6 +1208,10 @@ func NewIdentityServiceHandler(svc IdentityServiceHandler, opts ...connect.Handl
 			identityServiceStartCheckoutHandler.ServeHTTP(w, r)
 		case IdentityServiceOpenBillingPortalProcedure:
 			identityServiceOpenBillingPortalHandler.ServeHTTP(w, r)
+		case IdentityServiceRequestLimitIncreaseProcedure:
+			identityServiceRequestLimitIncreaseHandler.ServeHTTP(w, r)
+		case IdentityServiceListMyLimitRequestsProcedure:
+			identityServiceListMyLimitRequestsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1333,4 +1387,12 @@ func (UnimplementedIdentityServiceHandler) StartCheckout(context.Context, *conne
 
 func (UnimplementedIdentityServiceHandler) OpenBillingPortal(context.Context, *connect.Request[v1.OpenBillingPortalRequest]) (*connect.Response[v1.OpenBillingPortalResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.OpenBillingPortal is not implemented"))
+}
+
+func (UnimplementedIdentityServiceHandler) RequestLimitIncrease(context.Context, *connect.Request[v1.RequestLimitIncreaseRequest]) (*connect.Response[v1.RequestLimitIncreaseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.RequestLimitIncrease is not implemented"))
+}
+
+func (UnimplementedIdentityServiceHandler) ListMyLimitRequests(context.Context, *connect.Request[v1.ListMyLimitRequestsRequest]) (*connect.Response[v1.ListMyLimitRequestsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.IdentityService.ListMyLimitRequests is not implemented"))
 }

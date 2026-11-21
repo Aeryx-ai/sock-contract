@@ -158,6 +158,14 @@ public protocol Sock_V1_IdentityServiceClientInterface: Sendable {
 
     @available(iOS 13, *)
     func `openBillingPortal`(request: Sock_V1_OpenBillingPortalRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_OpenBillingPortalResponse>
+
+    /// Asking the operator for a higher limit (docs/specs/limits-and-overrides.md).
+    /// Human sessions only.
+    @available(iOS 13, *)
+    func `requestLimitIncrease`(request: Sock_V1_RequestLimitIncreaseRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_RequestLimitIncreaseResponse>
+
+    @available(iOS 13, *)
+    func `listMyLimitRequests`(request: Sock_V1_ListMyLimitRequestsRequest, headers: Connect.Headers) async -> ResponseMessage<Sock_V1_ListMyLimitRequestsResponse>
 }
 
 /// Concrete implementation of `Sock_V1_IdentityServiceClientInterface`.
@@ -378,6 +386,16 @@ public final class Sock_V1_IdentityServiceClient: Sock_V1_IdentityServiceClientI
         return await self.client.unary(path: "/sock.v1.IdentityService/OpenBillingPortal", idempotencyLevel: .unknown, request: request, headers: headers)
     }
 
+    @available(iOS 13, *)
+    public func `requestLimitIncrease`(request: Sock_V1_RequestLimitIncreaseRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_RequestLimitIncreaseResponse> {
+        return await self.client.unary(path: "/sock.v1.IdentityService/RequestLimitIncrease", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `listMyLimitRequests`(request: Sock_V1_ListMyLimitRequestsRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Sock_V1_ListMyLimitRequestsResponse> {
+        return await self.client.unary(path: "/sock.v1.IdentityService/ListMyLimitRequests", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
     public enum Metadata {
         public enum Methods {
             public static let signInWithApple = Connect.MethodSpec(name: "SignInWithApple", service: "sock.v1.IdentityService", type: .unary)
@@ -422,6 +440,8 @@ public final class Sock_V1_IdentityServiceClient: Sock_V1_IdentityServiceClientI
             public static let eraseAccount = Connect.MethodSpec(name: "EraseAccount", service: "sock.v1.IdentityService", type: .unary)
             public static let startCheckout = Connect.MethodSpec(name: "StartCheckout", service: "sock.v1.IdentityService", type: .unary)
             public static let openBillingPortal = Connect.MethodSpec(name: "OpenBillingPortal", service: "sock.v1.IdentityService", type: .unary)
+            public static let requestLimitIncrease = Connect.MethodSpec(name: "RequestLimitIncrease", service: "sock.v1.IdentityService", type: .unary)
+            public static let listMyLimitRequests = Connect.MethodSpec(name: "ListMyLimitRequests", service: "sock.v1.IdentityService", type: .unary)
         }
     }
 }

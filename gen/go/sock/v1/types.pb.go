@@ -398,10 +398,8 @@ type Puppet struct {
 	// unset in every other response, so a platform name never reaches
 	// anyone else. Clients label erasing it "Disconnect <client_name>".
 	Connector *Connector `protobuf:"bytes,4,opt,name=connector,proto3" json:"connector,omitempty"`
-	// Past the owner's plan's puppet limit: its tokens are refused
-	// SUBSCRIPTION_REQUIRED and it does not let humans post, until an older
-	// puppet is archived or erased or the owner gets Pro. Set only for its
-	// owner (ListPuppets); false in every other response.
+	// Always false: waitlisting is gone (docs/specs/entitlements.md). Kept for
+	// wire compatibility.
 	Waitlisted    bool `protobuf:"varint,5,opt,name=waitlisted,proto3" json:"waitlisted,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

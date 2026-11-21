@@ -25,6 +25,8 @@ Pass 1. Every human RPC in [api](api.md) has a `sock` command; this file is the 
 | `sock terms accept <version>` | `AcceptTerms` | version | `accepted terms <version>` |
 | `sock subscribe` | `StartCheckout` | `--yearly` (`PRO_PLAN_YEARLY`; default `PRO_PLAN_MONTHLY`) | Opens the Checkout `url` in the browser; json: `StartCheckoutResponse` |
 | `sock billing` | `OpenBillingPortal` | none | Opens the portal `url` in the browser; json: `OpenBillingPortalResponse` |
+| `sock limits` | `GetMe`, `ListMyLimitRequests` | none | The effective limits, then each request: `<key> <requested> <state>`, with `granted <n>` when approved; json: `PlanLimits` then `LimitRequest` per line |
+| `sock limits request <key> <value>` | `RequestLimitIncrease` | `--reason` (required, 1 to 500 characters); key `puppets`, `group-members` or `puppet-sends` | `requested <key> <value>, pending`; json: `LimitRequest` |
 
 ## Profile and accounts
 

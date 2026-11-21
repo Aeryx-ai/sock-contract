@@ -117,10 +117,8 @@ export type Puppet = Message$1<"sock.v1.Puppet"> & {
   connector?: Connector | undefined;
 
   /**
-   * Past the owner's plan's puppet limit: its tokens are refused
-   * SUBSCRIPTION_REQUIRED and it does not let humans post, until an older
-   * puppet is archived or erased or the owner gets Pro. Set only for its
-   * owner (ListPuppets); false in every other response.
+   * Always false: waitlisting is gone (docs/specs/entitlements.md). Kept for
+   * wire compatibility.
    *
    * @generated from field: bool waitlisted = 5;
    */

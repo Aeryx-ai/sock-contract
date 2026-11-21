@@ -1323,6 +1323,1127 @@ func (x *SetFeatureFlagResponse) GetFlag() *FeatureFlag {
 	return nil
 }
 
+type Limit struct {
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	Key         LimitKey               `protobuf:"varint,1,opt,name=key,proto3,enum=sock.v1.LimitKey" json:"key,omitempty"`
+	Description string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// The platform limit: every human without an override.
+	Value int32 `protobuf:"varint,3,opt,name=value,proto3" json:"value,omitempty"`
+	// The highest value the hub accepts for this key, platform or override.
+	Ceiling int32 `protobuf:"varint,4,opt,name=ceiling,proto3" json:"ceiling,omitempty"`
+	// Unset: no set for this key within the audit's 365 days.
+	LastSet       *FeatureFlagSet `protobuf:"bytes,5,opt,name=last_set,json=lastSet,proto3" json:"last_set,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Limit) Reset() {
+	*x = Limit{}
+	mi := &file_sock_v1_operator_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Limit) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Limit) ProtoMessage() {}
+
+func (x *Limit) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Limit.ProtoReflect.Descriptor instead.
+func (*Limit) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *Limit) GetKey() LimitKey {
+	if x != nil {
+		return x.Key
+	}
+	return LimitKey_LIMIT_KEY_UNSPECIFIED
+}
+
+func (x *Limit) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *Limit) GetValue() int32 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
+func (x *Limit) GetCeiling() int32 {
+	if x != nil {
+		return x.Ceiling
+	}
+	return 0
+}
+
+func (x *Limit) GetLastSet() *FeatureFlagSet {
+	if x != nil {
+		return x.LastSet
+	}
+	return nil
+}
+
+type GetLimitsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetLimitsRequest) Reset() {
+	*x = GetLimitsRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetLimitsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetLimitsRequest) ProtoMessage() {}
+
+func (x *GetLimitsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetLimitsRequest.ProtoReflect.Descriptor instead.
+func (*GetLimitsRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{22}
+}
+
+type GetLimitsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Every declared key, key order.
+	Limits        []*Limit `protobuf:"bytes,1,rep,name=limits,proto3" json:"limits,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetLimitsResponse) Reset() {
+	*x = GetLimitsResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetLimitsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetLimitsResponse) ProtoMessage() {}
+
+func (x *GetLimitsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetLimitsResponse.ProtoReflect.Descriptor instead.
+func (*GetLimitsResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *GetLimitsResponse) GetLimits() []*Limit {
+	if x != nil {
+		return x.Limits
+	}
+	return nil
+}
+
+// FIELD_INVALID when key is unspecified or value is not 1 to the ceiling.
+// Idempotent; the current value still records an action.
+type SetLimitRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Key           LimitKey               `protobuf:"varint,1,opt,name=key,proto3,enum=sock.v1.LimitKey" json:"key,omitempty"`
+	Value         int32                  `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetLimitRequest) Reset() {
+	*x = SetLimitRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetLimitRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetLimitRequest) ProtoMessage() {}
+
+func (x *SetLimitRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetLimitRequest.ProtoReflect.Descriptor instead.
+func (*SetLimitRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *SetLimitRequest) GetKey() LimitKey {
+	if x != nil {
+		return x.Key
+	}
+	return LimitKey_LIMIT_KEY_UNSPECIFIED
+}
+
+func (x *SetLimitRequest) GetValue() int32 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
+type SetLimitResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Limit         *Limit                 `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetLimitResponse) Reset() {
+	*x = SetLimitResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetLimitResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetLimitResponse) ProtoMessage() {}
+
+func (x *SetLimitResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetLimitResponse.ProtoReflect.Descriptor instead.
+func (*SetLimitResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *SetLimitResponse) GetLimit() *Limit {
+	if x != nil {
+		return x.Limit
+	}
+	return nil
+}
+
+// One human's own value for a limit, higher or lower than the platform's.
+type LimitOverride struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Key           LimitKey               `protobuf:"varint,1,opt,name=key,proto3,enum=sock.v1.LimitKey" json:"key,omitempty"`
+	Value         int32                  `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LimitOverride) Reset() {
+	*x = LimitOverride{}
+	mi := &file_sock_v1_operator_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LimitOverride) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LimitOverride) ProtoMessage() {}
+
+func (x *LimitOverride) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LimitOverride.ProtoReflect.Descriptor instead.
+func (*LimitOverride) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *LimitOverride) GetKey() LimitKey {
+	if x != nil {
+		return x.Key
+	}
+	return LimitKey_LIMIT_KEY_UNSPECIFIED
+}
+
+func (x *LimitOverride) GetValue() int32 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
+// One human's own value for a flag. For rollout and betas: never makes a
+// Basic human entitled to a Pro feature.
+type FeatureFlagOverride struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Enabled       bool                   `protobuf:"varint,2,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FeatureFlagOverride) Reset() {
+	*x = FeatureFlagOverride{}
+	mi := &file_sock_v1_operator_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FeatureFlagOverride) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FeatureFlagOverride) ProtoMessage() {}
+
+func (x *FeatureFlagOverride) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FeatureFlagOverride.ProtoReflect.Descriptor instead.
+func (*FeatureFlagOverride) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *FeatureFlagOverride) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *FeatureFlagOverride) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+// NOT_FOUND unless account_id is a human. FIELD_INVALID as SetLimit.
+type SetLimitOverrideRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	Key           LimitKey               `protobuf:"varint,2,opt,name=key,proto3,enum=sock.v1.LimitKey" json:"key,omitempty"`
+	Value         int32                  `protobuf:"varint,3,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetLimitOverrideRequest) Reset() {
+	*x = SetLimitOverrideRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetLimitOverrideRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetLimitOverrideRequest) ProtoMessage() {}
+
+func (x *SetLimitOverrideRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetLimitOverrideRequest.ProtoReflect.Descriptor instead.
+func (*SetLimitOverrideRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *SetLimitOverrideRequest) GetAccountId() string {
+	if x != nil {
+		return x.AccountId
+	}
+	return ""
+}
+
+func (x *SetLimitOverrideRequest) GetKey() LimitKey {
+	if x != nil {
+		return x.Key
+	}
+	return LimitKey_LIMIT_KEY_UNSPECIFIED
+}
+
+func (x *SetLimitOverrideRequest) GetValue() int32 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
+type SetLimitOverrideResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Override      *LimitOverride         `protobuf:"bytes,1,opt,name=override,proto3" json:"override,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetLimitOverrideResponse) Reset() {
+	*x = SetLimitOverrideResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetLimitOverrideResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetLimitOverrideResponse) ProtoMessage() {}
+
+func (x *SetLimitOverrideResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetLimitOverrideResponse.ProtoReflect.Descriptor instead.
+func (*SetLimitOverrideResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *SetLimitOverrideResponse) GetOverride() *LimitOverride {
+	if x != nil {
+		return x.Override
+	}
+	return nil
+}
+
+// Clearing an absent override succeeds and records an action.
+type ClearLimitOverrideRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	Key           LimitKey               `protobuf:"varint,2,opt,name=key,proto3,enum=sock.v1.LimitKey" json:"key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClearLimitOverrideRequest) Reset() {
+	*x = ClearLimitOverrideRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClearLimitOverrideRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClearLimitOverrideRequest) ProtoMessage() {}
+
+func (x *ClearLimitOverrideRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClearLimitOverrideRequest.ProtoReflect.Descriptor instead.
+func (*ClearLimitOverrideRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *ClearLimitOverrideRequest) GetAccountId() string {
+	if x != nil {
+		return x.AccountId
+	}
+	return ""
+}
+
+func (x *ClearLimitOverrideRequest) GetKey() LimitKey {
+	if x != nil {
+		return x.Key
+	}
+	return LimitKey_LIMIT_KEY_UNSPECIFIED
+}
+
+type ClearLimitOverrideResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClearLimitOverrideResponse) Reset() {
+	*x = ClearLimitOverrideResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClearLimitOverrideResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClearLimitOverrideResponse) ProtoMessage() {}
+
+func (x *ClearLimitOverrideResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClearLimitOverrideResponse.ProtoReflect.Descriptor instead.
+func (*ClearLimitOverrideResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{31}
+}
+
+// NOT_FOUND unless account_id is a human; FIELD_INVALID for an undeclared key.
+type SetFeatureFlagOverrideRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	Key           string                 `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
+	Enabled       bool                   `protobuf:"varint,3,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetFeatureFlagOverrideRequest) Reset() {
+	*x = SetFeatureFlagOverrideRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetFeatureFlagOverrideRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetFeatureFlagOverrideRequest) ProtoMessage() {}
+
+func (x *SetFeatureFlagOverrideRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetFeatureFlagOverrideRequest.ProtoReflect.Descriptor instead.
+func (*SetFeatureFlagOverrideRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *SetFeatureFlagOverrideRequest) GetAccountId() string {
+	if x != nil {
+		return x.AccountId
+	}
+	return ""
+}
+
+func (x *SetFeatureFlagOverrideRequest) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *SetFeatureFlagOverrideRequest) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+type SetFeatureFlagOverrideResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Override      *FeatureFlagOverride   `protobuf:"bytes,1,opt,name=override,proto3" json:"override,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetFeatureFlagOverrideResponse) Reset() {
+	*x = SetFeatureFlagOverrideResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetFeatureFlagOverrideResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetFeatureFlagOverrideResponse) ProtoMessage() {}
+
+func (x *SetFeatureFlagOverrideResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetFeatureFlagOverrideResponse.ProtoReflect.Descriptor instead.
+func (*SetFeatureFlagOverrideResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *SetFeatureFlagOverrideResponse) GetOverride() *FeatureFlagOverride {
+	if x != nil {
+		return x.Override
+	}
+	return nil
+}
+
+type ClearFeatureFlagOverrideRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	Key           string                 `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClearFeatureFlagOverrideRequest) Reset() {
+	*x = ClearFeatureFlagOverrideRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClearFeatureFlagOverrideRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClearFeatureFlagOverrideRequest) ProtoMessage() {}
+
+func (x *ClearFeatureFlagOverrideRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClearFeatureFlagOverrideRequest.ProtoReflect.Descriptor instead.
+func (*ClearFeatureFlagOverrideRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *ClearFeatureFlagOverrideRequest) GetAccountId() string {
+	if x != nil {
+		return x.AccountId
+	}
+	return ""
+}
+
+func (x *ClearFeatureFlagOverrideRequest) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+type ClearFeatureFlagOverrideResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClearFeatureFlagOverrideResponse) Reset() {
+	*x = ClearFeatureFlagOverrideResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClearFeatureFlagOverrideResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClearFeatureFlagOverrideResponse) ProtoMessage() {}
+
+func (x *ClearFeatureFlagOverrideResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClearFeatureFlagOverrideResponse.ProtoReflect.Descriptor instead.
+func (*ClearFeatureFlagOverrideResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{35}
+}
+
+type ListLimitRequestsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 0 means 25; at most 100.
+	Limit int32 `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	// Continue after this request id, the last one of the previous page.
+	// Empty starts at the newest request.
+	AfterRequestId string `protobuf:"bytes,2,opt,name=after_request_id,json=afterRequestId,proto3" json:"after_request_id,omitempty"`
+	// Unset lists every request.
+	State         LimitRequestState `protobuf:"varint,3,opt,name=state,proto3,enum=sock.v1.LimitRequestState" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListLimitRequestsRequest) Reset() {
+	*x = ListLimitRequestsRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListLimitRequestsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListLimitRequestsRequest) ProtoMessage() {}
+
+func (x *ListLimitRequestsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListLimitRequestsRequest.ProtoReflect.Descriptor instead.
+func (*ListLimitRequestsRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *ListLimitRequestsRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *ListLimitRequestsRequest) GetAfterRequestId() string {
+	if x != nil {
+		return x.AfterRequestId
+	}
+	return ""
+}
+
+func (x *ListLimitRequestsRequest) GetState() LimitRequestState {
+	if x != nil {
+		return x.State
+	}
+	return LimitRequestState_LIMIT_REQUEST_STATE_UNSPECIFIED
+}
+
+type ListLimitRequestsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Newest first, by id. Fewer than the limit means no more.
+	Requests      []*HumanLimitRequest `protobuf:"bytes,1,rep,name=requests,proto3" json:"requests,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListLimitRequestsResponse) Reset() {
+	*x = ListLimitRequestsResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListLimitRequestsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListLimitRequestsResponse) ProtoMessage() {}
+
+func (x *ListLimitRequestsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListLimitRequestsResponse.ProtoReflect.Descriptor instead.
+func (*ListLimitRequestsResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *ListLimitRequestsResponse) GetRequests() []*HumanLimitRequest {
+	if x != nil {
+		return x.Requests
+	}
+	return nil
+}
+
+// HumanLimitRequest is a limit request with its human, as the operator sees it.
+type HumanLimitRequest struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	Request   *LimitRequest          `protobuf:"bytes,1,opt,name=request,proto3" json:"request,omitempty"`
+	AccountId string                 `protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	Handle    string                 `protobuf:"bytes,3,opt,name=handle,proto3" json:"handle,omitempty"`
+	// The human's effective value for request.key now.
+	Effective     int32 `protobuf:"varint,4,opt,name=effective,proto3" json:"effective,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HumanLimitRequest) Reset() {
+	*x = HumanLimitRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HumanLimitRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HumanLimitRequest) ProtoMessage() {}
+
+func (x *HumanLimitRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HumanLimitRequest.ProtoReflect.Descriptor instead.
+func (*HumanLimitRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *HumanLimitRequest) GetRequest() *LimitRequest {
+	if x != nil {
+		return x.Request
+	}
+	return nil
+}
+
+func (x *HumanLimitRequest) GetAccountId() string {
+	if x != nil {
+		return x.AccountId
+	}
+	return ""
+}
+
+func (x *HumanLimitRequest) GetHandle() string {
+	if x != nil {
+		return x.Handle
+	}
+	return ""
+}
+
+func (x *HumanLimitRequest) GetEffective() int32 {
+	if x != nil {
+		return x.Effective
+	}
+	return 0
+}
+
+// Sets the human's override to granted in the same transaction. NOT_FOUND
+// for an unknown id; FIELD_INVALID when granted is not 1 to the ceiling;
+// CONFLICT when declined, or approved with another value. Approving again
+// with the same granted succeeds and records nothing.
+type ApproveLimitRequestRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	Granted       int32                  `protobuf:"varint,2,opt,name=granted,proto3" json:"granted,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ApproveLimitRequestRequest) Reset() {
+	*x = ApproveLimitRequestRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ApproveLimitRequestRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApproveLimitRequestRequest) ProtoMessage() {}
+
+func (x *ApproveLimitRequestRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApproveLimitRequestRequest.ProtoReflect.Descriptor instead.
+func (*ApproveLimitRequestRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *ApproveLimitRequestRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+func (x *ApproveLimitRequestRequest) GetGranted() int32 {
+	if x != nil {
+		return x.Granted
+	}
+	return 0
+}
+
+type ApproveLimitRequestResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Request       *LimitRequest          `protobuf:"bytes,1,opt,name=request,proto3" json:"request,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ApproveLimitRequestResponse) Reset() {
+	*x = ApproveLimitRequestResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ApproveLimitRequestResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApproveLimitRequestResponse) ProtoMessage() {}
+
+func (x *ApproveLimitRequestResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApproveLimitRequestResponse.ProtoReflect.Descriptor instead.
+func (*ApproveLimitRequestResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *ApproveLimitRequestResponse) GetRequest() *LimitRequest {
+	if x != nil {
+		return x.Request
+	}
+	return nil
+}
+
+// NOT_FOUND for an unknown id; CONFLICT when approved. Declining again
+// succeeds and records nothing.
+type DeclineLimitRequestRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeclineLimitRequestRequest) Reset() {
+	*x = DeclineLimitRequestRequest{}
+	mi := &file_sock_v1_operator_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeclineLimitRequestRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeclineLimitRequestRequest) ProtoMessage() {}
+
+func (x *DeclineLimitRequestRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeclineLimitRequestRequest.ProtoReflect.Descriptor instead.
+func (*DeclineLimitRequestRequest) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *DeclineLimitRequestRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+type DeclineLimitRequestResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Request       *LimitRequest          `protobuf:"bytes,1,opt,name=request,proto3" json:"request,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeclineLimitRequestResponse) Reset() {
+	*x = DeclineLimitRequestResponse{}
+	mi := &file_sock_v1_operator_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeclineLimitRequestResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeclineLimitRequestResponse) ProtoMessage() {}
+
+func (x *DeclineLimitRequestResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sock_v1_operator_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeclineLimitRequestResponse.ProtoReflect.Descriptor instead.
+func (*DeclineLimitRequestResponse) Descriptor() ([]byte, []int) {
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *DeclineLimitRequestResponse) GetRequest() *LimitRequest {
+	if x != nil {
+		return x.Request
+	}
+	return nil
+}
+
 type MintInviteRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1331,7 +2452,7 @@ type MintInviteRequest struct {
 
 func (x *MintInviteRequest) Reset() {
 	*x = MintInviteRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[21]
+	mi := &file_sock_v1_operator_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1343,7 +2464,7 @@ func (x *MintInviteRequest) String() string {
 func (*MintInviteRequest) ProtoMessage() {}
 
 func (x *MintInviteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[21]
+	mi := &file_sock_v1_operator_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1356,7 +2477,7 @@ func (x *MintInviteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MintInviteRequest.ProtoReflect.Descriptor instead.
 func (*MintInviteRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{21}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{43}
 }
 
 type MintInviteResponse struct {
@@ -1374,7 +2495,7 @@ type MintInviteResponse struct {
 
 func (x *MintInviteResponse) Reset() {
 	*x = MintInviteResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[22]
+	mi := &file_sock_v1_operator_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1386,7 +2507,7 @@ func (x *MintInviteResponse) String() string {
 func (*MintInviteResponse) ProtoMessage() {}
 
 func (x *MintInviteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[22]
+	mi := &file_sock_v1_operator_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1399,7 +2520,7 @@ func (x *MintInviteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MintInviteResponse.ProtoReflect.Descriptor instead.
 func (*MintInviteResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{22}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *MintInviteResponse) GetCode() string {
@@ -1429,7 +2550,7 @@ type ListReportsRequest struct {
 
 func (x *ListReportsRequest) Reset() {
 	*x = ListReportsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[23]
+	mi := &file_sock_v1_operator_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1441,7 +2562,7 @@ func (x *ListReportsRequest) String() string {
 func (*ListReportsRequest) ProtoMessage() {}
 
 func (x *ListReportsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[23]
+	mi := &file_sock_v1_operator_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1454,7 +2575,7 @@ func (x *ListReportsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListReportsRequest.ProtoReflect.Descriptor instead.
 func (*ListReportsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{23}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *ListReportsRequest) GetLimit() int32 {
@@ -1486,7 +2607,7 @@ type ListReportsResponse struct {
 
 func (x *ListReportsResponse) Reset() {
 	*x = ListReportsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[24]
+	mi := &file_sock_v1_operator_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1498,7 +2619,7 @@ func (x *ListReportsResponse) String() string {
 func (*ListReportsResponse) ProtoMessage() {}
 
 func (x *ListReportsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[24]
+	mi := &file_sock_v1_operator_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1511,7 +2632,7 @@ func (x *ListReportsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListReportsResponse.ProtoReflect.Descriptor instead.
 func (*ListReportsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{24}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *ListReportsResponse) GetReports() []*Report {
@@ -1539,7 +2660,7 @@ type ResolveReportRequest struct {
 
 func (x *ResolveReportRequest) Reset() {
 	*x = ResolveReportRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[25]
+	mi := &file_sock_v1_operator_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1551,7 +2672,7 @@ func (x *ResolveReportRequest) String() string {
 func (*ResolveReportRequest) ProtoMessage() {}
 
 func (x *ResolveReportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[25]
+	mi := &file_sock_v1_operator_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1564,7 +2685,7 @@ func (x *ResolveReportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveReportRequest.ProtoReflect.Descriptor instead.
 func (*ResolveReportRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{25}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *ResolveReportRequest) GetReportId() string {
@@ -1592,7 +2713,7 @@ type ResolveReportResponse struct {
 
 func (x *ResolveReportResponse) Reset() {
 	*x = ResolveReportResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[26]
+	mi := &file_sock_v1_operator_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1604,7 +2725,7 @@ func (x *ResolveReportResponse) String() string {
 func (*ResolveReportResponse) ProtoMessage() {}
 
 func (x *ResolveReportResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[26]
+	mi := &file_sock_v1_operator_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1617,7 +2738,7 @@ func (x *ResolveReportResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveReportResponse.ProtoReflect.Descriptor instead.
 func (*ResolveReportResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{26}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *ResolveReportResponse) GetResolution() *Resolution {
@@ -1638,7 +2759,7 @@ type ReinstateAccountRequest struct {
 
 func (x *ReinstateAccountRequest) Reset() {
 	*x = ReinstateAccountRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[27]
+	mi := &file_sock_v1_operator_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1650,7 +2771,7 @@ func (x *ReinstateAccountRequest) String() string {
 func (*ReinstateAccountRequest) ProtoMessage() {}
 
 func (x *ReinstateAccountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[27]
+	mi := &file_sock_v1_operator_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1663,7 +2784,7 @@ func (x *ReinstateAccountRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReinstateAccountRequest.ProtoReflect.Descriptor instead.
 func (*ReinstateAccountRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{27}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *ReinstateAccountRequest) GetAccountId() string {
@@ -1681,7 +2802,7 @@ type ReinstateAccountResponse struct {
 
 func (x *ReinstateAccountResponse) Reset() {
 	*x = ReinstateAccountResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[28]
+	mi := &file_sock_v1_operator_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1693,7 +2814,7 @@ func (x *ReinstateAccountResponse) String() string {
 func (*ReinstateAccountResponse) ProtoMessage() {}
 
 func (x *ReinstateAccountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[28]
+	mi := &file_sock_v1_operator_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1706,7 +2827,7 @@ func (x *ReinstateAccountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReinstateAccountResponse.ProtoReflect.Descriptor instead.
 func (*ReinstateAccountResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{28}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{50}
 }
 
 // Revokes the operator token the request presents, and every triage token
@@ -1722,7 +2843,7 @@ type RevokeOperatorTokenRequest struct {
 
 func (x *RevokeOperatorTokenRequest) Reset() {
 	*x = RevokeOperatorTokenRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[29]
+	mi := &file_sock_v1_operator_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1734,7 +2855,7 @@ func (x *RevokeOperatorTokenRequest) String() string {
 func (*RevokeOperatorTokenRequest) ProtoMessage() {}
 
 func (x *RevokeOperatorTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[29]
+	mi := &file_sock_v1_operator_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1747,7 +2868,7 @@ func (x *RevokeOperatorTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeOperatorTokenRequest.ProtoReflect.Descriptor instead.
 func (*RevokeOperatorTokenRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{29}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{51}
 }
 
 type RevokeOperatorTokenResponse struct {
@@ -1758,7 +2879,7 @@ type RevokeOperatorTokenResponse struct {
 
 func (x *RevokeOperatorTokenResponse) Reset() {
 	*x = RevokeOperatorTokenResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[30]
+	mi := &file_sock_v1_operator_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1770,7 +2891,7 @@ func (x *RevokeOperatorTokenResponse) String() string {
 func (*RevokeOperatorTokenResponse) ProtoMessage() {}
 
 func (x *RevokeOperatorTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[30]
+	mi := &file_sock_v1_operator_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1783,7 +2904,7 @@ func (x *RevokeOperatorTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeOperatorTokenResponse.ProtoReflect.Descriptor instead.
 func (*RevokeOperatorTokenResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{30}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{52}
 }
 
 type ListHumansRequest struct {
@@ -1805,7 +2926,7 @@ type ListHumansRequest struct {
 
 func (x *ListHumansRequest) Reset() {
 	*x = ListHumansRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[31]
+	mi := &file_sock_v1_operator_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1817,7 +2938,7 @@ func (x *ListHumansRequest) String() string {
 func (*ListHumansRequest) ProtoMessage() {}
 
 func (x *ListHumansRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[31]
+	mi := &file_sock_v1_operator_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1830,7 +2951,7 @@ func (x *ListHumansRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListHumansRequest.ProtoReflect.Descriptor instead.
 func (*ListHumansRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{31}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *ListHumansRequest) GetLimit() int32 {
@@ -1872,7 +2993,7 @@ type ListHumansResponse struct {
 
 func (x *ListHumansResponse) Reset() {
 	*x = ListHumansResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[32]
+	mi := &file_sock_v1_operator_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1884,7 +3005,7 @@ func (x *ListHumansResponse) String() string {
 func (*ListHumansResponse) ProtoMessage() {}
 
 func (x *ListHumansResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[32]
+	mi := &file_sock_v1_operator_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1897,7 +3018,7 @@ func (x *ListHumansResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListHumansResponse.ProtoReflect.Descriptor instead.
 func (*ListHumansResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{32}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *ListHumansResponse) GetHumans() []*HumanSummary {
@@ -1926,7 +3047,7 @@ type HumanSummary struct {
 
 func (x *HumanSummary) Reset() {
 	*x = HumanSummary{}
-	mi := &file_sock_v1_operator_proto_msgTypes[33]
+	mi := &file_sock_v1_operator_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1938,7 +3059,7 @@ func (x *HumanSummary) String() string {
 func (*HumanSummary) ProtoMessage() {}
 
 func (x *HumanSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[33]
+	mi := &file_sock_v1_operator_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1951,7 +3072,7 @@ func (x *HumanSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HumanSummary.ProtoReflect.Descriptor instead.
 func (*HumanSummary) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{33}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *HumanSummary) GetAccount() *Account {
@@ -1999,7 +3120,7 @@ type GetHumanRequest struct {
 
 func (x *GetHumanRequest) Reset() {
 	*x = GetHumanRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[34]
+	mi := &file_sock_v1_operator_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2011,7 +3132,7 @@ func (x *GetHumanRequest) String() string {
 func (*GetHumanRequest) ProtoMessage() {}
 
 func (x *GetHumanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[34]
+	mi := &file_sock_v1_operator_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2024,7 +3145,7 @@ func (x *GetHumanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHumanRequest.ProtoReflect.Descriptor instead.
 func (*GetHumanRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{34}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *GetHumanRequest) GetAccountId() string {
@@ -2053,14 +3174,20 @@ type GetHumanResponse struct {
 	// Every Stripe subscription of the human's, as last fetched.
 	Subscriptions []*ProSubscriptionSummary `protobuf:"bytes,8,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
 	// Every grant, revoked ones included, newest first.
-	Grants        []*ProGrant `protobuf:"bytes,9,rep,name=grants,proto3" json:"grants,omitempty"`
+	Grants []*ProGrant `protobuf:"bytes,9,rep,name=grants,proto3" json:"grants,omitempty"`
+	// The human's limit overrides, key order.
+	LimitOverrides []*LimitOverride `protobuf:"bytes,10,rep,name=limit_overrides,json=limitOverrides,proto3" json:"limit_overrides,omitempty"`
+	// The human's flag overrides, key order.
+	FlagOverrides []*FeatureFlagOverride `protobuf:"bytes,11,rep,name=flag_overrides,json=flagOverrides,proto3" json:"flag_overrides,omitempty"`
+	// The human's effective limits.
+	Limits        *PlanLimits `protobuf:"bytes,12,opt,name=limits,proto3" json:"limits,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetHumanResponse) Reset() {
 	*x = GetHumanResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[35]
+	mi := &file_sock_v1_operator_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2072,7 +3199,7 @@ func (x *GetHumanResponse) String() string {
 func (*GetHumanResponse) ProtoMessage() {}
 
 func (x *GetHumanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[35]
+	mi := &file_sock_v1_operator_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2085,7 +3212,7 @@ func (x *GetHumanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHumanResponse.ProtoReflect.Descriptor instead.
 func (*GetHumanResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{35}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *GetHumanResponse) GetHuman() *HumanSummary {
@@ -2151,6 +3278,27 @@ func (x *GetHumanResponse) GetGrants() []*ProGrant {
 	return nil
 }
 
+func (x *GetHumanResponse) GetLimitOverrides() []*LimitOverride {
+	if x != nil {
+		return x.LimitOverrides
+	}
+	return nil
+}
+
+func (x *GetHumanResponse) GetFlagOverrides() []*FeatureFlagOverride {
+	if x != nil {
+		return x.FlagOverrides
+	}
+	return nil
+}
+
+func (x *GetHumanResponse) GetLimits() *PlanLimits {
+	if x != nil {
+		return x.Limits
+	}
+	return nil
+}
+
 // TermsAcceptance is a human's agreement to one terms version.
 type TermsAcceptance struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2163,7 +3311,7 @@ type TermsAcceptance struct {
 
 func (x *TermsAcceptance) Reset() {
 	*x = TermsAcceptance{}
-	mi := &file_sock_v1_operator_proto_msgTypes[36]
+	mi := &file_sock_v1_operator_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2175,7 +3323,7 @@ func (x *TermsAcceptance) String() string {
 func (*TermsAcceptance) ProtoMessage() {}
 
 func (x *TermsAcceptance) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[36]
+	mi := &file_sock_v1_operator_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2188,7 +3336,7 @@ func (x *TermsAcceptance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TermsAcceptance.ProtoReflect.Descriptor instead.
 func (*TermsAcceptance) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{36}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *TermsAcceptance) GetVersion() string {
@@ -2221,7 +3369,7 @@ type ListAccountReportsRequest struct {
 
 func (x *ListAccountReportsRequest) Reset() {
 	*x = ListAccountReportsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[37]
+	mi := &file_sock_v1_operator_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2233,7 +3381,7 @@ func (x *ListAccountReportsRequest) String() string {
 func (*ListAccountReportsRequest) ProtoMessage() {}
 
 func (x *ListAccountReportsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[37]
+	mi := &file_sock_v1_operator_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2246,7 +3394,7 @@ func (x *ListAccountReportsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAccountReportsRequest.ProtoReflect.Descriptor instead.
 func (*ListAccountReportsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{37}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *ListAccountReportsRequest) GetAccountId() string {
@@ -2284,7 +3432,7 @@ type ListAccountReportsResponse struct {
 
 func (x *ListAccountReportsResponse) Reset() {
 	*x = ListAccountReportsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[38]
+	mi := &file_sock_v1_operator_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2296,7 +3444,7 @@ func (x *ListAccountReportsResponse) String() string {
 func (*ListAccountReportsResponse) ProtoMessage() {}
 
 func (x *ListAccountReportsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[38]
+	mi := &file_sock_v1_operator_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2309,7 +3457,7 @@ func (x *ListAccountReportsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAccountReportsResponse.ProtoReflect.Descriptor instead.
 func (*ListAccountReportsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{38}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *ListAccountReportsResponse) GetReports() []*ReportSummary {
@@ -2347,7 +3495,7 @@ type ReportSummary struct {
 
 func (x *ReportSummary) Reset() {
 	*x = ReportSummary{}
-	mi := &file_sock_v1_operator_proto_msgTypes[39]
+	mi := &file_sock_v1_operator_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2359,7 +3507,7 @@ func (x *ReportSummary) String() string {
 func (*ReportSummary) ProtoMessage() {}
 
 func (x *ReportSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[39]
+	mi := &file_sock_v1_operator_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2372,7 +3520,7 @@ func (x *ReportSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportSummary.ProtoReflect.Descriptor instead.
 func (*ReportSummary) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{39}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *ReportSummary) GetId() string {
@@ -2440,7 +3588,7 @@ type EraseHumanRequest struct {
 
 func (x *EraseHumanRequest) Reset() {
 	*x = EraseHumanRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[40]
+	mi := &file_sock_v1_operator_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2452,7 +3600,7 @@ func (x *EraseHumanRequest) String() string {
 func (*EraseHumanRequest) ProtoMessage() {}
 
 func (x *EraseHumanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[40]
+	mi := &file_sock_v1_operator_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2465,7 +3613,7 @@ func (x *EraseHumanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EraseHumanRequest.ProtoReflect.Descriptor instead.
 func (*EraseHumanRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{40}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *EraseHumanRequest) GetAccountId() string {
@@ -2490,7 +3638,7 @@ type EraseHumanResponse struct {
 
 func (x *EraseHumanResponse) Reset() {
 	*x = EraseHumanResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[41]
+	mi := &file_sock_v1_operator_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2502,7 +3650,7 @@ func (x *EraseHumanResponse) String() string {
 func (*EraseHumanResponse) ProtoMessage() {}
 
 func (x *EraseHumanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[41]
+	mi := &file_sock_v1_operator_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2515,7 +3663,7 @@ func (x *EraseHumanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EraseHumanResponse.ProtoReflect.Descriptor instead.
 func (*EraseHumanResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{41}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{63}
 }
 
 // Creates a human with an email identity and a generated password: the
@@ -2535,7 +3683,7 @@ type CreateHumanRequest struct {
 
 func (x *CreateHumanRequest) Reset() {
 	*x = CreateHumanRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[42]
+	mi := &file_sock_v1_operator_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2547,7 +3695,7 @@ func (x *CreateHumanRequest) String() string {
 func (*CreateHumanRequest) ProtoMessage() {}
 
 func (x *CreateHumanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[42]
+	mi := &file_sock_v1_operator_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2560,7 +3708,7 @@ func (x *CreateHumanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateHumanRequest.ProtoReflect.Descriptor instead.
 func (*CreateHumanRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{42}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *CreateHumanRequest) GetEmail() string {
@@ -2595,7 +3743,7 @@ type CreateHumanResponse struct {
 
 func (x *CreateHumanResponse) Reset() {
 	*x = CreateHumanResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[43]
+	mi := &file_sock_v1_operator_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2607,7 +3755,7 @@ func (x *CreateHumanResponse) String() string {
 func (*CreateHumanResponse) ProtoMessage() {}
 
 func (x *CreateHumanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[43]
+	mi := &file_sock_v1_operator_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2620,7 +3768,7 @@ func (x *CreateHumanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateHumanResponse.ProtoReflect.Descriptor instead.
 func (*CreateHumanResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{43}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *CreateHumanResponse) GetAccount() *Account {
@@ -2649,7 +3797,7 @@ type ArchiveHumanRequest struct {
 
 func (x *ArchiveHumanRequest) Reset() {
 	*x = ArchiveHumanRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[44]
+	mi := &file_sock_v1_operator_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2661,7 +3809,7 @@ func (x *ArchiveHumanRequest) String() string {
 func (*ArchiveHumanRequest) ProtoMessage() {}
 
 func (x *ArchiveHumanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[44]
+	mi := &file_sock_v1_operator_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2674,7 +3822,7 @@ func (x *ArchiveHumanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveHumanRequest.ProtoReflect.Descriptor instead.
 func (*ArchiveHumanRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{44}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *ArchiveHumanRequest) GetAccountId() string {
@@ -2692,7 +3840,7 @@ type ArchiveHumanResponse struct {
 
 func (x *ArchiveHumanResponse) Reset() {
 	*x = ArchiveHumanResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[45]
+	mi := &file_sock_v1_operator_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2704,7 +3852,7 @@ func (x *ArchiveHumanResponse) String() string {
 func (*ArchiveHumanResponse) ProtoMessage() {}
 
 func (x *ArchiveHumanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[45]
+	mi := &file_sock_v1_operator_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2717,7 +3865,7 @@ func (x *ArchiveHumanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArchiveHumanResponse.ProtoReflect.Descriptor instead.
 func (*ArchiveHumanResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{45}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{67}
 }
 
 // Lifts an archive. Devices are not restored; the human signs in again. A
@@ -2732,7 +3880,7 @@ type UnarchiveHumanRequest struct {
 
 func (x *UnarchiveHumanRequest) Reset() {
 	*x = UnarchiveHumanRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[46]
+	mi := &file_sock_v1_operator_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2744,7 +3892,7 @@ func (x *UnarchiveHumanRequest) String() string {
 func (*UnarchiveHumanRequest) ProtoMessage() {}
 
 func (x *UnarchiveHumanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[46]
+	mi := &file_sock_v1_operator_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2757,7 +3905,7 @@ func (x *UnarchiveHumanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveHumanRequest.ProtoReflect.Descriptor instead.
 func (*UnarchiveHumanRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{46}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *UnarchiveHumanRequest) GetAccountId() string {
@@ -2775,7 +3923,7 @@ type UnarchiveHumanResponse struct {
 
 func (x *UnarchiveHumanResponse) Reset() {
 	*x = UnarchiveHumanResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[47]
+	mi := &file_sock_v1_operator_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2787,7 +3935,7 @@ func (x *UnarchiveHumanResponse) String() string {
 func (*UnarchiveHumanResponse) ProtoMessage() {}
 
 func (x *UnarchiveHumanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[47]
+	mi := &file_sock_v1_operator_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2800,7 +3948,7 @@ func (x *UnarchiveHumanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveHumanResponse.ProtoReflect.Descriptor instead.
 func (*UnarchiveHumanResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{47}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{69}
 }
 
 type SignInOperatorWithAppleRequest struct {
@@ -2825,7 +3973,7 @@ type SignInOperatorWithAppleRequest struct {
 
 func (x *SignInOperatorWithAppleRequest) Reset() {
 	*x = SignInOperatorWithAppleRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[48]
+	mi := &file_sock_v1_operator_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2837,7 +3985,7 @@ func (x *SignInOperatorWithAppleRequest) String() string {
 func (*SignInOperatorWithAppleRequest) ProtoMessage() {}
 
 func (x *SignInOperatorWithAppleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[48]
+	mi := &file_sock_v1_operator_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2850,7 +3998,7 @@ func (x *SignInOperatorWithAppleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignInOperatorWithAppleRequest.ProtoReflect.Descriptor instead.
 func (*SignInOperatorWithAppleRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{48}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *SignInOperatorWithAppleRequest) GetIdentityToken() string {
@@ -2888,7 +4036,7 @@ type SignInOperatorWithAppleResponse struct {
 
 func (x *SignInOperatorWithAppleResponse) Reset() {
 	*x = SignInOperatorWithAppleResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[49]
+	mi := &file_sock_v1_operator_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2900,7 +4048,7 @@ func (x *SignInOperatorWithAppleResponse) String() string {
 func (*SignInOperatorWithAppleResponse) ProtoMessage() {}
 
 func (x *SignInOperatorWithAppleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[49]
+	mi := &file_sock_v1_operator_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2913,7 +4061,7 @@ func (x *SignInOperatorWithAppleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignInOperatorWithAppleResponse.ProtoReflect.Descriptor instead.
 func (*SignInOperatorWithAppleResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{49}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *SignInOperatorWithAppleResponse) GetToken() string {
@@ -2945,7 +4093,7 @@ type ListInviteRequestsRequest struct {
 
 func (x *ListInviteRequestsRequest) Reset() {
 	*x = ListInviteRequestsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[50]
+	mi := &file_sock_v1_operator_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2957,7 +4105,7 @@ func (x *ListInviteRequestsRequest) String() string {
 func (*ListInviteRequestsRequest) ProtoMessage() {}
 
 func (x *ListInviteRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[50]
+	mi := &file_sock_v1_operator_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2970,7 +4118,7 @@ func (x *ListInviteRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInviteRequestsRequest.ProtoReflect.Descriptor instead.
 func (*ListInviteRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{50}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *ListInviteRequestsRequest) GetLimit() int32 {
@@ -3005,7 +4153,7 @@ type ListInviteRequestsResponse struct {
 
 func (x *ListInviteRequestsResponse) Reset() {
 	*x = ListInviteRequestsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[51]
+	mi := &file_sock_v1_operator_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3017,7 +4165,7 @@ func (x *ListInviteRequestsResponse) String() string {
 func (*ListInviteRequestsResponse) ProtoMessage() {}
 
 func (x *ListInviteRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[51]
+	mi := &file_sock_v1_operator_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3030,7 +4178,7 @@ func (x *ListInviteRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInviteRequestsResponse.ProtoReflect.Descriptor instead.
 func (*ListInviteRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{51}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *ListInviteRequestsResponse) GetRequests() []*InviteRequest {
@@ -3050,7 +4198,7 @@ type ApproveInviteRequestsRequest struct {
 
 func (x *ApproveInviteRequestsRequest) Reset() {
 	*x = ApproveInviteRequestsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[52]
+	mi := &file_sock_v1_operator_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3062,7 +4210,7 @@ func (x *ApproveInviteRequestsRequest) String() string {
 func (*ApproveInviteRequestsRequest) ProtoMessage() {}
 
 func (x *ApproveInviteRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[52]
+	mi := &file_sock_v1_operator_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3075,7 +4223,7 @@ func (x *ApproveInviteRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveInviteRequestsRequest.ProtoReflect.Descriptor instead.
 func (*ApproveInviteRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{52}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *ApproveInviteRequestsRequest) GetRequestIds() []string {
@@ -3095,7 +4243,7 @@ type ApproveInviteRequestsResponse struct {
 
 func (x *ApproveInviteRequestsResponse) Reset() {
 	*x = ApproveInviteRequestsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[53]
+	mi := &file_sock_v1_operator_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3107,7 +4255,7 @@ func (x *ApproveInviteRequestsResponse) String() string {
 func (*ApproveInviteRequestsResponse) ProtoMessage() {}
 
 func (x *ApproveInviteRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[53]
+	mi := &file_sock_v1_operator_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3120,7 +4268,7 @@ func (x *ApproveInviteRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveInviteRequestsResponse.ProtoReflect.Descriptor instead.
 func (*ApproveInviteRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{53}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *ApproveInviteRequestsResponse) GetResults() []*ApproveInviteRequestResult {
@@ -3142,7 +4290,7 @@ type ApproveInviteRequestResult struct {
 
 func (x *ApproveInviteRequestResult) Reset() {
 	*x = ApproveInviteRequestResult{}
-	mi := &file_sock_v1_operator_proto_msgTypes[54]
+	mi := &file_sock_v1_operator_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3154,7 +4302,7 @@ func (x *ApproveInviteRequestResult) String() string {
 func (*ApproveInviteRequestResult) ProtoMessage() {}
 
 func (x *ApproveInviteRequestResult) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[54]
+	mi := &file_sock_v1_operator_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3167,7 +4315,7 @@ func (x *ApproveInviteRequestResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveInviteRequestResult.ProtoReflect.Descriptor instead.
 func (*ApproveInviteRequestResult) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{54}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *ApproveInviteRequestResult) GetRequestId() string {
@@ -3201,7 +4349,7 @@ type DeclineInviteRequestsRequest struct {
 
 func (x *DeclineInviteRequestsRequest) Reset() {
 	*x = DeclineInviteRequestsRequest{}
-	mi := &file_sock_v1_operator_proto_msgTypes[55]
+	mi := &file_sock_v1_operator_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3213,7 +4361,7 @@ func (x *DeclineInviteRequestsRequest) String() string {
 func (*DeclineInviteRequestsRequest) ProtoMessage() {}
 
 func (x *DeclineInviteRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[55]
+	mi := &file_sock_v1_operator_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3226,7 +4374,7 @@ func (x *DeclineInviteRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclineInviteRequestsRequest.ProtoReflect.Descriptor instead.
 func (*DeclineInviteRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{55}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *DeclineInviteRequestsRequest) GetRequestIds() []string {
@@ -3246,7 +4394,7 @@ type DeclineInviteRequestsResponse struct {
 
 func (x *DeclineInviteRequestsResponse) Reset() {
 	*x = DeclineInviteRequestsResponse{}
-	mi := &file_sock_v1_operator_proto_msgTypes[56]
+	mi := &file_sock_v1_operator_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3258,7 +4406,7 @@ func (x *DeclineInviteRequestsResponse) String() string {
 func (*DeclineInviteRequestsResponse) ProtoMessage() {}
 
 func (x *DeclineInviteRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[56]
+	mi := &file_sock_v1_operator_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3271,7 +4419,7 @@ func (x *DeclineInviteRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclineInviteRequestsResponse.ProtoReflect.Descriptor instead.
 func (*DeclineInviteRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{56}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *DeclineInviteRequestsResponse) GetResults() []*DeclineInviteRequestResult {
@@ -3291,7 +4439,7 @@ type DeclineInviteRequestResult struct {
 
 func (x *DeclineInviteRequestResult) Reset() {
 	*x = DeclineInviteRequestResult{}
-	mi := &file_sock_v1_operator_proto_msgTypes[57]
+	mi := &file_sock_v1_operator_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3303,7 +4451,7 @@ func (x *DeclineInviteRequestResult) String() string {
 func (*DeclineInviteRequestResult) ProtoMessage() {}
 
 func (x *DeclineInviteRequestResult) ProtoReflect() protoreflect.Message {
-	mi := &file_sock_v1_operator_proto_msgTypes[57]
+	mi := &file_sock_v1_operator_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3316,7 +4464,7 @@ func (x *DeclineInviteRequestResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclineInviteRequestResult.ProtoReflect.Descriptor instead.
 func (*DeclineInviteRequestResult) Descriptor() ([]byte, []int) {
-	return file_sock_v1_operator_proto_rawDescGZIP(), []int{57}
+	return file_sock_v1_operator_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *DeclineInviteRequestResult) GetRequestId() string {
@@ -3394,7 +4542,74 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x18\n" +
 	"\aenabled\x18\x02 \x01(\bR\aenabled\"B\n" +
 	"\x16SetFeatureFlagResponse\x12(\n" +
-	"\x04flag\x18\x01 \x01(\v2\x14.sock.v1.FeatureFlagR\x04flag\"\x13\n" +
+	"\x04flag\x18\x01 \x01(\v2\x14.sock.v1.FeatureFlagR\x04flag\"\xb2\x01\n" +
+	"\x05Limit\x12#\n" +
+	"\x03key\x18\x01 \x01(\x0e2\x11.sock.v1.LimitKeyR\x03key\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x14\n" +
+	"\x05value\x18\x03 \x01(\x05R\x05value\x12\x18\n" +
+	"\aceiling\x18\x04 \x01(\x05R\aceiling\x122\n" +
+	"\blast_set\x18\x05 \x01(\v2\x17.sock.v1.FeatureFlagSetR\alastSet\"\x12\n" +
+	"\x10GetLimitsRequest\";\n" +
+	"\x11GetLimitsResponse\x12&\n" +
+	"\x06limits\x18\x01 \x03(\v2\x0e.sock.v1.LimitR\x06limits\"L\n" +
+	"\x0fSetLimitRequest\x12#\n" +
+	"\x03key\x18\x01 \x01(\x0e2\x11.sock.v1.LimitKeyR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value\"8\n" +
+	"\x10SetLimitResponse\x12$\n" +
+	"\x05limit\x18\x01 \x01(\v2\x0e.sock.v1.LimitR\x05limit\"J\n" +
+	"\rLimitOverride\x12#\n" +
+	"\x03key\x18\x01 \x01(\x0e2\x11.sock.v1.LimitKeyR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value\"A\n" +
+	"\x13FeatureFlagOverride\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x18\n" +
+	"\aenabled\x18\x02 \x01(\bR\aenabled\"s\n" +
+	"\x17SetLimitOverrideRequest\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\tR\taccountId\x12#\n" +
+	"\x03key\x18\x02 \x01(\x0e2\x11.sock.v1.LimitKeyR\x03key\x12\x14\n" +
+	"\x05value\x18\x03 \x01(\x05R\x05value\"N\n" +
+	"\x18SetLimitOverrideResponse\x122\n" +
+	"\boverride\x18\x01 \x01(\v2\x16.sock.v1.LimitOverrideR\boverride\"_\n" +
+	"\x19ClearLimitOverrideRequest\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\tR\taccountId\x12#\n" +
+	"\x03key\x18\x02 \x01(\x0e2\x11.sock.v1.LimitKeyR\x03key\"\x1c\n" +
+	"\x1aClearLimitOverrideResponse\"j\n" +
+	"\x1dSetFeatureFlagOverrideRequest\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\tR\taccountId\x12\x10\n" +
+	"\x03key\x18\x02 \x01(\tR\x03key\x12\x18\n" +
+	"\aenabled\x18\x03 \x01(\bR\aenabled\"Z\n" +
+	"\x1eSetFeatureFlagOverrideResponse\x128\n" +
+	"\boverride\x18\x01 \x01(\v2\x1c.sock.v1.FeatureFlagOverrideR\boverride\"R\n" +
+	"\x1fClearFeatureFlagOverrideRequest\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\tR\taccountId\x12\x10\n" +
+	"\x03key\x18\x02 \x01(\tR\x03key\"\"\n" +
+	" ClearFeatureFlagOverrideResponse\"\x8c\x01\n" +
+	"\x18ListLimitRequestsRequest\x12\x14\n" +
+	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12(\n" +
+	"\x10after_request_id\x18\x02 \x01(\tR\x0eafterRequestId\x120\n" +
+	"\x05state\x18\x03 \x01(\x0e2\x1a.sock.v1.LimitRequestStateR\x05state\"S\n" +
+	"\x19ListLimitRequestsResponse\x126\n" +
+	"\brequests\x18\x01 \x03(\v2\x1a.sock.v1.HumanLimitRequestR\brequests\"\x99\x01\n" +
+	"\x11HumanLimitRequest\x12/\n" +
+	"\arequest\x18\x01 \x01(\v2\x15.sock.v1.LimitRequestR\arequest\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x02 \x01(\tR\taccountId\x12\x16\n" +
+	"\x06handle\x18\x03 \x01(\tR\x06handle\x12\x1c\n" +
+	"\teffective\x18\x04 \x01(\x05R\teffective\"U\n" +
+	"\x1aApproveLimitRequestRequest\x12\x1d\n" +
+	"\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12\x18\n" +
+	"\agranted\x18\x02 \x01(\x05R\agranted\"N\n" +
+	"\x1bApproveLimitRequestResponse\x12/\n" +
+	"\arequest\x18\x01 \x01(\v2\x15.sock.v1.LimitRequestR\arequest\";\n" +
+	"\x1aDeclineLimitRequestRequest\x12\x1d\n" +
+	"\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\"N\n" +
+	"\x1bDeclineLimitRequestResponse\x12/\n" +
+	"\arequest\x18\x01 \x01(\v2\x15.sock.v1.LimitRequestR\arequest\"\x13\n" +
 	"\x11MintInviteRequest\"c\n" +
 	"\x12MintInviteResponse\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\tR\x04code\x129\n" +
@@ -3435,7 +4650,7 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"archivedAt\"0\n" +
 	"\x0fGetHumanRequest\x12\x1d\n" +
 	"\n" +
-	"account_id\x18\x01 \x01(\tR\taccountId\"\xcd\x03\n" +
+	"account_id\x18\x01 \x01(\tR\taccountId\"\x80\x05\n" +
 	"\x10GetHumanResponse\x12+\n" +
 	"\x05human\x18\x01 \x01(\v2\x15.sock.v1.HumanSummaryR\x05human\x12)\n" +
 	"\adevices\x18\x02 \x03(\v2\x0f.sock.v1.DeviceR\adevices\x124\n" +
@@ -3445,7 +4660,11 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"\x03pro\x18\x06 \x01(\v2\x12.sock.v1.ProStatusR\x03pro\x12'\n" +
 	"\x05trial\x18\a \x01(\v2\x11.sock.v1.ProTrialR\x05trial\x12E\n" +
 	"\rsubscriptions\x18\b \x03(\v2\x1f.sock.v1.ProSubscriptionSummaryR\rsubscriptions\x12)\n" +
-	"\x06grants\x18\t \x03(\v2\x11.sock.v1.ProGrantR\x06grants\"h\n" +
+	"\x06grants\x18\t \x03(\v2\x11.sock.v1.ProGrantR\x06grants\x12?\n" +
+	"\x0flimit_overrides\x18\n" +
+	" \x03(\v2\x16.sock.v1.LimitOverrideR\x0elimitOverrides\x12C\n" +
+	"\x0eflag_overrides\x18\v \x03(\v2\x1c.sock.v1.FeatureFlagOverrideR\rflagOverrides\x12+\n" +
+	"\x06limits\x18\f \x01(\v2\x13.sock.v1.PlanLimitsR\x06limits\"h\n" +
 	"\x0fTermsAcceptance\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12;\n" +
 	"\vaccepted_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -3548,7 +4767,7 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"*DECLINE_INVITE_REQUEST_OUTCOME_UNSPECIFIED\x10\x00\x12+\n" +
 	"'DECLINE_INVITE_REQUEST_OUTCOME_DECLINED\x10\x01\x12+\n" +
 	"'DECLINE_INVITE_REQUEST_OUTCOME_APPROVED\x10\x02\x12,\n" +
-	"(DECLINE_INVITE_REQUEST_OUTCOME_NOT_FOUND\x10\x032\xb7\x0f\n" +
+	"(DECLINE_INVITE_REQUEST_OUTCOME_NOT_FOUND\x10\x032\x82\x16\n" +
 	"\x0fOperatorService\x12G\n" +
 	"\n" +
 	"MintInvite\x12\x1a.sock.v1.MintInviteRequest\x1a\x1b.sock.v1.MintInviteResponse\"\x00\x12J\n" +
@@ -3571,7 +4790,16 @@ const file_sock_v1_operator_proto_rawDesc = "" +
 	"\x0eGetMessageHold\x12\x1e.sock.v1.GetMessageHoldRequest\x1a\x1f.sock.v1.GetMessageHoldResponse\"\x00\x12S\n" +
 	"\x0eSetMessageHold\x12\x1e.sock.v1.SetMessageHoldRequest\x1a\x1f.sock.v1.SetMessageHoldResponse\"\x00\x12V\n" +
 	"\x0fGetFeatureFlags\x12\x1f.sock.v1.GetFeatureFlagsRequest\x1a .sock.v1.GetFeatureFlagsResponse\"\x00\x12S\n" +
-	"\x0eSetFeatureFlag\x12\x1e.sock.v1.SetFeatureFlagRequest\x1a\x1f.sock.v1.SetFeatureFlagResponse\"\x00\x12A\n" +
+	"\x0eSetFeatureFlag\x12\x1e.sock.v1.SetFeatureFlagRequest\x1a\x1f.sock.v1.SetFeatureFlagResponse\"\x00\x12D\n" +
+	"\tGetLimits\x12\x19.sock.v1.GetLimitsRequest\x1a\x1a.sock.v1.GetLimitsResponse\"\x00\x12A\n" +
+	"\bSetLimit\x12\x18.sock.v1.SetLimitRequest\x1a\x19.sock.v1.SetLimitResponse\"\x00\x12Y\n" +
+	"\x10SetLimitOverride\x12 .sock.v1.SetLimitOverrideRequest\x1a!.sock.v1.SetLimitOverrideResponse\"\x00\x12_\n" +
+	"\x12ClearLimitOverride\x12\".sock.v1.ClearLimitOverrideRequest\x1a#.sock.v1.ClearLimitOverrideResponse\"\x00\x12k\n" +
+	"\x16SetFeatureFlagOverride\x12&.sock.v1.SetFeatureFlagOverrideRequest\x1a'.sock.v1.SetFeatureFlagOverrideResponse\"\x00\x12q\n" +
+	"\x18ClearFeatureFlagOverride\x12(.sock.v1.ClearFeatureFlagOverrideRequest\x1a).sock.v1.ClearFeatureFlagOverrideResponse\"\x00\x12\\\n" +
+	"\x11ListLimitRequests\x12!.sock.v1.ListLimitRequestsRequest\x1a\".sock.v1.ListLimitRequestsResponse\"\x00\x12b\n" +
+	"\x13ApproveLimitRequest\x12#.sock.v1.ApproveLimitRequestRequest\x1a$.sock.v1.ApproveLimitRequestResponse\"\x00\x12b\n" +
+	"\x13DeclineLimitRequest\x12#.sock.v1.DeclineLimitRequestRequest\x1a$.sock.v1.DeclineLimitRequestResponse\"\x00\x12A\n" +
 	"\bGrantPro\x12\x18.sock.v1.GrantProRequest\x1a\x19.sock.v1.GrantProResponse\"\x00\x12S\n" +
 	"\x0eRevokeProGrant\x12\x1e.sock.v1.RevokeProGrantRequest\x1a\x1f.sock.v1.RevokeProGrantResponse\"\x00\x12V\n" +
 	"\x0fMintTriageToken\x12\x1f.sock.v1.MintTriageTokenRequest\x1a .sock.v1.MintTriageTokenResponse\"\x00\x12\\\n" +
@@ -3593,186 +4821,248 @@ func file_sock_v1_operator_proto_rawDescGZIP() []byte {
 }
 
 var file_sock_v1_operator_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_sock_v1_operator_proto_msgTypes = make([]protoimpl.MessageInfo, 58)
+var file_sock_v1_operator_proto_msgTypes = make([]protoimpl.MessageInfo, 80)
 var file_sock_v1_operator_proto_goTypes = []any{
-	(HumanArchiveFilter)(0),                 // 0: sock.v1.HumanArchiveFilter
-	(OperatorSignInClient)(0),               // 1: sock.v1.OperatorSignInClient
-	(InviteRequestState)(0),                 // 2: sock.v1.InviteRequestState
-	(ApproveInviteRequestOutcome)(0),        // 3: sock.v1.ApproveInviteRequestOutcome
-	(DeclineInviteRequestOutcome)(0),        // 4: sock.v1.DeclineInviteRequestOutcome
-	(*MintTriageTokenRequest)(nil),          // 5: sock.v1.MintTriageTokenRequest
-	(*MintTriageTokenResponse)(nil),         // 6: sock.v1.MintTriageTokenResponse
-	(*VerifyTriageTokenRequest)(nil),        // 7: sock.v1.VerifyTriageTokenRequest
-	(*VerifyTriageTokenResponse)(nil),       // 8: sock.v1.VerifyTriageTokenResponse
-	(*GrantProRequest)(nil),                 // 9: sock.v1.GrantProRequest
-	(*GrantProResponse)(nil),                // 10: sock.v1.GrantProResponse
-	(*RevokeProGrantRequest)(nil),           // 11: sock.v1.RevokeProGrantRequest
-	(*RevokeProGrantResponse)(nil),          // 12: sock.v1.RevokeProGrantResponse
-	(*ProGrant)(nil),                        // 13: sock.v1.ProGrant
-	(*ProTrial)(nil),                        // 14: sock.v1.ProTrial
-	(*ProSubscriptionSummary)(nil),          // 15: sock.v1.ProSubscriptionSummary
-	(*GetMessageHoldRequest)(nil),           // 16: sock.v1.GetMessageHoldRequest
-	(*GetMessageHoldResponse)(nil),          // 17: sock.v1.GetMessageHoldResponse
-	(*SetMessageHoldRequest)(nil),           // 18: sock.v1.SetMessageHoldRequest
-	(*SetMessageHoldResponse)(nil),          // 19: sock.v1.SetMessageHoldResponse
-	(*FeatureFlag)(nil),                     // 20: sock.v1.FeatureFlag
-	(*FeatureFlagSet)(nil),                  // 21: sock.v1.FeatureFlagSet
-	(*GetFeatureFlagsRequest)(nil),          // 22: sock.v1.GetFeatureFlagsRequest
-	(*GetFeatureFlagsResponse)(nil),         // 23: sock.v1.GetFeatureFlagsResponse
-	(*SetFeatureFlagRequest)(nil),           // 24: sock.v1.SetFeatureFlagRequest
-	(*SetFeatureFlagResponse)(nil),          // 25: sock.v1.SetFeatureFlagResponse
-	(*MintInviteRequest)(nil),               // 26: sock.v1.MintInviteRequest
-	(*MintInviteResponse)(nil),              // 27: sock.v1.MintInviteResponse
-	(*ListReportsRequest)(nil),              // 28: sock.v1.ListReportsRequest
-	(*ListReportsResponse)(nil),             // 29: sock.v1.ListReportsResponse
-	(*ResolveReportRequest)(nil),            // 30: sock.v1.ResolveReportRequest
-	(*ResolveReportResponse)(nil),           // 31: sock.v1.ResolveReportResponse
-	(*ReinstateAccountRequest)(nil),         // 32: sock.v1.ReinstateAccountRequest
-	(*ReinstateAccountResponse)(nil),        // 33: sock.v1.ReinstateAccountResponse
-	(*RevokeOperatorTokenRequest)(nil),      // 34: sock.v1.RevokeOperatorTokenRequest
-	(*RevokeOperatorTokenResponse)(nil),     // 35: sock.v1.RevokeOperatorTokenResponse
-	(*ListHumansRequest)(nil),               // 36: sock.v1.ListHumansRequest
-	(*ListHumansResponse)(nil),              // 37: sock.v1.ListHumansResponse
-	(*HumanSummary)(nil),                    // 38: sock.v1.HumanSummary
-	(*GetHumanRequest)(nil),                 // 39: sock.v1.GetHumanRequest
-	(*GetHumanResponse)(nil),                // 40: sock.v1.GetHumanResponse
-	(*TermsAcceptance)(nil),                 // 41: sock.v1.TermsAcceptance
-	(*ListAccountReportsRequest)(nil),       // 42: sock.v1.ListAccountReportsRequest
-	(*ListAccountReportsResponse)(nil),      // 43: sock.v1.ListAccountReportsResponse
-	(*ReportSummary)(nil),                   // 44: sock.v1.ReportSummary
-	(*EraseHumanRequest)(nil),               // 45: sock.v1.EraseHumanRequest
-	(*EraseHumanResponse)(nil),              // 46: sock.v1.EraseHumanResponse
-	(*CreateHumanRequest)(nil),              // 47: sock.v1.CreateHumanRequest
-	(*CreateHumanResponse)(nil),             // 48: sock.v1.CreateHumanResponse
-	(*ArchiveHumanRequest)(nil),             // 49: sock.v1.ArchiveHumanRequest
-	(*ArchiveHumanResponse)(nil),            // 50: sock.v1.ArchiveHumanResponse
-	(*UnarchiveHumanRequest)(nil),           // 51: sock.v1.UnarchiveHumanRequest
-	(*UnarchiveHumanResponse)(nil),          // 52: sock.v1.UnarchiveHumanResponse
-	(*SignInOperatorWithAppleRequest)(nil),  // 53: sock.v1.SignInOperatorWithAppleRequest
-	(*SignInOperatorWithAppleResponse)(nil), // 54: sock.v1.SignInOperatorWithAppleResponse
-	(*ListInviteRequestsRequest)(nil),       // 55: sock.v1.ListInviteRequestsRequest
-	(*ListInviteRequestsResponse)(nil),      // 56: sock.v1.ListInviteRequestsResponse
-	(*ApproveInviteRequestsRequest)(nil),    // 57: sock.v1.ApproveInviteRequestsRequest
-	(*ApproveInviteRequestsResponse)(nil),   // 58: sock.v1.ApproveInviteRequestsResponse
-	(*ApproveInviteRequestResult)(nil),      // 59: sock.v1.ApproveInviteRequestResult
-	(*DeclineInviteRequestsRequest)(nil),    // 60: sock.v1.DeclineInviteRequestsRequest
-	(*DeclineInviteRequestsResponse)(nil),   // 61: sock.v1.DeclineInviteRequestsResponse
-	(*DeclineInviteRequestResult)(nil),      // 62: sock.v1.DeclineInviteRequestResult
-	(*timestamppb.Timestamp)(nil),           // 63: google.protobuf.Timestamp
-	(*Report)(nil),                          // 64: sock.v1.Report
-	(*Account)(nil),                         // 65: sock.v1.Account
-	(ResolutionOutcome)(0),                  // 66: sock.v1.ResolutionOutcome
-	(*Resolution)(nil),                      // 67: sock.v1.Resolution
-	(*Device)(nil),                          // 68: sock.v1.Device
-	(*PuppetWithDevices)(nil),               // 69: sock.v1.PuppetWithDevices
-	(*ProStatus)(nil),                       // 70: sock.v1.ProStatus
-	(ReportReason)(0),                       // 71: sock.v1.ReportReason
-	(*InviteRequest)(nil),                   // 72: sock.v1.InviteRequest
-	(*ApprovedInvite)(nil),                  // 73: sock.v1.ApprovedInvite
+	(HumanArchiveFilter)(0),                  // 0: sock.v1.HumanArchiveFilter
+	(OperatorSignInClient)(0),                // 1: sock.v1.OperatorSignInClient
+	(InviteRequestState)(0),                  // 2: sock.v1.InviteRequestState
+	(ApproveInviteRequestOutcome)(0),         // 3: sock.v1.ApproveInviteRequestOutcome
+	(DeclineInviteRequestOutcome)(0),         // 4: sock.v1.DeclineInviteRequestOutcome
+	(*MintTriageTokenRequest)(nil),           // 5: sock.v1.MintTriageTokenRequest
+	(*MintTriageTokenResponse)(nil),          // 6: sock.v1.MintTriageTokenResponse
+	(*VerifyTriageTokenRequest)(nil),         // 7: sock.v1.VerifyTriageTokenRequest
+	(*VerifyTriageTokenResponse)(nil),        // 8: sock.v1.VerifyTriageTokenResponse
+	(*GrantProRequest)(nil),                  // 9: sock.v1.GrantProRequest
+	(*GrantProResponse)(nil),                 // 10: sock.v1.GrantProResponse
+	(*RevokeProGrantRequest)(nil),            // 11: sock.v1.RevokeProGrantRequest
+	(*RevokeProGrantResponse)(nil),           // 12: sock.v1.RevokeProGrantResponse
+	(*ProGrant)(nil),                         // 13: sock.v1.ProGrant
+	(*ProTrial)(nil),                         // 14: sock.v1.ProTrial
+	(*ProSubscriptionSummary)(nil),           // 15: sock.v1.ProSubscriptionSummary
+	(*GetMessageHoldRequest)(nil),            // 16: sock.v1.GetMessageHoldRequest
+	(*GetMessageHoldResponse)(nil),           // 17: sock.v1.GetMessageHoldResponse
+	(*SetMessageHoldRequest)(nil),            // 18: sock.v1.SetMessageHoldRequest
+	(*SetMessageHoldResponse)(nil),           // 19: sock.v1.SetMessageHoldResponse
+	(*FeatureFlag)(nil),                      // 20: sock.v1.FeatureFlag
+	(*FeatureFlagSet)(nil),                   // 21: sock.v1.FeatureFlagSet
+	(*GetFeatureFlagsRequest)(nil),           // 22: sock.v1.GetFeatureFlagsRequest
+	(*GetFeatureFlagsResponse)(nil),          // 23: sock.v1.GetFeatureFlagsResponse
+	(*SetFeatureFlagRequest)(nil),            // 24: sock.v1.SetFeatureFlagRequest
+	(*SetFeatureFlagResponse)(nil),           // 25: sock.v1.SetFeatureFlagResponse
+	(*Limit)(nil),                            // 26: sock.v1.Limit
+	(*GetLimitsRequest)(nil),                 // 27: sock.v1.GetLimitsRequest
+	(*GetLimitsResponse)(nil),                // 28: sock.v1.GetLimitsResponse
+	(*SetLimitRequest)(nil),                  // 29: sock.v1.SetLimitRequest
+	(*SetLimitResponse)(nil),                 // 30: sock.v1.SetLimitResponse
+	(*LimitOverride)(nil),                    // 31: sock.v1.LimitOverride
+	(*FeatureFlagOverride)(nil),              // 32: sock.v1.FeatureFlagOverride
+	(*SetLimitOverrideRequest)(nil),          // 33: sock.v1.SetLimitOverrideRequest
+	(*SetLimitOverrideResponse)(nil),         // 34: sock.v1.SetLimitOverrideResponse
+	(*ClearLimitOverrideRequest)(nil),        // 35: sock.v1.ClearLimitOverrideRequest
+	(*ClearLimitOverrideResponse)(nil),       // 36: sock.v1.ClearLimitOverrideResponse
+	(*SetFeatureFlagOverrideRequest)(nil),    // 37: sock.v1.SetFeatureFlagOverrideRequest
+	(*SetFeatureFlagOverrideResponse)(nil),   // 38: sock.v1.SetFeatureFlagOverrideResponse
+	(*ClearFeatureFlagOverrideRequest)(nil),  // 39: sock.v1.ClearFeatureFlagOverrideRequest
+	(*ClearFeatureFlagOverrideResponse)(nil), // 40: sock.v1.ClearFeatureFlagOverrideResponse
+	(*ListLimitRequestsRequest)(nil),         // 41: sock.v1.ListLimitRequestsRequest
+	(*ListLimitRequestsResponse)(nil),        // 42: sock.v1.ListLimitRequestsResponse
+	(*HumanLimitRequest)(nil),                // 43: sock.v1.HumanLimitRequest
+	(*ApproveLimitRequestRequest)(nil),       // 44: sock.v1.ApproveLimitRequestRequest
+	(*ApproveLimitRequestResponse)(nil),      // 45: sock.v1.ApproveLimitRequestResponse
+	(*DeclineLimitRequestRequest)(nil),       // 46: sock.v1.DeclineLimitRequestRequest
+	(*DeclineLimitRequestResponse)(nil),      // 47: sock.v1.DeclineLimitRequestResponse
+	(*MintInviteRequest)(nil),                // 48: sock.v1.MintInviteRequest
+	(*MintInviteResponse)(nil),               // 49: sock.v1.MintInviteResponse
+	(*ListReportsRequest)(nil),               // 50: sock.v1.ListReportsRequest
+	(*ListReportsResponse)(nil),              // 51: sock.v1.ListReportsResponse
+	(*ResolveReportRequest)(nil),             // 52: sock.v1.ResolveReportRequest
+	(*ResolveReportResponse)(nil),            // 53: sock.v1.ResolveReportResponse
+	(*ReinstateAccountRequest)(nil),          // 54: sock.v1.ReinstateAccountRequest
+	(*ReinstateAccountResponse)(nil),         // 55: sock.v1.ReinstateAccountResponse
+	(*RevokeOperatorTokenRequest)(nil),       // 56: sock.v1.RevokeOperatorTokenRequest
+	(*RevokeOperatorTokenResponse)(nil),      // 57: sock.v1.RevokeOperatorTokenResponse
+	(*ListHumansRequest)(nil),                // 58: sock.v1.ListHumansRequest
+	(*ListHumansResponse)(nil),               // 59: sock.v1.ListHumansResponse
+	(*HumanSummary)(nil),                     // 60: sock.v1.HumanSummary
+	(*GetHumanRequest)(nil),                  // 61: sock.v1.GetHumanRequest
+	(*GetHumanResponse)(nil),                 // 62: sock.v1.GetHumanResponse
+	(*TermsAcceptance)(nil),                  // 63: sock.v1.TermsAcceptance
+	(*ListAccountReportsRequest)(nil),        // 64: sock.v1.ListAccountReportsRequest
+	(*ListAccountReportsResponse)(nil),       // 65: sock.v1.ListAccountReportsResponse
+	(*ReportSummary)(nil),                    // 66: sock.v1.ReportSummary
+	(*EraseHumanRequest)(nil),                // 67: sock.v1.EraseHumanRequest
+	(*EraseHumanResponse)(nil),               // 68: sock.v1.EraseHumanResponse
+	(*CreateHumanRequest)(nil),               // 69: sock.v1.CreateHumanRequest
+	(*CreateHumanResponse)(nil),              // 70: sock.v1.CreateHumanResponse
+	(*ArchiveHumanRequest)(nil),              // 71: sock.v1.ArchiveHumanRequest
+	(*ArchiveHumanResponse)(nil),             // 72: sock.v1.ArchiveHumanResponse
+	(*UnarchiveHumanRequest)(nil),            // 73: sock.v1.UnarchiveHumanRequest
+	(*UnarchiveHumanResponse)(nil),           // 74: sock.v1.UnarchiveHumanResponse
+	(*SignInOperatorWithAppleRequest)(nil),   // 75: sock.v1.SignInOperatorWithAppleRequest
+	(*SignInOperatorWithAppleResponse)(nil),  // 76: sock.v1.SignInOperatorWithAppleResponse
+	(*ListInviteRequestsRequest)(nil),        // 77: sock.v1.ListInviteRequestsRequest
+	(*ListInviteRequestsResponse)(nil),       // 78: sock.v1.ListInviteRequestsResponse
+	(*ApproveInviteRequestsRequest)(nil),     // 79: sock.v1.ApproveInviteRequestsRequest
+	(*ApproveInviteRequestsResponse)(nil),    // 80: sock.v1.ApproveInviteRequestsResponse
+	(*ApproveInviteRequestResult)(nil),       // 81: sock.v1.ApproveInviteRequestResult
+	(*DeclineInviteRequestsRequest)(nil),     // 82: sock.v1.DeclineInviteRequestsRequest
+	(*DeclineInviteRequestsResponse)(nil),    // 83: sock.v1.DeclineInviteRequestsResponse
+	(*DeclineInviteRequestResult)(nil),       // 84: sock.v1.DeclineInviteRequestResult
+	(*timestamppb.Timestamp)(nil),            // 85: google.protobuf.Timestamp
+	(LimitKey)(0),                            // 86: sock.v1.LimitKey
+	(LimitRequestState)(0),                   // 87: sock.v1.LimitRequestState
+	(*LimitRequest)(nil),                     // 88: sock.v1.LimitRequest
+	(*Report)(nil),                           // 89: sock.v1.Report
+	(*Account)(nil),                          // 90: sock.v1.Account
+	(ResolutionOutcome)(0),                   // 91: sock.v1.ResolutionOutcome
+	(*Resolution)(nil),                       // 92: sock.v1.Resolution
+	(*Device)(nil),                           // 93: sock.v1.Device
+	(*PuppetWithDevices)(nil),                // 94: sock.v1.PuppetWithDevices
+	(*ProStatus)(nil),                        // 95: sock.v1.ProStatus
+	(*PlanLimits)(nil),                       // 96: sock.v1.PlanLimits
+	(ReportReason)(0),                        // 97: sock.v1.ReportReason
+	(*InviteRequest)(nil),                    // 98: sock.v1.InviteRequest
+	(*ApprovedInvite)(nil),                   // 99: sock.v1.ApprovedInvite
 }
 var file_sock_v1_operator_proto_depIdxs = []int32{
-	63, // 0: sock.v1.MintTriageTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
-	63, // 1: sock.v1.VerifyTriageTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
-	63, // 2: sock.v1.GrantProRequest.ends_at:type_name -> google.protobuf.Timestamp
-	13, // 3: sock.v1.GrantProResponse.grant:type_name -> sock.v1.ProGrant
-	63, // 4: sock.v1.ProGrant.granted_at:type_name -> google.protobuf.Timestamp
-	63, // 5: sock.v1.ProGrant.ends_at:type_name -> google.protobuf.Timestamp
-	63, // 6: sock.v1.ProGrant.revoked_at:type_name -> google.protobuf.Timestamp
-	63, // 7: sock.v1.ProTrial.started_at:type_name -> google.protobuf.Timestamp
-	63, // 8: sock.v1.ProTrial.ends_at:type_name -> google.protobuf.Timestamp
-	63, // 9: sock.v1.ProSubscriptionSummary.active_until:type_name -> google.protobuf.Timestamp
-	21, // 10: sock.v1.FeatureFlag.last_set:type_name -> sock.v1.FeatureFlagSet
-	63, // 11: sock.v1.FeatureFlagSet.at:type_name -> google.protobuf.Timestamp
-	20, // 12: sock.v1.GetFeatureFlagsResponse.flags:type_name -> sock.v1.FeatureFlag
-	20, // 13: sock.v1.SetFeatureFlagResponse.flag:type_name -> sock.v1.FeatureFlag
-	63, // 14: sock.v1.MintInviteResponse.expires_at:type_name -> google.protobuf.Timestamp
-	64, // 15: sock.v1.ListReportsResponse.reports:type_name -> sock.v1.Report
-	65, // 16: sock.v1.ListReportsResponse.accounts:type_name -> sock.v1.Account
-	66, // 17: sock.v1.ResolveReportRequest.outcome:type_name -> sock.v1.ResolutionOutcome
-	67, // 18: sock.v1.ResolveReportResponse.resolution:type_name -> sock.v1.Resolution
-	0,  // 19: sock.v1.ListHumansRequest.archive_filter:type_name -> sock.v1.HumanArchiveFilter
-	38, // 20: sock.v1.ListHumansResponse.humans:type_name -> sock.v1.HumanSummary
-	65, // 21: sock.v1.HumanSummary.account:type_name -> sock.v1.Account
-	63, // 22: sock.v1.HumanSummary.joined_at:type_name -> google.protobuf.Timestamp
-	63, // 23: sock.v1.HumanSummary.suspended_at:type_name -> google.protobuf.Timestamp
-	63, // 24: sock.v1.HumanSummary.archived_at:type_name -> google.protobuf.Timestamp
-	38, // 25: sock.v1.GetHumanResponse.human:type_name -> sock.v1.HumanSummary
-	68, // 26: sock.v1.GetHumanResponse.devices:type_name -> sock.v1.Device
-	69, // 27: sock.v1.GetHumanResponse.puppets:type_name -> sock.v1.PuppetWithDevices
-	41, // 28: sock.v1.GetHumanResponse.terms_acceptances:type_name -> sock.v1.TermsAcceptance
-	70, // 29: sock.v1.GetHumanResponse.pro:type_name -> sock.v1.ProStatus
-	14, // 30: sock.v1.GetHumanResponse.trial:type_name -> sock.v1.ProTrial
-	15, // 31: sock.v1.GetHumanResponse.subscriptions:type_name -> sock.v1.ProSubscriptionSummary
-	13, // 32: sock.v1.GetHumanResponse.grants:type_name -> sock.v1.ProGrant
-	63, // 33: sock.v1.TermsAcceptance.accepted_at:type_name -> google.protobuf.Timestamp
-	44, // 34: sock.v1.ListAccountReportsResponse.reports:type_name -> sock.v1.ReportSummary
-	65, // 35: sock.v1.ListAccountReportsResponse.accounts:type_name -> sock.v1.Account
-	71, // 36: sock.v1.ReportSummary.reason:type_name -> sock.v1.ReportReason
-	63, // 37: sock.v1.ReportSummary.created_at:type_name -> google.protobuf.Timestamp
-	67, // 38: sock.v1.ReportSummary.resolution:type_name -> sock.v1.Resolution
-	65, // 39: sock.v1.CreateHumanResponse.account:type_name -> sock.v1.Account
-	1,  // 40: sock.v1.SignInOperatorWithAppleRequest.client:type_name -> sock.v1.OperatorSignInClient
-	63, // 41: sock.v1.SignInOperatorWithAppleResponse.expires_at:type_name -> google.protobuf.Timestamp
-	2,  // 42: sock.v1.ListInviteRequestsRequest.state:type_name -> sock.v1.InviteRequestState
-	72, // 43: sock.v1.ListInviteRequestsResponse.requests:type_name -> sock.v1.InviteRequest
-	59, // 44: sock.v1.ApproveInviteRequestsResponse.results:type_name -> sock.v1.ApproveInviteRequestResult
-	3,  // 45: sock.v1.ApproveInviteRequestResult.outcome:type_name -> sock.v1.ApproveInviteRequestOutcome
-	73, // 46: sock.v1.ApproveInviteRequestResult.invite:type_name -> sock.v1.ApprovedInvite
-	62, // 47: sock.v1.DeclineInviteRequestsResponse.results:type_name -> sock.v1.DeclineInviteRequestResult
-	4,  // 48: sock.v1.DeclineInviteRequestResult.outcome:type_name -> sock.v1.DeclineInviteRequestOutcome
-	26, // 49: sock.v1.OperatorService.MintInvite:input_type -> sock.v1.MintInviteRequest
-	28, // 50: sock.v1.OperatorService.ListReports:input_type -> sock.v1.ListReportsRequest
-	30, // 51: sock.v1.OperatorService.ResolveReport:input_type -> sock.v1.ResolveReportRequest
-	32, // 52: sock.v1.OperatorService.ReinstateAccount:input_type -> sock.v1.ReinstateAccountRequest
-	34, // 53: sock.v1.OperatorService.RevokeOperatorToken:input_type -> sock.v1.RevokeOperatorTokenRequest
-	36, // 54: sock.v1.OperatorService.ListHumans:input_type -> sock.v1.ListHumansRequest
-	39, // 55: sock.v1.OperatorService.GetHuman:input_type -> sock.v1.GetHumanRequest
-	42, // 56: sock.v1.OperatorService.ListAccountReports:input_type -> sock.v1.ListAccountReportsRequest
-	45, // 57: sock.v1.OperatorService.EraseHuman:input_type -> sock.v1.EraseHumanRequest
-	47, // 58: sock.v1.OperatorService.CreateHuman:input_type -> sock.v1.CreateHumanRequest
-	49, // 59: sock.v1.OperatorService.ArchiveHuman:input_type -> sock.v1.ArchiveHumanRequest
-	51, // 60: sock.v1.OperatorService.UnarchiveHuman:input_type -> sock.v1.UnarchiveHumanRequest
-	55, // 61: sock.v1.OperatorService.ListInviteRequests:input_type -> sock.v1.ListInviteRequestsRequest
-	57, // 62: sock.v1.OperatorService.ApproveInviteRequests:input_type -> sock.v1.ApproveInviteRequestsRequest
-	60, // 63: sock.v1.OperatorService.DeclineInviteRequests:input_type -> sock.v1.DeclineInviteRequestsRequest
-	16, // 64: sock.v1.OperatorService.GetMessageHold:input_type -> sock.v1.GetMessageHoldRequest
-	18, // 65: sock.v1.OperatorService.SetMessageHold:input_type -> sock.v1.SetMessageHoldRequest
-	22, // 66: sock.v1.OperatorService.GetFeatureFlags:input_type -> sock.v1.GetFeatureFlagsRequest
-	24, // 67: sock.v1.OperatorService.SetFeatureFlag:input_type -> sock.v1.SetFeatureFlagRequest
-	9,  // 68: sock.v1.OperatorService.GrantPro:input_type -> sock.v1.GrantProRequest
-	11, // 69: sock.v1.OperatorService.RevokeProGrant:input_type -> sock.v1.RevokeProGrantRequest
-	5,  // 70: sock.v1.OperatorService.MintTriageToken:input_type -> sock.v1.MintTriageTokenRequest
-	7,  // 71: sock.v1.OperatorService.VerifyTriageToken:input_type -> sock.v1.VerifyTriageTokenRequest
-	53, // 72: sock.v1.OperatorSignInService.SignInOperatorWithApple:input_type -> sock.v1.SignInOperatorWithAppleRequest
-	27, // 73: sock.v1.OperatorService.MintInvite:output_type -> sock.v1.MintInviteResponse
-	29, // 74: sock.v1.OperatorService.ListReports:output_type -> sock.v1.ListReportsResponse
-	31, // 75: sock.v1.OperatorService.ResolveReport:output_type -> sock.v1.ResolveReportResponse
-	33, // 76: sock.v1.OperatorService.ReinstateAccount:output_type -> sock.v1.ReinstateAccountResponse
-	35, // 77: sock.v1.OperatorService.RevokeOperatorToken:output_type -> sock.v1.RevokeOperatorTokenResponse
-	37, // 78: sock.v1.OperatorService.ListHumans:output_type -> sock.v1.ListHumansResponse
-	40, // 79: sock.v1.OperatorService.GetHuman:output_type -> sock.v1.GetHumanResponse
-	43, // 80: sock.v1.OperatorService.ListAccountReports:output_type -> sock.v1.ListAccountReportsResponse
-	46, // 81: sock.v1.OperatorService.EraseHuman:output_type -> sock.v1.EraseHumanResponse
-	48, // 82: sock.v1.OperatorService.CreateHuman:output_type -> sock.v1.CreateHumanResponse
-	50, // 83: sock.v1.OperatorService.ArchiveHuman:output_type -> sock.v1.ArchiveHumanResponse
-	52, // 84: sock.v1.OperatorService.UnarchiveHuman:output_type -> sock.v1.UnarchiveHumanResponse
-	56, // 85: sock.v1.OperatorService.ListInviteRequests:output_type -> sock.v1.ListInviteRequestsResponse
-	58, // 86: sock.v1.OperatorService.ApproveInviteRequests:output_type -> sock.v1.ApproveInviteRequestsResponse
-	61, // 87: sock.v1.OperatorService.DeclineInviteRequests:output_type -> sock.v1.DeclineInviteRequestsResponse
-	17, // 88: sock.v1.OperatorService.GetMessageHold:output_type -> sock.v1.GetMessageHoldResponse
-	19, // 89: sock.v1.OperatorService.SetMessageHold:output_type -> sock.v1.SetMessageHoldResponse
-	23, // 90: sock.v1.OperatorService.GetFeatureFlags:output_type -> sock.v1.GetFeatureFlagsResponse
-	25, // 91: sock.v1.OperatorService.SetFeatureFlag:output_type -> sock.v1.SetFeatureFlagResponse
-	10, // 92: sock.v1.OperatorService.GrantPro:output_type -> sock.v1.GrantProResponse
-	12, // 93: sock.v1.OperatorService.RevokeProGrant:output_type -> sock.v1.RevokeProGrantResponse
-	6,  // 94: sock.v1.OperatorService.MintTriageToken:output_type -> sock.v1.MintTriageTokenResponse
-	8,  // 95: sock.v1.OperatorService.VerifyTriageToken:output_type -> sock.v1.VerifyTriageTokenResponse
-	54, // 96: sock.v1.OperatorSignInService.SignInOperatorWithApple:output_type -> sock.v1.SignInOperatorWithAppleResponse
-	73, // [73:97] is the sub-list for method output_type
-	49, // [49:73] is the sub-list for method input_type
-	49, // [49:49] is the sub-list for extension type_name
-	49, // [49:49] is the sub-list for extension extendee
-	0,  // [0:49] is the sub-list for field type_name
+	85,  // 0: sock.v1.MintTriageTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
+	85,  // 1: sock.v1.VerifyTriageTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
+	85,  // 2: sock.v1.GrantProRequest.ends_at:type_name -> google.protobuf.Timestamp
+	13,  // 3: sock.v1.GrantProResponse.grant:type_name -> sock.v1.ProGrant
+	85,  // 4: sock.v1.ProGrant.granted_at:type_name -> google.protobuf.Timestamp
+	85,  // 5: sock.v1.ProGrant.ends_at:type_name -> google.protobuf.Timestamp
+	85,  // 6: sock.v1.ProGrant.revoked_at:type_name -> google.protobuf.Timestamp
+	85,  // 7: sock.v1.ProTrial.started_at:type_name -> google.protobuf.Timestamp
+	85,  // 8: sock.v1.ProTrial.ends_at:type_name -> google.protobuf.Timestamp
+	85,  // 9: sock.v1.ProSubscriptionSummary.active_until:type_name -> google.protobuf.Timestamp
+	21,  // 10: sock.v1.FeatureFlag.last_set:type_name -> sock.v1.FeatureFlagSet
+	85,  // 11: sock.v1.FeatureFlagSet.at:type_name -> google.protobuf.Timestamp
+	20,  // 12: sock.v1.GetFeatureFlagsResponse.flags:type_name -> sock.v1.FeatureFlag
+	20,  // 13: sock.v1.SetFeatureFlagResponse.flag:type_name -> sock.v1.FeatureFlag
+	86,  // 14: sock.v1.Limit.key:type_name -> sock.v1.LimitKey
+	21,  // 15: sock.v1.Limit.last_set:type_name -> sock.v1.FeatureFlagSet
+	26,  // 16: sock.v1.GetLimitsResponse.limits:type_name -> sock.v1.Limit
+	86,  // 17: sock.v1.SetLimitRequest.key:type_name -> sock.v1.LimitKey
+	26,  // 18: sock.v1.SetLimitResponse.limit:type_name -> sock.v1.Limit
+	86,  // 19: sock.v1.LimitOverride.key:type_name -> sock.v1.LimitKey
+	86,  // 20: sock.v1.SetLimitOverrideRequest.key:type_name -> sock.v1.LimitKey
+	31,  // 21: sock.v1.SetLimitOverrideResponse.override:type_name -> sock.v1.LimitOverride
+	86,  // 22: sock.v1.ClearLimitOverrideRequest.key:type_name -> sock.v1.LimitKey
+	32,  // 23: sock.v1.SetFeatureFlagOverrideResponse.override:type_name -> sock.v1.FeatureFlagOverride
+	87,  // 24: sock.v1.ListLimitRequestsRequest.state:type_name -> sock.v1.LimitRequestState
+	43,  // 25: sock.v1.ListLimitRequestsResponse.requests:type_name -> sock.v1.HumanLimitRequest
+	88,  // 26: sock.v1.HumanLimitRequest.request:type_name -> sock.v1.LimitRequest
+	88,  // 27: sock.v1.ApproveLimitRequestResponse.request:type_name -> sock.v1.LimitRequest
+	88,  // 28: sock.v1.DeclineLimitRequestResponse.request:type_name -> sock.v1.LimitRequest
+	85,  // 29: sock.v1.MintInviteResponse.expires_at:type_name -> google.protobuf.Timestamp
+	89,  // 30: sock.v1.ListReportsResponse.reports:type_name -> sock.v1.Report
+	90,  // 31: sock.v1.ListReportsResponse.accounts:type_name -> sock.v1.Account
+	91,  // 32: sock.v1.ResolveReportRequest.outcome:type_name -> sock.v1.ResolutionOutcome
+	92,  // 33: sock.v1.ResolveReportResponse.resolution:type_name -> sock.v1.Resolution
+	0,   // 34: sock.v1.ListHumansRequest.archive_filter:type_name -> sock.v1.HumanArchiveFilter
+	60,  // 35: sock.v1.ListHumansResponse.humans:type_name -> sock.v1.HumanSummary
+	90,  // 36: sock.v1.HumanSummary.account:type_name -> sock.v1.Account
+	85,  // 37: sock.v1.HumanSummary.joined_at:type_name -> google.protobuf.Timestamp
+	85,  // 38: sock.v1.HumanSummary.suspended_at:type_name -> google.protobuf.Timestamp
+	85,  // 39: sock.v1.HumanSummary.archived_at:type_name -> google.protobuf.Timestamp
+	60,  // 40: sock.v1.GetHumanResponse.human:type_name -> sock.v1.HumanSummary
+	93,  // 41: sock.v1.GetHumanResponse.devices:type_name -> sock.v1.Device
+	94,  // 42: sock.v1.GetHumanResponse.puppets:type_name -> sock.v1.PuppetWithDevices
+	63,  // 43: sock.v1.GetHumanResponse.terms_acceptances:type_name -> sock.v1.TermsAcceptance
+	95,  // 44: sock.v1.GetHumanResponse.pro:type_name -> sock.v1.ProStatus
+	14,  // 45: sock.v1.GetHumanResponse.trial:type_name -> sock.v1.ProTrial
+	15,  // 46: sock.v1.GetHumanResponse.subscriptions:type_name -> sock.v1.ProSubscriptionSummary
+	13,  // 47: sock.v1.GetHumanResponse.grants:type_name -> sock.v1.ProGrant
+	31,  // 48: sock.v1.GetHumanResponse.limit_overrides:type_name -> sock.v1.LimitOverride
+	32,  // 49: sock.v1.GetHumanResponse.flag_overrides:type_name -> sock.v1.FeatureFlagOverride
+	96,  // 50: sock.v1.GetHumanResponse.limits:type_name -> sock.v1.PlanLimits
+	85,  // 51: sock.v1.TermsAcceptance.accepted_at:type_name -> google.protobuf.Timestamp
+	66,  // 52: sock.v1.ListAccountReportsResponse.reports:type_name -> sock.v1.ReportSummary
+	90,  // 53: sock.v1.ListAccountReportsResponse.accounts:type_name -> sock.v1.Account
+	97,  // 54: sock.v1.ReportSummary.reason:type_name -> sock.v1.ReportReason
+	85,  // 55: sock.v1.ReportSummary.created_at:type_name -> google.protobuf.Timestamp
+	92,  // 56: sock.v1.ReportSummary.resolution:type_name -> sock.v1.Resolution
+	90,  // 57: sock.v1.CreateHumanResponse.account:type_name -> sock.v1.Account
+	1,   // 58: sock.v1.SignInOperatorWithAppleRequest.client:type_name -> sock.v1.OperatorSignInClient
+	85,  // 59: sock.v1.SignInOperatorWithAppleResponse.expires_at:type_name -> google.protobuf.Timestamp
+	2,   // 60: sock.v1.ListInviteRequestsRequest.state:type_name -> sock.v1.InviteRequestState
+	98,  // 61: sock.v1.ListInviteRequestsResponse.requests:type_name -> sock.v1.InviteRequest
+	81,  // 62: sock.v1.ApproveInviteRequestsResponse.results:type_name -> sock.v1.ApproveInviteRequestResult
+	3,   // 63: sock.v1.ApproveInviteRequestResult.outcome:type_name -> sock.v1.ApproveInviteRequestOutcome
+	99,  // 64: sock.v1.ApproveInviteRequestResult.invite:type_name -> sock.v1.ApprovedInvite
+	84,  // 65: sock.v1.DeclineInviteRequestsResponse.results:type_name -> sock.v1.DeclineInviteRequestResult
+	4,   // 66: sock.v1.DeclineInviteRequestResult.outcome:type_name -> sock.v1.DeclineInviteRequestOutcome
+	48,  // 67: sock.v1.OperatorService.MintInvite:input_type -> sock.v1.MintInviteRequest
+	50,  // 68: sock.v1.OperatorService.ListReports:input_type -> sock.v1.ListReportsRequest
+	52,  // 69: sock.v1.OperatorService.ResolveReport:input_type -> sock.v1.ResolveReportRequest
+	54,  // 70: sock.v1.OperatorService.ReinstateAccount:input_type -> sock.v1.ReinstateAccountRequest
+	56,  // 71: sock.v1.OperatorService.RevokeOperatorToken:input_type -> sock.v1.RevokeOperatorTokenRequest
+	58,  // 72: sock.v1.OperatorService.ListHumans:input_type -> sock.v1.ListHumansRequest
+	61,  // 73: sock.v1.OperatorService.GetHuman:input_type -> sock.v1.GetHumanRequest
+	64,  // 74: sock.v1.OperatorService.ListAccountReports:input_type -> sock.v1.ListAccountReportsRequest
+	67,  // 75: sock.v1.OperatorService.EraseHuman:input_type -> sock.v1.EraseHumanRequest
+	69,  // 76: sock.v1.OperatorService.CreateHuman:input_type -> sock.v1.CreateHumanRequest
+	71,  // 77: sock.v1.OperatorService.ArchiveHuman:input_type -> sock.v1.ArchiveHumanRequest
+	73,  // 78: sock.v1.OperatorService.UnarchiveHuman:input_type -> sock.v1.UnarchiveHumanRequest
+	77,  // 79: sock.v1.OperatorService.ListInviteRequests:input_type -> sock.v1.ListInviteRequestsRequest
+	79,  // 80: sock.v1.OperatorService.ApproveInviteRequests:input_type -> sock.v1.ApproveInviteRequestsRequest
+	82,  // 81: sock.v1.OperatorService.DeclineInviteRequests:input_type -> sock.v1.DeclineInviteRequestsRequest
+	16,  // 82: sock.v1.OperatorService.GetMessageHold:input_type -> sock.v1.GetMessageHoldRequest
+	18,  // 83: sock.v1.OperatorService.SetMessageHold:input_type -> sock.v1.SetMessageHoldRequest
+	22,  // 84: sock.v1.OperatorService.GetFeatureFlags:input_type -> sock.v1.GetFeatureFlagsRequest
+	24,  // 85: sock.v1.OperatorService.SetFeatureFlag:input_type -> sock.v1.SetFeatureFlagRequest
+	27,  // 86: sock.v1.OperatorService.GetLimits:input_type -> sock.v1.GetLimitsRequest
+	29,  // 87: sock.v1.OperatorService.SetLimit:input_type -> sock.v1.SetLimitRequest
+	33,  // 88: sock.v1.OperatorService.SetLimitOverride:input_type -> sock.v1.SetLimitOverrideRequest
+	35,  // 89: sock.v1.OperatorService.ClearLimitOverride:input_type -> sock.v1.ClearLimitOverrideRequest
+	37,  // 90: sock.v1.OperatorService.SetFeatureFlagOverride:input_type -> sock.v1.SetFeatureFlagOverrideRequest
+	39,  // 91: sock.v1.OperatorService.ClearFeatureFlagOverride:input_type -> sock.v1.ClearFeatureFlagOverrideRequest
+	41,  // 92: sock.v1.OperatorService.ListLimitRequests:input_type -> sock.v1.ListLimitRequestsRequest
+	44,  // 93: sock.v1.OperatorService.ApproveLimitRequest:input_type -> sock.v1.ApproveLimitRequestRequest
+	46,  // 94: sock.v1.OperatorService.DeclineLimitRequest:input_type -> sock.v1.DeclineLimitRequestRequest
+	9,   // 95: sock.v1.OperatorService.GrantPro:input_type -> sock.v1.GrantProRequest
+	11,  // 96: sock.v1.OperatorService.RevokeProGrant:input_type -> sock.v1.RevokeProGrantRequest
+	5,   // 97: sock.v1.OperatorService.MintTriageToken:input_type -> sock.v1.MintTriageTokenRequest
+	7,   // 98: sock.v1.OperatorService.VerifyTriageToken:input_type -> sock.v1.VerifyTriageTokenRequest
+	75,  // 99: sock.v1.OperatorSignInService.SignInOperatorWithApple:input_type -> sock.v1.SignInOperatorWithAppleRequest
+	49,  // 100: sock.v1.OperatorService.MintInvite:output_type -> sock.v1.MintInviteResponse
+	51,  // 101: sock.v1.OperatorService.ListReports:output_type -> sock.v1.ListReportsResponse
+	53,  // 102: sock.v1.OperatorService.ResolveReport:output_type -> sock.v1.ResolveReportResponse
+	55,  // 103: sock.v1.OperatorService.ReinstateAccount:output_type -> sock.v1.ReinstateAccountResponse
+	57,  // 104: sock.v1.OperatorService.RevokeOperatorToken:output_type -> sock.v1.RevokeOperatorTokenResponse
+	59,  // 105: sock.v1.OperatorService.ListHumans:output_type -> sock.v1.ListHumansResponse
+	62,  // 106: sock.v1.OperatorService.GetHuman:output_type -> sock.v1.GetHumanResponse
+	65,  // 107: sock.v1.OperatorService.ListAccountReports:output_type -> sock.v1.ListAccountReportsResponse
+	68,  // 108: sock.v1.OperatorService.EraseHuman:output_type -> sock.v1.EraseHumanResponse
+	70,  // 109: sock.v1.OperatorService.CreateHuman:output_type -> sock.v1.CreateHumanResponse
+	72,  // 110: sock.v1.OperatorService.ArchiveHuman:output_type -> sock.v1.ArchiveHumanResponse
+	74,  // 111: sock.v1.OperatorService.UnarchiveHuman:output_type -> sock.v1.UnarchiveHumanResponse
+	78,  // 112: sock.v1.OperatorService.ListInviteRequests:output_type -> sock.v1.ListInviteRequestsResponse
+	80,  // 113: sock.v1.OperatorService.ApproveInviteRequests:output_type -> sock.v1.ApproveInviteRequestsResponse
+	83,  // 114: sock.v1.OperatorService.DeclineInviteRequests:output_type -> sock.v1.DeclineInviteRequestsResponse
+	17,  // 115: sock.v1.OperatorService.GetMessageHold:output_type -> sock.v1.GetMessageHoldResponse
+	19,  // 116: sock.v1.OperatorService.SetMessageHold:output_type -> sock.v1.SetMessageHoldResponse
+	23,  // 117: sock.v1.OperatorService.GetFeatureFlags:output_type -> sock.v1.GetFeatureFlagsResponse
+	25,  // 118: sock.v1.OperatorService.SetFeatureFlag:output_type -> sock.v1.SetFeatureFlagResponse
+	28,  // 119: sock.v1.OperatorService.GetLimits:output_type -> sock.v1.GetLimitsResponse
+	30,  // 120: sock.v1.OperatorService.SetLimit:output_type -> sock.v1.SetLimitResponse
+	34,  // 121: sock.v1.OperatorService.SetLimitOverride:output_type -> sock.v1.SetLimitOverrideResponse
+	36,  // 122: sock.v1.OperatorService.ClearLimitOverride:output_type -> sock.v1.ClearLimitOverrideResponse
+	38,  // 123: sock.v1.OperatorService.SetFeatureFlagOverride:output_type -> sock.v1.SetFeatureFlagOverrideResponse
+	40,  // 124: sock.v1.OperatorService.ClearFeatureFlagOverride:output_type -> sock.v1.ClearFeatureFlagOverrideResponse
+	42,  // 125: sock.v1.OperatorService.ListLimitRequests:output_type -> sock.v1.ListLimitRequestsResponse
+	45,  // 126: sock.v1.OperatorService.ApproveLimitRequest:output_type -> sock.v1.ApproveLimitRequestResponse
+	47,  // 127: sock.v1.OperatorService.DeclineLimitRequest:output_type -> sock.v1.DeclineLimitRequestResponse
+	10,  // 128: sock.v1.OperatorService.GrantPro:output_type -> sock.v1.GrantProResponse
+	12,  // 129: sock.v1.OperatorService.RevokeProGrant:output_type -> sock.v1.RevokeProGrantResponse
+	6,   // 130: sock.v1.OperatorService.MintTriageToken:output_type -> sock.v1.MintTriageTokenResponse
+	8,   // 131: sock.v1.OperatorService.VerifyTriageToken:output_type -> sock.v1.VerifyTriageTokenResponse
+	76,  // 132: sock.v1.OperatorSignInService.SignInOperatorWithApple:output_type -> sock.v1.SignInOperatorWithAppleResponse
+	100, // [100:133] is the sub-list for method output_type
+	67,  // [67:100] is the sub-list for method input_type
+	67,  // [67:67] is the sub-list for extension type_name
+	67,  // [67:67] is the sub-list for extension extendee
+	0,   // [0:67] is the sub-list for field type_name
 }
 
 func init() { file_sock_v1_operator_proto_init() }
@@ -3790,7 +5080,7 @@ func file_sock_v1_operator_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sock_v1_operator_proto_rawDesc), len(file_sock_v1_operator_proto_rawDesc)),
 			NumEnums:      5,
-			NumMessages:   58,
+			NumMessages:   80,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

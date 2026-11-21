@@ -75,13 +75,50 @@ public nonisolated enum Sock_V1_AppleClient: SwiftProtobuf.Enum, Swift.CaseItera
 
 }
 
-/// Plan is what a human's account allows. Not ProPlan, which is a Sock Pro
-/// price.
+/// Feature is a capability Sock Pro includes. Basic includes none.
+public nonisolated enum Sock_V1_Feature: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unspecified // = 0
+
+  /// Rules that mute, prioritize, batch and escalate the human's notifications.
+  case smartNotifications // = 1
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unspecified
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .smartNotifications
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .smartNotifications: return 1
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Sock_V1_Feature] = [
+    .unspecified,
+    .smartNotifications,
+  ]
+
+}
+
+/// Plan is what features a human's account includes. Not ProPlan, which is a
+/// Sock Pro price.
 public nonisolated enum Sock_V1_Plan: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
 
-  /// Free forever.
+  /// Free forever: everything but the Pro features.
   case basic // = 1
 
   /// Sock Pro: a subscription or an operator grant is active.
@@ -115,6 +152,91 @@ public nonisolated enum Sock_V1_Plan: SwiftProtobuf.Enum, Swift.CaseIterable {
     .unspecified,
     .basic,
     .pro,
+  ]
+
+}
+
+/// LimitKey names one limit.
+public nonisolated enum Sock_V1_LimitKey: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unspecified // = 0
+  case puppets // = 1
+  case groupMembers // = 2
+  case puppetSendsPerMinute // = 3
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unspecified
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .puppets
+    case 2: self = .groupMembers
+    case 3: self = .puppetSendsPerMinute
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .puppets: return 1
+    case .groupMembers: return 2
+    case .puppetSendsPerMinute: return 3
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Sock_V1_LimitKey] = [
+    .unspecified,
+    .puppets,
+    .groupMembers,
+    .puppetSendsPerMinute,
+  ]
+
+}
+
+public nonisolated enum Sock_V1_LimitRequestState: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unspecified // = 0
+  case pending // = 1
+  case approved // = 2
+  case declined // = 3
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unspecified
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .pending
+    case 2: self = .approved
+    case 3: self = .declined
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .pending: return 1
+    case .approved: return 2
+    case .declined: return 3
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Sock_V1_LimitRequestState] = [
+    .unspecified,
+    .pending,
+    .approved,
+    .declined,
   ]
 
 }
@@ -1277,9 +1399,8 @@ public nonisolated struct Sock_V1_GetMeResponse: @unchecked Sendable {
     set {_uniqueStorage()._currentTermsVersion = newValue}
   }
 
-  /// Sock Pro is active for this human, or for a puppet's owner: true while
-  /// the server does not enforce Sock Pro, otherwise true while any source in
-  /// pro is active.
+  /// Sock Pro is active for this human, or for a puppet's owner: any source in
+  /// pro is active. The same as plan == PLAN_PRO.
   public var proActive: Bool {
     get {_storage._proActive}
     set {_uniqueStorage()._proActive = newValue}
@@ -1311,14 +1432,15 @@ public nonisolated struct Sock_V1_GetMeResponse: @unchecked Sendable {
   }
 
   /// The human's plan, or a puppet owner's: Pro while any source in pro is
-  /// active, Basic otherwise, whether or not the server enforces Sock Pro.
-  /// pro_active can be true on Basic: the server is not enforcing.
+  /// active, Basic otherwise. Decides features only (docs/specs/entitlements.md).
   public var plan: Sock_V1_Plan {
     get {_storage._plan}
     set {_uniqueStorage()._plan = newValue}
   }
 
-  /// What plan allows.
+  /// The human's effective limits, or a puppet owner's: their override for a
+  /// key when the operator set one, the platform limit otherwise. The same
+  /// rule on both plans.
   public var limits: Sock_V1_PlanLimits {
     get {_storage._limits ?? Sock_V1_PlanLimits()}
     set {_uniqueStorage()._limits = newValue}
@@ -1328,6 +1450,13 @@ public nonisolated struct Sock_V1_GetMeResponse: @unchecked Sendable {
   /// Clears the value of `limits`. Subsequent reads from it will return its default value.
   public mutating func clearLimits() {_uniqueStorage()._limits = nil}
 
+  /// The features available to the human, or a puppet's owner: the plan
+  /// includes them and this server runs them. Empty on Basic.
+  public var features: [Sock_V1_Feature] {
+    get {_storage._features}
+    set {_uniqueStorage()._features = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1335,24 +1464,138 @@ public nonisolated struct Sock_V1_GetMeResponse: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-/// PlanLimits are the numbers a plan allows. Basic: 5, 20, 60. Pro: 50, 100,
-/// 300.
+/// PlanLimits are one human's effective limits, the same rule on both plans.
+/// The name is kept for wire compatibility. The platform launches at 10, 20
+/// and 60; the operator raises them, for everyone or for one human.
 public nonisolated struct Sock_V1_PlanLimits: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// Unarchived non-system puppets that work. Past it, while the server
-  /// enforces Sock Pro, the newest are waitlisted (Puppet.waitlisted) and
-  /// CreatePuppet is LIMIT_REACHED.
+  /// Unarchived non-system puppets. At it, CreatePuppet, UnarchivePuppet and
+  /// consent that creates a puppet are LIMIT_REACHED.
   public var puppets: Int32 = 0
 
-  /// Members of a group: Pro's while any human member has Pro. Past it,
+  /// Members of a group: the highest among the group's human members. At it,
   /// CreateGroup and AddMember are GROUP_FULL.
   public var groupMembers: Int32 = 0
 
-  /// Messages each puppet sends a minute.
+  /// Messages each of the human's puppets sends a minute.
   public var puppetSendsPerMinute: Int32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+/// LimitRequest is a human's ask for a higher limit.
+public nonisolated struct Sock_V1_LimitRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var id: String = String()
+
+  public var key: Sock_V1_LimitKey = .unspecified
+
+  /// The value asked for.
+  public var requested: Int32 = 0
+
+  /// 1 to 500 characters.
+  public var reason: String = String()
+
+  public var createdAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {_createdAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_createdAt = newValue}
+  }
+  /// Returns true if `createdAt` has been explicitly set.
+  public var hasCreatedAt: Bool {self._createdAt != nil}
+  /// Clears the value of `createdAt`. Subsequent reads from it will return its default value.
+  public mutating func clearCreatedAt() {self._createdAt = nil}
+
+  public var state: Sock_V1_LimitRequestState = .unspecified
+
+  /// The value the operator granted. Zero unless approved; it may differ from
+  /// requested.
+  public var granted: Int32 = 0
+
+  /// Unset while pending.
+  public var decidedAt: SwiftProtobuf.Google_Protobuf_Timestamp {
+    get {_decidedAt ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    set {_decidedAt = newValue}
+  }
+  /// Returns true if `decidedAt` has been explicitly set.
+  public var hasDecidedAt: Bool {self._decidedAt != nil}
+  /// Clears the value of `decidedAt`. Subsequent reads from it will return its default value.
+  public mutating func clearDecidedAt() {self._decidedAt = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+  fileprivate var _decidedAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
+}
+
+/// Asks for a higher value of one limit. FIELD_INVALID when key is
+/// unspecified, requested is not above the caller's effective limit or is
+/// above the limit's ceiling, or reason is not 1 to 500 characters.
+/// LIMIT_REQUEST_PENDING with a pending request for key;
+/// LIMIT_REQUEST_TOO_SOON within 30 days of a declined one.
+public nonisolated struct Sock_V1_RequestLimitIncreaseRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var key: Sock_V1_LimitKey = .unspecified
+
+  public var requested: Int32 = 0
+
+  public var reason: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_RequestLimitIncreaseResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var request: Sock_V1_LimitRequest {
+    get {_request ?? Sock_V1_LimitRequest()}
+    set {_request = newValue}
+  }
+  /// Returns true if `request` has been explicitly set.
+  public var hasRequest: Bool {self._request != nil}
+  /// Clears the value of `request`. Subsequent reads from it will return its default value.
+  public mutating func clearRequest() {self._request = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _request: Sock_V1_LimitRequest? = nil
+}
+
+public nonisolated struct Sock_V1_ListMyLimitRequestsRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Sock_V1_ListMyLimitRequestsResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// The caller's requests, newest first. Decided requests are kept 365 days.
+  public var requests: [Sock_V1_LimitRequest] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2038,8 +2281,20 @@ nonisolated extension Sock_V1_AppleClient: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0APPLE_CLIENT_UNSPECIFIED\0\u{1}APPLE_CLIENT_APP\0\u{1}APPLE_CLIENT_WEB\0")
 }
 
+nonisolated extension Sock_V1_Feature: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0FEATURE_UNSPECIFIED\0\u{1}FEATURE_SMART_NOTIFICATIONS\0")
+}
+
 nonisolated extension Sock_V1_Plan: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PLAN_UNSPECIFIED\0\u{1}PLAN_BASIC\0\u{1}PLAN_PRO\0")
+}
+
+nonisolated extension Sock_V1_LimitKey: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0LIMIT_KEY_UNSPECIFIED\0\u{1}LIMIT_KEY_PUPPETS\0\u{1}LIMIT_KEY_GROUP_MEMBERS\0\u{1}LIMIT_KEY_PUPPET_SENDS_PER_MINUTE\0")
+}
+
+nonisolated extension Sock_V1_LimitRequestState: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0LIMIT_REQUEST_STATE_UNSPECIFIED\0\u{1}LIMIT_REQUEST_STATE_PENDING\0\u{1}LIMIT_REQUEST_STATE_APPROVED\0\u{1}LIMIT_REQUEST_STATE_DECLINED\0")
 }
 
 nonisolated extension Sock_V1_ProSource: SwiftProtobuf._ProtoNameProviding {
@@ -3949,7 +4204,7 @@ nonisolated extension Sock_V1_GetMeRequest: SwiftProtobuf.Message, SwiftProtobuf
 
 nonisolated extension Sock_V1_GetMeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetMeResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}account\0\u{3}accepted_terms_version\0\u{3}current_terms_version\0\u{3}pro_active\0\u{3}support_account_id\0\u{1}pro\0\u{3}trial_available\0\u{1}plan\0\u{1}limits\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}account\0\u{3}accepted_terms_version\0\u{3}current_terms_version\0\u{3}pro_active\0\u{3}support_account_id\0\u{1}pro\0\u{3}trial_available\0\u{1}plan\0\u{1}limits\0\u{1}features\0")
 
   fileprivate class _StorageClass {
     var _account: Sock_V1_Account? = nil
@@ -3961,6 +4216,7 @@ nonisolated extension Sock_V1_GetMeResponse: SwiftProtobuf.Message, SwiftProtobu
     var _trialAvailable: Bool = false
     var _plan: Sock_V1_Plan = .unspecified
     var _limits: Sock_V1_PlanLimits? = nil
+    var _features: [Sock_V1_Feature] = []
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -3980,6 +4236,7 @@ nonisolated extension Sock_V1_GetMeResponse: SwiftProtobuf.Message, SwiftProtobu
       _trialAvailable = source._trialAvailable
       _plan = source._plan
       _limits = source._limits
+      _features = source._features
     }
   }
 
@@ -4007,6 +4264,7 @@ nonisolated extension Sock_V1_GetMeResponse: SwiftProtobuf.Message, SwiftProtobu
         case 7: try { try decoder.decodeSingularBoolField(value: &_storage._trialAvailable) }()
         case 8: try { try decoder.decodeSingularEnumField(value: &_storage._plan) }()
         case 9: try { try decoder.decodeSingularMessageField(value: &_storage._limits) }()
+        case 10: try { try decoder.decodeRepeatedEnumField(value: &_storage._features) }()
         default: break
         }
       }
@@ -4046,6 +4304,9 @@ nonisolated extension Sock_V1_GetMeResponse: SwiftProtobuf.Message, SwiftProtobu
       try { if let v = _storage._limits {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
       } }()
+      if !_storage._features.isEmpty {
+        try visitor.visitPackedEnumField(value: _storage._features, fieldNumber: 10)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4064,6 +4325,7 @@ nonisolated extension Sock_V1_GetMeResponse: SwiftProtobuf.Message, SwiftProtobu
         if _storage._trialAvailable != rhs_storage._trialAvailable {return false}
         if _storage._plan != rhs_storage._plan {return false}
         if _storage._limits != rhs_storage._limits {return false}
+        if _storage._features != rhs_storage._features {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -4108,6 +4370,198 @@ nonisolated extension Sock_V1_PlanLimits: SwiftProtobuf.Message, SwiftProtobuf._
     if lhs.puppets != rhs.puppets {return false}
     if lhs.groupMembers != rhs.groupMembers {return false}
     if lhs.puppetSendsPerMinute != rhs.puppetSendsPerMinute {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_LimitRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".LimitRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}key\0\u{1}requested\0\u{1}reason\0\u{3}created_at\0\u{1}state\0\u{1}granted\0\u{3}decided_at\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.id) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.key) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.requested) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.reason) }()
+      case 5: try { try decoder.decodeSingularMessageField(value: &self._createdAt) }()
+      case 6: try { try decoder.decodeSingularEnumField(value: &self.state) }()
+      case 7: try { try decoder.decodeSingularInt32Field(value: &self.granted) }()
+      case 8: try { try decoder.decodeSingularMessageField(value: &self._decidedAt) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.id.isEmpty {
+      try visitor.visitSingularStringField(value: self.id, fieldNumber: 1)
+    }
+    if self.key != .unspecified {
+      try visitor.visitSingularEnumField(value: self.key, fieldNumber: 2)
+    }
+    if self.requested != 0 {
+      try visitor.visitSingularInt32Field(value: self.requested, fieldNumber: 3)
+    }
+    if !self.reason.isEmpty {
+      try visitor.visitSingularStringField(value: self.reason, fieldNumber: 4)
+    }
+    try { if let v = self._createdAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    } }()
+    if self.state != .unspecified {
+      try visitor.visitSingularEnumField(value: self.state, fieldNumber: 6)
+    }
+    if self.granted != 0 {
+      try visitor.visitSingularInt32Field(value: self.granted, fieldNumber: 7)
+    }
+    try { if let v = self._decidedAt {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_LimitRequest, rhs: Sock_V1_LimitRequest) -> Bool {
+    if lhs.id != rhs.id {return false}
+    if lhs.key != rhs.key {return false}
+    if lhs.requested != rhs.requested {return false}
+    if lhs.reason != rhs.reason {return false}
+    if lhs._createdAt != rhs._createdAt {return false}
+    if lhs.state != rhs.state {return false}
+    if lhs.granted != rhs.granted {return false}
+    if lhs._decidedAt != rhs._decidedAt {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_RequestLimitIncreaseRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".RequestLimitIncreaseRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{1}requested\0\u{1}reason\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.key) }()
+      case 2: try { try decoder.decodeSingularInt32Field(value: &self.requested) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.reason) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.key != .unspecified {
+      try visitor.visitSingularEnumField(value: self.key, fieldNumber: 1)
+    }
+    if self.requested != 0 {
+      try visitor.visitSingularInt32Field(value: self.requested, fieldNumber: 2)
+    }
+    if !self.reason.isEmpty {
+      try visitor.visitSingularStringField(value: self.reason, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_RequestLimitIncreaseRequest, rhs: Sock_V1_RequestLimitIncreaseRequest) -> Bool {
+    if lhs.key != rhs.key {return false}
+    if lhs.requested != rhs.requested {return false}
+    if lhs.reason != rhs.reason {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_RequestLimitIncreaseResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".RequestLimitIncreaseResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}request\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._request) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._request {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_RequestLimitIncreaseResponse, rhs: Sock_V1_RequestLimitIncreaseResponse) -> Bool {
+    if lhs._request != rhs._request {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_ListMyLimitRequestsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ListMyLimitRequestsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_ListMyLimitRequestsRequest, rhs: Sock_V1_ListMyLimitRequestsRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Sock_V1_ListMyLimitRequestsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ListMyLimitRequestsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}requests\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.requests) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.requests.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.requests, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Sock_V1_ListMyLimitRequestsResponse, rhs: Sock_V1_ListMyLimitRequestsResponse) -> Bool {
+    if lhs.requests != rhs.requests {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

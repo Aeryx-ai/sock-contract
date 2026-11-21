@@ -92,8 +92,9 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
   /// failed_precondition: invite code unknown, used or expired.
   case inviteInvalid // = 50
 
-  /// failed_precondition: group is at its member limit: Pro's while any human
-  /// member has Pro, Basic's otherwise (PlanLimits.group_members).
+  /// failed_precondition: group is at its member limit: the highest
+  /// PlanLimits.group_members among its human members, including one being
+  /// added. Ask for more with RequestLimitIncrease.
   case groupFull // = 51
 
   /// failed_precondition: puppet cannot join a conversation its owner is not in.
@@ -118,11 +119,8 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
   /// different outcome. Resolving again with the same outcome succeeds.
   case reportAlreadyResolved // = 57
 
-  /// failed_precondition: the puppet is waitlisted: past its owner's plan's
-  /// puppet limit (Puppet.waitlisted). Sent only while the server enforces
-  /// Sock Pro, for every call with the puppet's token and for MintPuppetToken
-  /// and IssueConnectorPuppetToken naming it. Archive or erase an older
-  /// puppet, or get Sock Pro.
+  /// Never sent: waitlisting is gone (docs/specs/entitlements.md). Kept for
+  /// wire compatibility.
   case subscriptionRequired // = 58
 
   /// failed_precondition: the puppet is a system puppet (Puppet.system), run
@@ -137,9 +135,10 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
   /// reporter exceeded. Retry-After header set.
   case rateLimited // = 60
 
-  /// failed_precondition: a limit is reached. CreatePuppet, and an agent
-  /// platform's consent that creates a puppet, at the plan's puppet limit
-  /// (PlanLimits.puppets): archive or erase one, or get Sock Pro. MintMachineKey at 10 live
+  /// failed_precondition: a limit is reached. CreatePuppet, UnarchivePuppet,
+  /// and an agent platform's consent that creates a puppet, at the human's
+  /// puppet limit (PlanLimits.puppets): archive or erase one, or ask for more
+  /// with RequestLimitIncrease. MintMachineKey at 10 live
   /// machine keys per human: revoke one first. MintPuppetToken for the support
   /// puppet at 10 live tokens: revoke one first. Any other
   /// puppet at 10 live tokens is never refused: its oldest token other than
@@ -161,7 +160,7 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
 
   /// failed_precondition: a human posts only into a conversation with an
   /// active puppet: the moderation or support puppet, or a puppet that is not
-  /// archived or waitlisted whose owner is not suspended (Send, CreateGroup).
+  /// archived whose owner is not suspended (Send, CreateGroup).
   /// Conversation.humans_can_post says so before a send.
   case noActivePuppet // = 64
 
@@ -203,6 +202,19 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
   /// already_exists: the caller already has a custom section with this name,
   /// ignoring case (CreateSection, RenameSection).
   case sectionNameTaken // = 73
+
+  /// failed_precondition: the caller's plan does not include the feature this
+  /// RPC configures. The message names the feature. Get Sock Pro.
+  case featureRequired // = 74
+
+  /// already_exists: the caller has a pending request for this limit
+  /// (RequestLimitIncrease). Wait for its decision.
+  case limitRequestPending // = 75
+
+  /// failed_precondition: the caller's last request for this limit was
+  /// declined less than 30 days ago (RequestLimitIncrease). The message names
+  /// the date they can ask again.
+  case limitRequestTooSoon // = 76
   case UNRECOGNIZED(Int)
 
   public init() {
@@ -251,6 +263,9 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
     case 71: self = .lastSignInIdentity
     case 72: self = .recentSignInRequired
     case 73: self = .sectionNameTaken
+    case 74: self = .featureRequired
+    case 75: self = .limitRequestPending
+    case 76: self = .limitRequestTooSoon
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -297,6 +312,9 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
     case .lastSignInIdentity: return 71
     case .recentSignInRequired: return 72
     case .sectionNameTaken: return 73
+    case .featureRequired: return 74
+    case .limitRequestPending: return 75
+    case .limitRequestTooSoon: return 76
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -343,6 +361,9 @@ public nonisolated enum Sock_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
     .lastSignInIdentity,
     .recentSignInRequired,
     .sectionNameTaken,
+    .featureRequired,
+    .limitRequestPending,
+    .limitRequestTooSoon,
   ]
 
 }
@@ -367,7 +388,7 @@ public nonisolated struct Sock_V1_ErrorInfo: Sendable {
 fileprivate nonisolated let _protobuf_package = "sock.v1"
 
 nonisolated extension Sock_V1_ErrorReason: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ERROR_REASON_UNSPECIFIED\0\u{1}ERROR_REASON_TOKEN_INVALID\0\u{1}ERROR_REASON_APPLE_TOKEN_INVALID\0\u{1}ERROR_REASON_EMAIL_CODE_INVALID\0\u{2}\u{7}ERROR_REASON_CALLER_NOT_ALLOWED\0\u{1}ERROR_REASON_NOT_A_MEMBER\0\u{1}ERROR_REASON_NOT_OWNER\0\u{1}ERROR_REASON_ACCOUNT_SUSPENDED\0\u{1}ERROR_REASON_HUMAN_CHECK_FAILED\0\u{1}ERROR_REASON_EMAIL_NOT_VERIFIED\0\u{2}\u{5}ERROR_REASON_FIELD_INVALID\0\u{2}\u{a}ERROR_REASON_NOT_REGISTERED\0\u{1}ERROR_REASON_NOT_FOUND\0\u{2}\u{9}ERROR_REASON_HANDLE_TAKEN\0\u{1}ERROR_REASON_ALREADY_REGISTERED\0\u{1}ERROR_REASON_PUPPET_NAME_TAKEN\0\u{2}\u{8}ERROR_REASON_INVITE_INVALID\0\u{1}ERROR_REASON_GROUP_FULL\0\u{1}ERROR_REASON_OWNER_NOT_MEMBER\0\u{1}ERROR_REASON_DIRECT_IMMUTABLE\0\u{1}ERROR_REASON_PEER_NOT_ALLOWED\0\u{1}ERROR_REASON_IDEMPOTENCY_MISMATCH\0\u{1}ERROR_REASON_TERMS_NOT_ACCEPTED\0\u{1}ERROR_REASON_REPORT_ALREADY_RESOLVED\0\u{1}ERROR_REASON_SUBSCRIPTION_REQUIRED\0\u{1}ERROR_REASON_SYSTEM_PUPPET\0\u{1}ERROR_REASON_RATE_LIMITED\0\u{1}ERROR_REASON_LIMIT_REACHED\0\u{1}ERROR_REASON_ALREADY_ISSUED\0\u{1}ERROR_REASON_EMAIL_ALREADY_ADDED\0\u{1}ERROR_REASON_NO_ACTIVE_PUPPET\0\u{1}ERROR_REASON_ALREADY_SUBSCRIBED\0\u{1}ERROR_REASON_NO_SUBSCRIPTION\0\u{1}ERROR_REASON_REGISTRATION_TICKET_INVALID\0\u{1}ERROR_REASON_PASSKEY_INVALID\0\u{1}ERROR_REASON_PASSWORD_INVALID\0\u{1}ERROR_REASON_TERMINAL_SIGN_IN_INVALID\0\u{1}ERROR_REASON_LAST_SIGN_IN_IDENTITY\0\u{1}ERROR_REASON_RECENT_SIGN_IN_REQUIRED\0\u{1}ERROR_REASON_SECTION_NAME_TAKEN\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ERROR_REASON_UNSPECIFIED\0\u{1}ERROR_REASON_TOKEN_INVALID\0\u{1}ERROR_REASON_APPLE_TOKEN_INVALID\0\u{1}ERROR_REASON_EMAIL_CODE_INVALID\0\u{2}\u{7}ERROR_REASON_CALLER_NOT_ALLOWED\0\u{1}ERROR_REASON_NOT_A_MEMBER\0\u{1}ERROR_REASON_NOT_OWNER\0\u{1}ERROR_REASON_ACCOUNT_SUSPENDED\0\u{1}ERROR_REASON_HUMAN_CHECK_FAILED\0\u{1}ERROR_REASON_EMAIL_NOT_VERIFIED\0\u{2}\u{5}ERROR_REASON_FIELD_INVALID\0\u{2}\u{a}ERROR_REASON_NOT_REGISTERED\0\u{1}ERROR_REASON_NOT_FOUND\0\u{2}\u{9}ERROR_REASON_HANDLE_TAKEN\0\u{1}ERROR_REASON_ALREADY_REGISTERED\0\u{1}ERROR_REASON_PUPPET_NAME_TAKEN\0\u{2}\u{8}ERROR_REASON_INVITE_INVALID\0\u{1}ERROR_REASON_GROUP_FULL\0\u{1}ERROR_REASON_OWNER_NOT_MEMBER\0\u{1}ERROR_REASON_DIRECT_IMMUTABLE\0\u{1}ERROR_REASON_PEER_NOT_ALLOWED\0\u{1}ERROR_REASON_IDEMPOTENCY_MISMATCH\0\u{1}ERROR_REASON_TERMS_NOT_ACCEPTED\0\u{1}ERROR_REASON_REPORT_ALREADY_RESOLVED\0\u{1}ERROR_REASON_SUBSCRIPTION_REQUIRED\0\u{1}ERROR_REASON_SYSTEM_PUPPET\0\u{1}ERROR_REASON_RATE_LIMITED\0\u{1}ERROR_REASON_LIMIT_REACHED\0\u{1}ERROR_REASON_ALREADY_ISSUED\0\u{1}ERROR_REASON_EMAIL_ALREADY_ADDED\0\u{1}ERROR_REASON_NO_ACTIVE_PUPPET\0\u{1}ERROR_REASON_ALREADY_SUBSCRIBED\0\u{1}ERROR_REASON_NO_SUBSCRIPTION\0\u{1}ERROR_REASON_REGISTRATION_TICKET_INVALID\0\u{1}ERROR_REASON_PASSKEY_INVALID\0\u{1}ERROR_REASON_PASSWORD_INVALID\0\u{1}ERROR_REASON_TERMINAL_SIGN_IN_INVALID\0\u{1}ERROR_REASON_LAST_SIGN_IN_IDENTITY\0\u{1}ERROR_REASON_RECENT_SIGN_IN_REQUIRED\0\u{1}ERROR_REASON_SECTION_NAME_TAKEN\0\u{1}ERROR_REASON_FEATURE_REQUIRED\0\u{1}ERROR_REASON_LIMIT_REQUEST_PENDING\0\u{1}ERROR_REASON_LIMIT_REQUEST_TOO_SOON\0")
 }
 
 nonisolated extension Sock_V1_ErrorInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

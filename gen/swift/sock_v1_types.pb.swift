@@ -286,10 +286,8 @@ public nonisolated struct Sock_V1_Puppet: Sendable {
   /// Clears the value of `connector`. Subsequent reads from it will return its default value.
   public mutating func clearConnector() {self._connector = nil}
 
-  /// Past the owner's plan's puppet limit: its tokens are refused
-  /// SUBSCRIPTION_REQUIRED and it does not let humans post, until an older
-  /// puppet is archived or erased or the owner gets Pro. Set only for its
-  /// owner (ListPuppets); false in every other response.
+  /// Always false: waitlisting is gone (docs/specs/entitlements.md). Kept for
+  /// wire compatibility.
   public var waitlisted: Bool = false
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()

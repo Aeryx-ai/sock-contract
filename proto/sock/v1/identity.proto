@@ -79,6 +79,11 @@ service IdentityService {
   // Both open a page in the browser; the app re-reads GetMe on return.
   rpc StartCheckout(StartCheckoutRequest) returns (StartCheckoutResponse) {}
   rpc OpenBillingPortal(OpenBillingPortalRequest) returns (OpenBillingPortalResponse) {}
+
+  // Asking the operator for a higher limit (docs/specs/limits-and-overrides.md).
+  // Human sessions only.
+  rpc RequestLimitIncrease(RequestLimitIncreaseRequest) returns (RequestLimitIncreaseResponse) {}
+  rpc ListMyLimitRequests(ListMyLimitRequestsRequest) returns (ListMyLimitRequestsResponse) {}
 }
 
 message SignInWithAppleRequest {
@@ -442,9 +447,8 @@ message GetMeResponse {
   string accepted_terms_version = 2;
   // The version the server currently requires.
   string current_terms_version = 3;
-  // Sock Pro is active for this human, or for a puppet's owner: true while
-  // the server does not enforce Sock Pro, otherwise true while any source in
-  // pro is active.
+  // Sock Pro is active for this human, or for a puppet's owner: any source in
+  // pro is active. The same as plan == PLAN_PRO.
   bool pro_active = 4;
   // The support puppet's account id: open a direct with it to send
   // feedback. Empty: this server has no support desk, so offer none.
@@ -456,35 +460,98 @@ message GetMeResponse {
   // (docs/specs/plans.md). Kept for wire compatibility.
   bool trial_available = 7;
   // The human's plan, or a puppet owner's: Pro while any source in pro is
-  // active, Basic otherwise, whether or not the server enforces Sock Pro.
-  // pro_active can be true on Basic: the server is not enforcing.
+  // active, Basic otherwise. Decides features only (docs/specs/entitlements.md).
   Plan plan = 8;
-  // What plan allows.
+  // The human's effective limits, or a puppet owner's: their override for a
+  // key when the operator set one, the platform limit otherwise. The same
+  // rule on both plans.
   PlanLimits limits = 9;
+  // The features available to the human, or a puppet's owner: the plan
+  // includes them and this server runs them. Empty on Basic.
+  repeated Feature features = 10;
 }
 
-// Plan is what a human's account allows. Not ProPlan, which is a Sock Pro
-// price.
+// Feature is a capability Sock Pro includes. Basic includes none.
+enum Feature {
+  FEATURE_UNSPECIFIED = 0;
+  // Rules that mute, prioritize, batch and escalate the human's notifications.
+  FEATURE_SMART_NOTIFICATIONS = 1;
+}
+
+// Plan is what features a human's account includes. Not ProPlan, which is a
+// Sock Pro price.
 enum Plan {
   PLAN_UNSPECIFIED = 0;
-  // Free forever.
+  // Free forever: everything but the Pro features.
   PLAN_BASIC = 1;
   // Sock Pro: a subscription or an operator grant is active.
   PLAN_PRO = 2;
 }
 
-// PlanLimits are the numbers a plan allows. Basic: 5, 20, 60. Pro: 50, 100,
-// 300.
+// PlanLimits are one human's effective limits, the same rule on both plans.
+// The name is kept for wire compatibility. The platform launches at 10, 20
+// and 60; the operator raises them, for everyone or for one human.
 message PlanLimits {
-  // Unarchived non-system puppets that work. Past it, while the server
-  // enforces Sock Pro, the newest are waitlisted (Puppet.waitlisted) and
-  // CreatePuppet is LIMIT_REACHED.
+  // Unarchived non-system puppets. At it, CreatePuppet, UnarchivePuppet and
+  // consent that creates a puppet are LIMIT_REACHED.
   int32 puppets = 1;
-  // Members of a group: Pro's while any human member has Pro. Past it,
+  // Members of a group: the highest among the group's human members. At it,
   // CreateGroup and AddMember are GROUP_FULL.
   int32 group_members = 2;
-  // Messages each puppet sends a minute.
+  // Messages each of the human's puppets sends a minute.
   int32 puppet_sends_per_minute = 3;
+}
+
+// LimitKey names one limit.
+enum LimitKey {
+  LIMIT_KEY_UNSPECIFIED = 0;
+  LIMIT_KEY_PUPPETS = 1;
+  LIMIT_KEY_GROUP_MEMBERS = 2;
+  LIMIT_KEY_PUPPET_SENDS_PER_MINUTE = 3;
+}
+
+enum LimitRequestState {
+  LIMIT_REQUEST_STATE_UNSPECIFIED = 0;
+  LIMIT_REQUEST_STATE_PENDING = 1;
+  LIMIT_REQUEST_STATE_APPROVED = 2;
+  LIMIT_REQUEST_STATE_DECLINED = 3;
+}
+
+// LimitRequest is a human's ask for a higher limit.
+message LimitRequest {
+  string id = 1;
+  LimitKey key = 2;
+  // The value asked for.
+  int32 requested = 3;
+  // 1 to 500 characters.
+  string reason = 4;
+  google.protobuf.Timestamp created_at = 5;
+  LimitRequestState state = 6;
+  // The value the operator granted. Zero unless approved; it may differ from
+  // requested.
+  int32 granted = 7;
+  // Unset while pending.
+  google.protobuf.Timestamp decided_at = 8;
+}
+
+// Asks for a higher value of one limit. FIELD_INVALID when key is
+// unspecified, requested is not above the caller's effective limit or is
+// above the limit's ceiling, or reason is not 1 to 500 characters.
+// LIMIT_REQUEST_PENDING with a pending request for key;
+// LIMIT_REQUEST_TOO_SOON within 30 days of a declined one.
+message RequestLimitIncreaseRequest {
+  LimitKey key = 1;
+  int32 requested = 2;
+  string reason = 3;
+}
+message RequestLimitIncreaseResponse {
+  LimitRequest request = 1;
+}
+
+message ListMyLimitRequestsRequest {}
+message ListMyLimitRequestsResponse {
+  // The caller's requests, newest first. Decided requests are kept 365 days.
+  repeated LimitRequest requests = 1;
 }
 
 // ProSource is one reason Sock Pro is active.

@@ -92,6 +92,33 @@ const (
 	// OperatorServiceSetFeatureFlagProcedure is the fully-qualified name of the OperatorService's
 	// SetFeatureFlag RPC.
 	OperatorServiceSetFeatureFlagProcedure = "/sock.v1.OperatorService/SetFeatureFlag"
+	// OperatorServiceGetLimitsProcedure is the fully-qualified name of the OperatorService's GetLimits
+	// RPC.
+	OperatorServiceGetLimitsProcedure = "/sock.v1.OperatorService/GetLimits"
+	// OperatorServiceSetLimitProcedure is the fully-qualified name of the OperatorService's SetLimit
+	// RPC.
+	OperatorServiceSetLimitProcedure = "/sock.v1.OperatorService/SetLimit"
+	// OperatorServiceSetLimitOverrideProcedure is the fully-qualified name of the OperatorService's
+	// SetLimitOverride RPC.
+	OperatorServiceSetLimitOverrideProcedure = "/sock.v1.OperatorService/SetLimitOverride"
+	// OperatorServiceClearLimitOverrideProcedure is the fully-qualified name of the OperatorService's
+	// ClearLimitOverride RPC.
+	OperatorServiceClearLimitOverrideProcedure = "/sock.v1.OperatorService/ClearLimitOverride"
+	// OperatorServiceSetFeatureFlagOverrideProcedure is the fully-qualified name of the
+	// OperatorService's SetFeatureFlagOverride RPC.
+	OperatorServiceSetFeatureFlagOverrideProcedure = "/sock.v1.OperatorService/SetFeatureFlagOverride"
+	// OperatorServiceClearFeatureFlagOverrideProcedure is the fully-qualified name of the
+	// OperatorService's ClearFeatureFlagOverride RPC.
+	OperatorServiceClearFeatureFlagOverrideProcedure = "/sock.v1.OperatorService/ClearFeatureFlagOverride"
+	// OperatorServiceListLimitRequestsProcedure is the fully-qualified name of the OperatorService's
+	// ListLimitRequests RPC.
+	OperatorServiceListLimitRequestsProcedure = "/sock.v1.OperatorService/ListLimitRequests"
+	// OperatorServiceApproveLimitRequestProcedure is the fully-qualified name of the OperatorService's
+	// ApproveLimitRequest RPC.
+	OperatorServiceApproveLimitRequestProcedure = "/sock.v1.OperatorService/ApproveLimitRequest"
+	// OperatorServiceDeclineLimitRequestProcedure is the fully-qualified name of the OperatorService's
+	// DeclineLimitRequest RPC.
+	OperatorServiceDeclineLimitRequestProcedure = "/sock.v1.OperatorService/DeclineLimitRequest"
 	// OperatorServiceGrantProProcedure is the fully-qualified name of the OperatorService's GrantPro
 	// RPC.
 	OperatorServiceGrantProProcedure = "/sock.v1.OperatorService/GrantPro"
@@ -138,6 +165,19 @@ type OperatorServiceClient interface {
 	// Platform flags (feature flags spec). read tokens reach GetFeatureFlags.
 	GetFeatureFlags(context.Context, *connect.Request[v1.GetFeatureFlagsRequest]) (*connect.Response[v1.GetFeatureFlagsResponse], error)
 	SetFeatureFlag(context.Context, *connect.Request[v1.SetFeatureFlagRequest]) (*connect.Response[v1.SetFeatureFlagResponse], error)
+	// Limits, per-human overrides and limit requests
+	// (docs/specs/limits-and-overrides.md). read tokens reach GetLimits and
+	// ListLimitRequests; the rest are full only and record an operator action
+	// or a decision.
+	GetLimits(context.Context, *connect.Request[v1.GetLimitsRequest]) (*connect.Response[v1.GetLimitsResponse], error)
+	SetLimit(context.Context, *connect.Request[v1.SetLimitRequest]) (*connect.Response[v1.SetLimitResponse], error)
+	SetLimitOverride(context.Context, *connect.Request[v1.SetLimitOverrideRequest]) (*connect.Response[v1.SetLimitOverrideResponse], error)
+	ClearLimitOverride(context.Context, *connect.Request[v1.ClearLimitOverrideRequest]) (*connect.Response[v1.ClearLimitOverrideResponse], error)
+	SetFeatureFlagOverride(context.Context, *connect.Request[v1.SetFeatureFlagOverrideRequest]) (*connect.Response[v1.SetFeatureFlagOverrideResponse], error)
+	ClearFeatureFlagOverride(context.Context, *connect.Request[v1.ClearFeatureFlagOverrideRequest]) (*connect.Response[v1.ClearFeatureFlagOverrideResponse], error)
+	ListLimitRequests(context.Context, *connect.Request[v1.ListLimitRequestsRequest]) (*connect.Response[v1.ListLimitRequestsResponse], error)
+	ApproveLimitRequest(context.Context, *connect.Request[v1.ApproveLimitRequestRequest]) (*connect.Response[v1.ApproveLimitRequestResponse], error)
+	DeclineLimitRequest(context.Context, *connect.Request[v1.DeclineLimitRequestRequest]) (*connect.Response[v1.DeclineLimitRequestResponse], error)
 	// Free Sock Pro for a human until a date, and its revocation. Full scope
 	// only; each records an operator action.
 	GrantPro(context.Context, *connect.Request[v1.GrantProRequest]) (*connect.Response[v1.GrantProResponse], error)
@@ -279,6 +319,60 @@ func NewOperatorServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(operatorServiceMethods.ByName("SetFeatureFlag")),
 			connect.WithClientOptions(opts...),
 		),
+		getLimits: connect.NewClient[v1.GetLimitsRequest, v1.GetLimitsResponse](
+			httpClient,
+			baseURL+OperatorServiceGetLimitsProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("GetLimits")),
+			connect.WithClientOptions(opts...),
+		),
+		setLimit: connect.NewClient[v1.SetLimitRequest, v1.SetLimitResponse](
+			httpClient,
+			baseURL+OperatorServiceSetLimitProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("SetLimit")),
+			connect.WithClientOptions(opts...),
+		),
+		setLimitOverride: connect.NewClient[v1.SetLimitOverrideRequest, v1.SetLimitOverrideResponse](
+			httpClient,
+			baseURL+OperatorServiceSetLimitOverrideProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("SetLimitOverride")),
+			connect.WithClientOptions(opts...),
+		),
+		clearLimitOverride: connect.NewClient[v1.ClearLimitOverrideRequest, v1.ClearLimitOverrideResponse](
+			httpClient,
+			baseURL+OperatorServiceClearLimitOverrideProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("ClearLimitOverride")),
+			connect.WithClientOptions(opts...),
+		),
+		setFeatureFlagOverride: connect.NewClient[v1.SetFeatureFlagOverrideRequest, v1.SetFeatureFlagOverrideResponse](
+			httpClient,
+			baseURL+OperatorServiceSetFeatureFlagOverrideProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("SetFeatureFlagOverride")),
+			connect.WithClientOptions(opts...),
+		),
+		clearFeatureFlagOverride: connect.NewClient[v1.ClearFeatureFlagOverrideRequest, v1.ClearFeatureFlagOverrideResponse](
+			httpClient,
+			baseURL+OperatorServiceClearFeatureFlagOverrideProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("ClearFeatureFlagOverride")),
+			connect.WithClientOptions(opts...),
+		),
+		listLimitRequests: connect.NewClient[v1.ListLimitRequestsRequest, v1.ListLimitRequestsResponse](
+			httpClient,
+			baseURL+OperatorServiceListLimitRequestsProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("ListLimitRequests")),
+			connect.WithClientOptions(opts...),
+		),
+		approveLimitRequest: connect.NewClient[v1.ApproveLimitRequestRequest, v1.ApproveLimitRequestResponse](
+			httpClient,
+			baseURL+OperatorServiceApproveLimitRequestProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("ApproveLimitRequest")),
+			connect.WithClientOptions(opts...),
+		),
+		declineLimitRequest: connect.NewClient[v1.DeclineLimitRequestRequest, v1.DeclineLimitRequestResponse](
+			httpClient,
+			baseURL+OperatorServiceDeclineLimitRequestProcedure,
+			connect.WithSchema(operatorServiceMethods.ByName("DeclineLimitRequest")),
+			connect.WithClientOptions(opts...),
+		),
 		grantPro: connect.NewClient[v1.GrantProRequest, v1.GrantProResponse](
 			httpClient,
 			baseURL+OperatorServiceGrantProProcedure,
@@ -308,29 +402,38 @@ func NewOperatorServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 
 // operatorServiceClient implements OperatorServiceClient.
 type operatorServiceClient struct {
-	mintInvite            *connect.Client[v1.MintInviteRequest, v1.MintInviteResponse]
-	listReports           *connect.Client[v1.ListReportsRequest, v1.ListReportsResponse]
-	resolveReport         *connect.Client[v1.ResolveReportRequest, v1.ResolveReportResponse]
-	reinstateAccount      *connect.Client[v1.ReinstateAccountRequest, v1.ReinstateAccountResponse]
-	revokeOperatorToken   *connect.Client[v1.RevokeOperatorTokenRequest, v1.RevokeOperatorTokenResponse]
-	listHumans            *connect.Client[v1.ListHumansRequest, v1.ListHumansResponse]
-	getHuman              *connect.Client[v1.GetHumanRequest, v1.GetHumanResponse]
-	listAccountReports    *connect.Client[v1.ListAccountReportsRequest, v1.ListAccountReportsResponse]
-	eraseHuman            *connect.Client[v1.EraseHumanRequest, v1.EraseHumanResponse]
-	createHuman           *connect.Client[v1.CreateHumanRequest, v1.CreateHumanResponse]
-	archiveHuman          *connect.Client[v1.ArchiveHumanRequest, v1.ArchiveHumanResponse]
-	unarchiveHuman        *connect.Client[v1.UnarchiveHumanRequest, v1.UnarchiveHumanResponse]
-	listInviteRequests    *connect.Client[v1.ListInviteRequestsRequest, v1.ListInviteRequestsResponse]
-	approveInviteRequests *connect.Client[v1.ApproveInviteRequestsRequest, v1.ApproveInviteRequestsResponse]
-	declineInviteRequests *connect.Client[v1.DeclineInviteRequestsRequest, v1.DeclineInviteRequestsResponse]
-	getMessageHold        *connect.Client[v1.GetMessageHoldRequest, v1.GetMessageHoldResponse]
-	setMessageHold        *connect.Client[v1.SetMessageHoldRequest, v1.SetMessageHoldResponse]
-	getFeatureFlags       *connect.Client[v1.GetFeatureFlagsRequest, v1.GetFeatureFlagsResponse]
-	setFeatureFlag        *connect.Client[v1.SetFeatureFlagRequest, v1.SetFeatureFlagResponse]
-	grantPro              *connect.Client[v1.GrantProRequest, v1.GrantProResponse]
-	revokeProGrant        *connect.Client[v1.RevokeProGrantRequest, v1.RevokeProGrantResponse]
-	mintTriageToken       *connect.Client[v1.MintTriageTokenRequest, v1.MintTriageTokenResponse]
-	verifyTriageToken     *connect.Client[v1.VerifyTriageTokenRequest, v1.VerifyTriageTokenResponse]
+	mintInvite               *connect.Client[v1.MintInviteRequest, v1.MintInviteResponse]
+	listReports              *connect.Client[v1.ListReportsRequest, v1.ListReportsResponse]
+	resolveReport            *connect.Client[v1.ResolveReportRequest, v1.ResolveReportResponse]
+	reinstateAccount         *connect.Client[v1.ReinstateAccountRequest, v1.ReinstateAccountResponse]
+	revokeOperatorToken      *connect.Client[v1.RevokeOperatorTokenRequest, v1.RevokeOperatorTokenResponse]
+	listHumans               *connect.Client[v1.ListHumansRequest, v1.ListHumansResponse]
+	getHuman                 *connect.Client[v1.GetHumanRequest, v1.GetHumanResponse]
+	listAccountReports       *connect.Client[v1.ListAccountReportsRequest, v1.ListAccountReportsResponse]
+	eraseHuman               *connect.Client[v1.EraseHumanRequest, v1.EraseHumanResponse]
+	createHuman              *connect.Client[v1.CreateHumanRequest, v1.CreateHumanResponse]
+	archiveHuman             *connect.Client[v1.ArchiveHumanRequest, v1.ArchiveHumanResponse]
+	unarchiveHuman           *connect.Client[v1.UnarchiveHumanRequest, v1.UnarchiveHumanResponse]
+	listInviteRequests       *connect.Client[v1.ListInviteRequestsRequest, v1.ListInviteRequestsResponse]
+	approveInviteRequests    *connect.Client[v1.ApproveInviteRequestsRequest, v1.ApproveInviteRequestsResponse]
+	declineInviteRequests    *connect.Client[v1.DeclineInviteRequestsRequest, v1.DeclineInviteRequestsResponse]
+	getMessageHold           *connect.Client[v1.GetMessageHoldRequest, v1.GetMessageHoldResponse]
+	setMessageHold           *connect.Client[v1.SetMessageHoldRequest, v1.SetMessageHoldResponse]
+	getFeatureFlags          *connect.Client[v1.GetFeatureFlagsRequest, v1.GetFeatureFlagsResponse]
+	setFeatureFlag           *connect.Client[v1.SetFeatureFlagRequest, v1.SetFeatureFlagResponse]
+	getLimits                *connect.Client[v1.GetLimitsRequest, v1.GetLimitsResponse]
+	setLimit                 *connect.Client[v1.SetLimitRequest, v1.SetLimitResponse]
+	setLimitOverride         *connect.Client[v1.SetLimitOverrideRequest, v1.SetLimitOverrideResponse]
+	clearLimitOverride       *connect.Client[v1.ClearLimitOverrideRequest, v1.ClearLimitOverrideResponse]
+	setFeatureFlagOverride   *connect.Client[v1.SetFeatureFlagOverrideRequest, v1.SetFeatureFlagOverrideResponse]
+	clearFeatureFlagOverride *connect.Client[v1.ClearFeatureFlagOverrideRequest, v1.ClearFeatureFlagOverrideResponse]
+	listLimitRequests        *connect.Client[v1.ListLimitRequestsRequest, v1.ListLimitRequestsResponse]
+	approveLimitRequest      *connect.Client[v1.ApproveLimitRequestRequest, v1.ApproveLimitRequestResponse]
+	declineLimitRequest      *connect.Client[v1.DeclineLimitRequestRequest, v1.DeclineLimitRequestResponse]
+	grantPro                 *connect.Client[v1.GrantProRequest, v1.GrantProResponse]
+	revokeProGrant           *connect.Client[v1.RevokeProGrantRequest, v1.RevokeProGrantResponse]
+	mintTriageToken          *connect.Client[v1.MintTriageTokenRequest, v1.MintTriageTokenResponse]
+	verifyTriageToken        *connect.Client[v1.VerifyTriageTokenRequest, v1.VerifyTriageTokenResponse]
 }
 
 // MintInvite calls sock.v1.OperatorService.MintInvite.
@@ -428,6 +531,51 @@ func (c *operatorServiceClient) SetFeatureFlag(ctx context.Context, req *connect
 	return c.setFeatureFlag.CallUnary(ctx, req)
 }
 
+// GetLimits calls sock.v1.OperatorService.GetLimits.
+func (c *operatorServiceClient) GetLimits(ctx context.Context, req *connect.Request[v1.GetLimitsRequest]) (*connect.Response[v1.GetLimitsResponse], error) {
+	return c.getLimits.CallUnary(ctx, req)
+}
+
+// SetLimit calls sock.v1.OperatorService.SetLimit.
+func (c *operatorServiceClient) SetLimit(ctx context.Context, req *connect.Request[v1.SetLimitRequest]) (*connect.Response[v1.SetLimitResponse], error) {
+	return c.setLimit.CallUnary(ctx, req)
+}
+
+// SetLimitOverride calls sock.v1.OperatorService.SetLimitOverride.
+func (c *operatorServiceClient) SetLimitOverride(ctx context.Context, req *connect.Request[v1.SetLimitOverrideRequest]) (*connect.Response[v1.SetLimitOverrideResponse], error) {
+	return c.setLimitOverride.CallUnary(ctx, req)
+}
+
+// ClearLimitOverride calls sock.v1.OperatorService.ClearLimitOverride.
+func (c *operatorServiceClient) ClearLimitOverride(ctx context.Context, req *connect.Request[v1.ClearLimitOverrideRequest]) (*connect.Response[v1.ClearLimitOverrideResponse], error) {
+	return c.clearLimitOverride.CallUnary(ctx, req)
+}
+
+// SetFeatureFlagOverride calls sock.v1.OperatorService.SetFeatureFlagOverride.
+func (c *operatorServiceClient) SetFeatureFlagOverride(ctx context.Context, req *connect.Request[v1.SetFeatureFlagOverrideRequest]) (*connect.Response[v1.SetFeatureFlagOverrideResponse], error) {
+	return c.setFeatureFlagOverride.CallUnary(ctx, req)
+}
+
+// ClearFeatureFlagOverride calls sock.v1.OperatorService.ClearFeatureFlagOverride.
+func (c *operatorServiceClient) ClearFeatureFlagOverride(ctx context.Context, req *connect.Request[v1.ClearFeatureFlagOverrideRequest]) (*connect.Response[v1.ClearFeatureFlagOverrideResponse], error) {
+	return c.clearFeatureFlagOverride.CallUnary(ctx, req)
+}
+
+// ListLimitRequests calls sock.v1.OperatorService.ListLimitRequests.
+func (c *operatorServiceClient) ListLimitRequests(ctx context.Context, req *connect.Request[v1.ListLimitRequestsRequest]) (*connect.Response[v1.ListLimitRequestsResponse], error) {
+	return c.listLimitRequests.CallUnary(ctx, req)
+}
+
+// ApproveLimitRequest calls sock.v1.OperatorService.ApproveLimitRequest.
+func (c *operatorServiceClient) ApproveLimitRequest(ctx context.Context, req *connect.Request[v1.ApproveLimitRequestRequest]) (*connect.Response[v1.ApproveLimitRequestResponse], error) {
+	return c.approveLimitRequest.CallUnary(ctx, req)
+}
+
+// DeclineLimitRequest calls sock.v1.OperatorService.DeclineLimitRequest.
+func (c *operatorServiceClient) DeclineLimitRequest(ctx context.Context, req *connect.Request[v1.DeclineLimitRequestRequest]) (*connect.Response[v1.DeclineLimitRequestResponse], error) {
+	return c.declineLimitRequest.CallUnary(ctx, req)
+}
+
 // GrantPro calls sock.v1.OperatorService.GrantPro.
 func (c *operatorServiceClient) GrantPro(ctx context.Context, req *connect.Request[v1.GrantProRequest]) (*connect.Response[v1.GrantProResponse], error) {
 	return c.grantPro.CallUnary(ctx, req)
@@ -477,6 +625,19 @@ type OperatorServiceHandler interface {
 	// Platform flags (feature flags spec). read tokens reach GetFeatureFlags.
 	GetFeatureFlags(context.Context, *connect.Request[v1.GetFeatureFlagsRequest]) (*connect.Response[v1.GetFeatureFlagsResponse], error)
 	SetFeatureFlag(context.Context, *connect.Request[v1.SetFeatureFlagRequest]) (*connect.Response[v1.SetFeatureFlagResponse], error)
+	// Limits, per-human overrides and limit requests
+	// (docs/specs/limits-and-overrides.md). read tokens reach GetLimits and
+	// ListLimitRequests; the rest are full only and record an operator action
+	// or a decision.
+	GetLimits(context.Context, *connect.Request[v1.GetLimitsRequest]) (*connect.Response[v1.GetLimitsResponse], error)
+	SetLimit(context.Context, *connect.Request[v1.SetLimitRequest]) (*connect.Response[v1.SetLimitResponse], error)
+	SetLimitOverride(context.Context, *connect.Request[v1.SetLimitOverrideRequest]) (*connect.Response[v1.SetLimitOverrideResponse], error)
+	ClearLimitOverride(context.Context, *connect.Request[v1.ClearLimitOverrideRequest]) (*connect.Response[v1.ClearLimitOverrideResponse], error)
+	SetFeatureFlagOverride(context.Context, *connect.Request[v1.SetFeatureFlagOverrideRequest]) (*connect.Response[v1.SetFeatureFlagOverrideResponse], error)
+	ClearFeatureFlagOverride(context.Context, *connect.Request[v1.ClearFeatureFlagOverrideRequest]) (*connect.Response[v1.ClearFeatureFlagOverrideResponse], error)
+	ListLimitRequests(context.Context, *connect.Request[v1.ListLimitRequestsRequest]) (*connect.Response[v1.ListLimitRequestsResponse], error)
+	ApproveLimitRequest(context.Context, *connect.Request[v1.ApproveLimitRequestRequest]) (*connect.Response[v1.ApproveLimitRequestResponse], error)
+	DeclineLimitRequest(context.Context, *connect.Request[v1.DeclineLimitRequestRequest]) (*connect.Response[v1.DeclineLimitRequestResponse], error)
 	// Free Sock Pro for a human until a date, and its revocation. Full scope
 	// only; each records an operator action.
 	GrantPro(context.Context, *connect.Request[v1.GrantProRequest]) (*connect.Response[v1.GrantProResponse], error)
@@ -614,6 +775,60 @@ func NewOperatorServiceHandler(svc OperatorServiceHandler, opts ...connect.Handl
 		connect.WithSchema(operatorServiceMethods.ByName("SetFeatureFlag")),
 		connect.WithHandlerOptions(opts...),
 	)
+	operatorServiceGetLimitsHandler := connect.NewUnaryHandler(
+		OperatorServiceGetLimitsProcedure,
+		svc.GetLimits,
+		connect.WithSchema(operatorServiceMethods.ByName("GetLimits")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceSetLimitHandler := connect.NewUnaryHandler(
+		OperatorServiceSetLimitProcedure,
+		svc.SetLimit,
+		connect.WithSchema(operatorServiceMethods.ByName("SetLimit")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceSetLimitOverrideHandler := connect.NewUnaryHandler(
+		OperatorServiceSetLimitOverrideProcedure,
+		svc.SetLimitOverride,
+		connect.WithSchema(operatorServiceMethods.ByName("SetLimitOverride")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceClearLimitOverrideHandler := connect.NewUnaryHandler(
+		OperatorServiceClearLimitOverrideProcedure,
+		svc.ClearLimitOverride,
+		connect.WithSchema(operatorServiceMethods.ByName("ClearLimitOverride")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceSetFeatureFlagOverrideHandler := connect.NewUnaryHandler(
+		OperatorServiceSetFeatureFlagOverrideProcedure,
+		svc.SetFeatureFlagOverride,
+		connect.WithSchema(operatorServiceMethods.ByName("SetFeatureFlagOverride")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceClearFeatureFlagOverrideHandler := connect.NewUnaryHandler(
+		OperatorServiceClearFeatureFlagOverrideProcedure,
+		svc.ClearFeatureFlagOverride,
+		connect.WithSchema(operatorServiceMethods.ByName("ClearFeatureFlagOverride")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceListLimitRequestsHandler := connect.NewUnaryHandler(
+		OperatorServiceListLimitRequestsProcedure,
+		svc.ListLimitRequests,
+		connect.WithSchema(operatorServiceMethods.ByName("ListLimitRequests")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceApproveLimitRequestHandler := connect.NewUnaryHandler(
+		OperatorServiceApproveLimitRequestProcedure,
+		svc.ApproveLimitRequest,
+		connect.WithSchema(operatorServiceMethods.ByName("ApproveLimitRequest")),
+		connect.WithHandlerOptions(opts...),
+	)
+	operatorServiceDeclineLimitRequestHandler := connect.NewUnaryHandler(
+		OperatorServiceDeclineLimitRequestProcedure,
+		svc.DeclineLimitRequest,
+		connect.WithSchema(operatorServiceMethods.ByName("DeclineLimitRequest")),
+		connect.WithHandlerOptions(opts...),
+	)
 	operatorServiceGrantProHandler := connect.NewUnaryHandler(
 		OperatorServiceGrantProProcedure,
 		svc.GrantPro,
@@ -678,6 +893,24 @@ func NewOperatorServiceHandler(svc OperatorServiceHandler, opts ...connect.Handl
 			operatorServiceGetFeatureFlagsHandler.ServeHTTP(w, r)
 		case OperatorServiceSetFeatureFlagProcedure:
 			operatorServiceSetFeatureFlagHandler.ServeHTTP(w, r)
+		case OperatorServiceGetLimitsProcedure:
+			operatorServiceGetLimitsHandler.ServeHTTP(w, r)
+		case OperatorServiceSetLimitProcedure:
+			operatorServiceSetLimitHandler.ServeHTTP(w, r)
+		case OperatorServiceSetLimitOverrideProcedure:
+			operatorServiceSetLimitOverrideHandler.ServeHTTP(w, r)
+		case OperatorServiceClearLimitOverrideProcedure:
+			operatorServiceClearLimitOverrideHandler.ServeHTTP(w, r)
+		case OperatorServiceSetFeatureFlagOverrideProcedure:
+			operatorServiceSetFeatureFlagOverrideHandler.ServeHTTP(w, r)
+		case OperatorServiceClearFeatureFlagOverrideProcedure:
+			operatorServiceClearFeatureFlagOverrideHandler.ServeHTTP(w, r)
+		case OperatorServiceListLimitRequestsProcedure:
+			operatorServiceListLimitRequestsHandler.ServeHTTP(w, r)
+		case OperatorServiceApproveLimitRequestProcedure:
+			operatorServiceApproveLimitRequestHandler.ServeHTTP(w, r)
+		case OperatorServiceDeclineLimitRequestProcedure:
+			operatorServiceDeclineLimitRequestHandler.ServeHTTP(w, r)
 		case OperatorServiceGrantProProcedure:
 			operatorServiceGrantProHandler.ServeHTTP(w, r)
 		case OperatorServiceRevokeProGrantProcedure:
@@ -769,6 +1002,42 @@ func (UnimplementedOperatorServiceHandler) GetFeatureFlags(context.Context, *con
 
 func (UnimplementedOperatorServiceHandler) SetFeatureFlag(context.Context, *connect.Request[v1.SetFeatureFlagRequest]) (*connect.Response[v1.SetFeatureFlagResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.SetFeatureFlag is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) GetLimits(context.Context, *connect.Request[v1.GetLimitsRequest]) (*connect.Response[v1.GetLimitsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.GetLimits is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) SetLimit(context.Context, *connect.Request[v1.SetLimitRequest]) (*connect.Response[v1.SetLimitResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.SetLimit is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) SetLimitOverride(context.Context, *connect.Request[v1.SetLimitOverrideRequest]) (*connect.Response[v1.SetLimitOverrideResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.SetLimitOverride is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) ClearLimitOverride(context.Context, *connect.Request[v1.ClearLimitOverrideRequest]) (*connect.Response[v1.ClearLimitOverrideResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.ClearLimitOverride is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) SetFeatureFlagOverride(context.Context, *connect.Request[v1.SetFeatureFlagOverrideRequest]) (*connect.Response[v1.SetFeatureFlagOverrideResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.SetFeatureFlagOverride is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) ClearFeatureFlagOverride(context.Context, *connect.Request[v1.ClearFeatureFlagOverrideRequest]) (*connect.Response[v1.ClearFeatureFlagOverrideResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.ClearFeatureFlagOverride is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) ListLimitRequests(context.Context, *connect.Request[v1.ListLimitRequestsRequest]) (*connect.Response[v1.ListLimitRequestsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.ListLimitRequests is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) ApproveLimitRequest(context.Context, *connect.Request[v1.ApproveLimitRequestRequest]) (*connect.Response[v1.ApproveLimitRequestResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.ApproveLimitRequest is not implemented"))
+}
+
+func (UnimplementedOperatorServiceHandler) DeclineLimitRequest(context.Context, *connect.Request[v1.DeclineLimitRequestRequest]) (*connect.Response[v1.DeclineLimitRequestResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sock.v1.OperatorService.DeclineLimitRequest is not implemented"))
 }
 
 func (UnimplementedOperatorServiceHandler) GrantPro(context.Context, *connect.Request[v1.GrantProRequest]) (*connect.Response[v1.GrantProResponse], error) {

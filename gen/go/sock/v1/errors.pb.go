@@ -77,8 +77,9 @@ const (
 	ErrorReason_ERROR_REASON_PUPPET_NAME_TAKEN ErrorReason = 42
 	// failed_precondition: invite code unknown, used or expired.
 	ErrorReason_ERROR_REASON_INVITE_INVALID ErrorReason = 50
-	// failed_precondition: group is at its member limit: Pro's while any human
-	// member has Pro, Basic's otherwise (PlanLimits.group_members).
+	// failed_precondition: group is at its member limit: the highest
+	// PlanLimits.group_members among its human members, including one being
+	// added. Ask for more with RequestLimitIncrease.
 	ErrorReason_ERROR_REASON_GROUP_FULL ErrorReason = 51
 	// failed_precondition: puppet cannot join a conversation its owner is not in.
 	ErrorReason_ERROR_REASON_OWNER_NOT_MEMBER ErrorReason = 52
@@ -96,11 +97,8 @@ const (
 	// failed_precondition: the report already has a resolution with a
 	// different outcome. Resolving again with the same outcome succeeds.
 	ErrorReason_ERROR_REASON_REPORT_ALREADY_RESOLVED ErrorReason = 57
-	// failed_precondition: the puppet is waitlisted: past its owner's plan's
-	// puppet limit (Puppet.waitlisted). Sent only while the server enforces
-	// Sock Pro, for every call with the puppet's token and for MintPuppetToken
-	// and IssueConnectorPuppetToken naming it. Archive or erase an older
-	// puppet, or get Sock Pro.
+	// Never sent: waitlisting is gone (docs/specs/entitlements.md). Kept for
+	// wire compatibility.
 	ErrorReason_ERROR_REASON_SUBSCRIPTION_REQUIRED ErrorReason = 58
 	// failed_precondition: the puppet is a system puppet (Puppet.system), run
 	// by the server. ErasePuppet refuses it; CreateGroup and AddMember refuse
@@ -112,9 +110,10 @@ const (
 	// client address, invite requests per client address, or reports per
 	// reporter exceeded. Retry-After header set.
 	ErrorReason_ERROR_REASON_RATE_LIMITED ErrorReason = 60
-	// failed_precondition: a limit is reached. CreatePuppet, and an agent
-	// platform's consent that creates a puppet, at the plan's puppet limit
-	// (PlanLimits.puppets): archive or erase one, or get Sock Pro. MintMachineKey at 10 live
+	// failed_precondition: a limit is reached. CreatePuppet, UnarchivePuppet,
+	// and an agent platform's consent that creates a puppet, at the human's
+	// puppet limit (PlanLimits.puppets): archive or erase one, or ask for more
+	// with RequestLimitIncrease. MintMachineKey at 10 live
 	// machine keys per human: revoke one first. MintPuppetToken for the support
 	// puppet at 10 live tokens: revoke one first. Any other
 	// puppet at 10 live tokens is never refused: its oldest token other than
@@ -133,7 +132,7 @@ const (
 	ErrorReason_ERROR_REASON_EMAIL_ALREADY_ADDED ErrorReason = 63
 	// failed_precondition: a human posts only into a conversation with an
 	// active puppet: the moderation or support puppet, or a puppet that is not
-	// archived or waitlisted whose owner is not suspended (Send, CreateGroup).
+	// archived whose owner is not suspended (Send, CreateGroup).
 	// Conversation.humans_can_post says so before a send.
 	ErrorReason_ERROR_REASON_NO_ACTIVE_PUPPET ErrorReason = 64
 	// failed_precondition: the human already has a subscription keeping Sock Pro
@@ -166,6 +165,16 @@ const (
 	// already_exists: the caller already has a custom section with this name,
 	// ignoring case (CreateSection, RenameSection).
 	ErrorReason_ERROR_REASON_SECTION_NAME_TAKEN ErrorReason = 73
+	// failed_precondition: the caller's plan does not include the feature this
+	// RPC configures. The message names the feature. Get Sock Pro.
+	ErrorReason_ERROR_REASON_FEATURE_REQUIRED ErrorReason = 74
+	// already_exists: the caller has a pending request for this limit
+	// (RequestLimitIncrease). Wait for its decision.
+	ErrorReason_ERROR_REASON_LIMIT_REQUEST_PENDING ErrorReason = 75
+	// failed_precondition: the caller's last request for this limit was
+	// declined less than 30 days ago (RequestLimitIncrease). The message names
+	// the date they can ask again.
+	ErrorReason_ERROR_REASON_LIMIT_REQUEST_TOO_SOON ErrorReason = 76
 )
 
 // Enum value maps for ErrorReason.
@@ -211,6 +220,9 @@ var (
 		71: "ERROR_REASON_LAST_SIGN_IN_IDENTITY",
 		72: "ERROR_REASON_RECENT_SIGN_IN_REQUIRED",
 		73: "ERROR_REASON_SECTION_NAME_TAKEN",
+		74: "ERROR_REASON_FEATURE_REQUIRED",
+		75: "ERROR_REASON_LIMIT_REQUEST_PENDING",
+		76: "ERROR_REASON_LIMIT_REQUEST_TOO_SOON",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED":                 0,
@@ -253,6 +265,9 @@ var (
 		"ERROR_REASON_LAST_SIGN_IN_IDENTITY":       71,
 		"ERROR_REASON_RECENT_SIGN_IN_REQUIRED":     72,
 		"ERROR_REASON_SECTION_NAME_TAKEN":          73,
+		"ERROR_REASON_FEATURE_REQUIRED":            74,
+		"ERROR_REASON_LIMIT_REQUEST_PENDING":       75,
+		"ERROR_REASON_LIMIT_REQUEST_TOO_SOON":      76,
 	}
 )
 
@@ -336,7 +351,7 @@ const file_sock_v1_errors_proto_rawDesc = "" +
 	"\n" +
 	"\x14sock/v1/errors.proto\x12\asock.v1\"9\n" +
 	"\tErrorInfo\x12,\n" +
-	"\x06reason\x18\x01 \x01(\x0e2\x14.sock.v1.ErrorReasonR\x06reason*\x93\v\n" +
+	"\x06reason\x18\x01 \x01(\x0e2\x14.sock.v1.ErrorReasonR\x06reason*\x87\f\n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aERROR_REASON_TOKEN_INVALID\x10\x01\x12$\n" +
@@ -378,7 +393,10 @@ const file_sock_v1_errors_proto_rawDesc = "" +
 	"%ERROR_REASON_TERMINAL_SIGN_IN_INVALID\x10F\x12&\n" +
 	"\"ERROR_REASON_LAST_SIGN_IN_IDENTITY\x10G\x12(\n" +
 	"$ERROR_REASON_RECENT_SIGN_IN_REQUIRED\x10H\x12#\n" +
-	"\x1fERROR_REASON_SECTION_NAME_TAKEN\x10IB\x90\x01\n" +
+	"\x1fERROR_REASON_SECTION_NAME_TAKEN\x10I\x12!\n" +
+	"\x1dERROR_REASON_FEATURE_REQUIRED\x10J\x12&\n" +
+	"\"ERROR_REASON_LIMIT_REQUEST_PENDING\x10K\x12'\n" +
+	"#ERROR_REASON_LIMIT_REQUEST_TOO_SOON\x10LB\x90\x01\n" +
 	"\vcom.sock.v1B\vErrorsProtoP\x01Z7github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1\xa2\x02\x03SXX\xaa\x02\aSock.V1\xca\x02\aSock\\V1\xe2\x02\x13Sock\\V1\\GPBMetadata\xea\x02\bSock::V1b\x06proto3"
 
 var (

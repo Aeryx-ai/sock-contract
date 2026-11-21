@@ -44,8 +44,15 @@ Out of scope until the console has them: the Users RPCs (`ListHumans`, `GetHuman
 | `sock-admin requests decline <request id>...` | `DeclineInviteRequests` | 1 to 100 distinct ids | As `approve`, with the decline outcomes |
 | `sock-admin flags list` | `GetFeatureFlags` | none | `<key>  on|off  <description>` per flag, then `  set by <label or id> at <local time>` when set; json: `FeatureFlag` per line |
 | `sock-admin flags set <key> on\|off` | `SetFeatureFlag` | key, value | `<key> on|off`; json: `FeatureFlag`. Asks for confirmation on a terminal; off one, `--yes` |
+| `sock-admin limits list` | `GetLimits` | none | `<key>  <value>  (ceiling <n>)  <description>` per key, then `  set by <label or id> at <local time>` when set; json: `Limit` per line |
+| `sock-admin limits set <key> <value>` | `SetLimit` | key, value | `<key> <value>`; json: `Limit`. Asks for confirmation on a terminal; off one, `--yes` |
+| `sock-admin overrides set <account id> <key> <value>` | `SetLimitOverride` for a limit key, `SetFeatureFlagOverride` for a flag key (`on`\|`off`) | account id, key, value | `<account id> <key> <value>`; json: the override. Asks for confirmation |
+| `sock-admin overrides clear <account id> <key>` | `ClearLimitOverride` or `ClearFeatureFlagOverride` by key | account id, key | `<account id> <key> cleared`. Asks for confirmation |
+| `sock-admin limit-requests list` | `ListLimitRequests` | `--state pending\|approved\|declined`, `--limit`, `--after` | `<id>  <handle>  <key>  <effective> -> <requested>  <state>  <reason>` per request; json: `HumanLimitRequest` per line |
+| `sock-admin limit-requests approve <id>` | `ApproveLimitRequest` | `--granted N` (default: the requested value) | `<id> approved <granted>`; json: `LimitRequest`. Asks for confirmation |
+| `sock-admin limit-requests decline <id>` | `DeclineLimitRequest` | none | `<id> declined`; json: `LimitRequest`. Asks for confirmation |
 
-`resolve` with `suspend` or `suspend-owner`, `requests decline` and `flags set`, ask for confirmation on a terminal; off a terminal they need `--yes`.
+`resolve` with `suspend` or `suspend-owner`, `requests decline`, `flags set`, `limits set`, `overrides` and `limit-requests approve` and `decline` ask for confirmation on a terminal; off a terminal they need `--yes`.
 
 ## Contract changes
 

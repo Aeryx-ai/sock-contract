@@ -71,8 +71,9 @@ enum ErrorReason {
 
   // failed_precondition: invite code unknown, used or expired.
   ERROR_REASON_INVITE_INVALID = 50;
-  // failed_precondition: group is at its member limit: Pro's while any human
-  // member has Pro, Basic's otherwise (PlanLimits.group_members).
+  // failed_precondition: group is at its member limit: the highest
+  // PlanLimits.group_members among its human members, including one being
+  // added. Ask for more with RequestLimitIncrease.
   ERROR_REASON_GROUP_FULL = 51;
   // failed_precondition: puppet cannot join a conversation its owner is not in.
   ERROR_REASON_OWNER_NOT_MEMBER = 52;
@@ -92,11 +93,8 @@ enum ErrorReason {
   // different outcome. Resolving again with the same outcome succeeds.
   ERROR_REASON_REPORT_ALREADY_RESOLVED = 57;
 
-  // failed_precondition: the puppet is waitlisted: past its owner's plan's
-  // puppet limit (Puppet.waitlisted). Sent only while the server enforces
-  // Sock Pro, for every call with the puppet's token and for MintPuppetToken
-  // and IssueConnectorPuppetToken naming it. Archive or erase an older
-  // puppet, or get Sock Pro.
+  // Never sent: waitlisting is gone (docs/specs/entitlements.md). Kept for
+  // wire compatibility.
   ERROR_REASON_SUBSCRIPTION_REQUIRED = 58;
 
   // failed_precondition: the puppet is a system puppet (Puppet.system), run
@@ -111,9 +109,10 @@ enum ErrorReason {
   // reporter exceeded. Retry-After header set.
   ERROR_REASON_RATE_LIMITED = 60;
 
-  // failed_precondition: a limit is reached. CreatePuppet, and an agent
-  // platform's consent that creates a puppet, at the plan's puppet limit
-  // (PlanLimits.puppets): archive or erase one, or get Sock Pro. MintMachineKey at 10 live
+  // failed_precondition: a limit is reached. CreatePuppet, UnarchivePuppet,
+  // and an agent platform's consent that creates a puppet, at the human's
+  // puppet limit (PlanLimits.puppets): archive or erase one, or ask for more
+  // with RequestLimitIncrease. MintMachineKey at 10 live
   // machine keys per human: revoke one first. MintPuppetToken for the support
   // puppet at 10 live tokens: revoke one first. Any other
   // puppet at 10 live tokens is never refused: its oldest token other than
@@ -133,7 +132,7 @@ enum ErrorReason {
   ERROR_REASON_EMAIL_ALREADY_ADDED = 63;
   // failed_precondition: a human posts only into a conversation with an
   // active puppet: the moderation or support puppet, or a puppet that is not
-  // archived or waitlisted whose owner is not suspended (Send, CreateGroup).
+  // archived whose owner is not suspended (Send, CreateGroup).
   // Conversation.humans_can_post says so before a send.
   ERROR_REASON_NO_ACTIVE_PUPPET = 64;
   // failed_precondition: the human already has a subscription keeping Sock Pro
@@ -167,4 +166,15 @@ enum ErrorReason {
   // already_exists: the caller already has a custom section with this name,
   // ignoring case (CreateSection, RenameSection).
   ERROR_REASON_SECTION_NAME_TAKEN = 73;
+
+  // failed_precondition: the caller's plan does not include the feature this
+  // RPC configures. The message names the feature. Get Sock Pro.
+  ERROR_REASON_FEATURE_REQUIRED = 74;
+  // already_exists: the caller has a pending request for this limit
+  // (RequestLimitIncrease). Wait for its decision.
+  ERROR_REASON_LIMIT_REQUEST_PENDING = 75;
+  // failed_precondition: the caller's last request for this limit was
+  // declined less than 30 days ago (RequestLimitIncrease). The message names
+  // the date they can ask again.
+  ERROR_REASON_LIMIT_REQUEST_TOO_SOON = 76;
 }

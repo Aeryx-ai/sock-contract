@@ -42,6 +42,19 @@ service OperatorService {
   // Platform flags (feature flags spec). read tokens reach GetFeatureFlags.
   rpc GetFeatureFlags(GetFeatureFlagsRequest) returns (GetFeatureFlagsResponse) {}
   rpc SetFeatureFlag(SetFeatureFlagRequest) returns (SetFeatureFlagResponse) {}
+  // Limits, per-human overrides and limit requests
+  // (docs/specs/limits-and-overrides.md). read tokens reach GetLimits and
+  // ListLimitRequests; the rest are full only and record an operator action
+  // or a decision.
+  rpc GetLimits(GetLimitsRequest) returns (GetLimitsResponse) {}
+  rpc SetLimit(SetLimitRequest) returns (SetLimitResponse) {}
+  rpc SetLimitOverride(SetLimitOverrideRequest) returns (SetLimitOverrideResponse) {}
+  rpc ClearLimitOverride(ClearLimitOverrideRequest) returns (ClearLimitOverrideResponse) {}
+  rpc SetFeatureFlagOverride(SetFeatureFlagOverrideRequest) returns (SetFeatureFlagOverrideResponse) {}
+  rpc ClearFeatureFlagOverride(ClearFeatureFlagOverrideRequest) returns (ClearFeatureFlagOverrideResponse) {}
+  rpc ListLimitRequests(ListLimitRequestsRequest) returns (ListLimitRequestsResponse) {}
+  rpc ApproveLimitRequest(ApproveLimitRequestRequest) returns (ApproveLimitRequestResponse) {}
+  rpc DeclineLimitRequest(DeclineLimitRequestRequest) returns (DeclineLimitRequestResponse) {}
   // Free Sock Pro for a human until a date, and its revocation. Full scope
   // only; each records an operator action.
   rpc GrantPro(GrantProRequest) returns (GrantProResponse) {}
@@ -162,6 +175,113 @@ message SetFeatureFlagResponse {
   FeatureFlag flag = 1;
 }
 
+message Limit {
+  LimitKey key = 1;
+  string description = 2;
+  // The platform limit: every human without an override.
+  int32 value = 3;
+  // The highest value the hub accepts for this key, platform or override.
+  int32 ceiling = 4;
+  // Unset: no set for this key within the audit's 365 days.
+  FeatureFlagSet last_set = 5;
+}
+message GetLimitsRequest {}
+message GetLimitsResponse {
+  // Every declared key, key order.
+  repeated Limit limits = 1;
+}
+// FIELD_INVALID when key is unspecified or value is not 1 to the ceiling.
+// Idempotent; the current value still records an action.
+message SetLimitRequest {
+  LimitKey key = 1;
+  int32 value = 2;
+}
+message SetLimitResponse {
+  Limit limit = 1;
+}
+
+// One human's own value for a limit, higher or lower than the platform's.
+message LimitOverride {
+  LimitKey key = 1;
+  int32 value = 2;
+}
+// One human's own value for a flag. For rollout and betas: never makes a
+// Basic human entitled to a Pro feature.
+message FeatureFlagOverride {
+  string key = 1;
+  bool enabled = 2;
+}
+// NOT_FOUND unless account_id is a human. FIELD_INVALID as SetLimit.
+message SetLimitOverrideRequest {
+  string account_id = 1;
+  LimitKey key = 2;
+  int32 value = 3;
+}
+message SetLimitOverrideResponse {
+  LimitOverride override = 1;
+}
+// Clearing an absent override succeeds and records an action.
+message ClearLimitOverrideRequest {
+  string account_id = 1;
+  LimitKey key = 2;
+}
+message ClearLimitOverrideResponse {}
+// NOT_FOUND unless account_id is a human; FIELD_INVALID for an undeclared key.
+message SetFeatureFlagOverrideRequest {
+  string account_id = 1;
+  string key = 2;
+  bool enabled = 3;
+}
+message SetFeatureFlagOverrideResponse {
+  FeatureFlagOverride override = 1;
+}
+message ClearFeatureFlagOverrideRequest {
+  string account_id = 1;
+  string key = 2;
+}
+message ClearFeatureFlagOverrideResponse {}
+
+message ListLimitRequestsRequest {
+  // 0 means 25; at most 100.
+  int32 limit = 1;
+  // Continue after this request id, the last one of the previous page.
+  // Empty starts at the newest request.
+  string after_request_id = 2;
+  // Unset lists every request.
+  LimitRequestState state = 3;
+}
+message ListLimitRequestsResponse {
+  // Newest first, by id. Fewer than the limit means no more.
+  repeated HumanLimitRequest requests = 1;
+}
+// HumanLimitRequest is a limit request with its human, as the operator sees it.
+message HumanLimitRequest {
+  LimitRequest request = 1;
+  string account_id = 2;
+  string handle = 3;
+  // The human's effective value for request.key now.
+  int32 effective = 4;
+}
+// Sets the human's override to granted in the same transaction. NOT_FOUND
+// for an unknown id; FIELD_INVALID when granted is not 1 to the ceiling;
+// CONFLICT when declined, or approved with another value. Approving again
+// with the same granted succeeds and records nothing.
+message ApproveLimitRequestRequest {
+  string request_id = 1;
+  int32 granted = 2;
+}
+message ApproveLimitRequestResponse {
+  LimitRequest request = 1;
+}
+// NOT_FOUND for an unknown id; CONFLICT when approved. Declining again
+// succeeds and records nothing.
+message DeclineLimitRequestRequest {
+  string request_id = 1;
+}
+message DeclineLimitRequestResponse {
+  LimitRequest request = 1;
+}
+
 message MintInviteRequest {}
 message MintInviteResponse {
   // Single-use code for RegisterWithAppleRequest.invite_code. Returned once;
@@ -272,6 +392,12 @@ message GetHumanResponse {
   repeated ProSubscriptionSummary subscriptions = 8;
   // Every grant, revoked ones included, newest first.
   repeated ProGrant grants = 9;
+  // The human's limit overrides, key order.
+  repeated LimitOverride limit_overrides = 10;
+  // The human's flag overrides, key order.
+  repeated FeatureFlagOverride flag_overrides = 11;
+  // The human's effective limits.
+  PlanLimits limits = 12;
 }
 
 // TermsAcceptance is a human's agreement to one terms version.
