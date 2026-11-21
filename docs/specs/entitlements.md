@@ -356,6 +356,11 @@ Modules:
 - Rules see the message text. The privacy policy names smart notifications' processing of message content when the module ships.
 - No Pro subscriber exists, so dropping ADR 56's Pro limits affects no one.
 
+## Built in the first implementation
+
+- `extension` ships `Module`, the registry, `Host` with `Entitled`, `DB` and `Logger`, and `NotificationPolicy` with `Deliver` and `Silence`. `Escalate`, `Hold` with `Host.Push`, and module migrations come with the smart notifications pass: `Hold` without `Host.Push` would lose a notification, and `Escalate` needs a push field and the apps' Time Sensitive capability.
+- An archived puppet's token is refused `PUPPET_ARCHIVED` (decided during implementation, above).
+
 ## Open questions
 
 - Whether each feature also gets a platform flag for staged rollout. Without one, registering the module is the switch.
