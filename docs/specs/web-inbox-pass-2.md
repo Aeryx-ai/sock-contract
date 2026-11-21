@@ -1,6 +1,6 @@
 # Web inbox, pass 2: Sock Pro
 
-Pass 2, draft. Pass 1 ([web inbox](web-inbox.md)) was approved and stays in force except where this spec says otherwise. Contexts: Identity (the session, the billing customer), Billing through the Stripe adapter ([Sock Pro billing](sock-pro-billing.md)). ADR 60.
+Pass 2, approved. Pass 1 ([web inbox](web-inbox.md)) was approved and stays in force except where this spec says otherwise. Contexts: Identity (the session, the billing customer), Billing through the Stripe adapter ([Sock Pro billing](sock-pro-billing.md)). ADR 60.
 
 A signed-in human subscribes to Sock Pro, or opens Stripe's Customer Portal, from the inbox page. Checkout and the portal return the browser to `/inbox`.
 
@@ -12,7 +12,7 @@ Pass 1's non-goal "billing" is lifted. Its other non-goals stand.
 
 - The Inbox browser class reaches two more routes: `POST /inbox/subscribe` and `POST /inbox/billing`. It still writes nothing to Messaging.
 - The inbox page gains a Sock Pro section.
-- `StartCheckout`'s and `OpenBillingPortal`'s bodies move out of `internal/api` into two application services in Identity, `StartCheckout(humanId, plan)` and `OpenBillingPortal(humanId)`. The RPCs and the inbox routes call the same functions; no rule is copied.
+- `StartCheckout`'s and `OpenBillingPortal`'s bodies become two application services, `StartCheckout(humanId, plan)` and `OpenBillingPortal(humanId)`, in `internal/api` beside both callers. The RPCs and the inbox routes call the same functions; no rule is copied.
 - `SOCK_BILLING_RETURN_URL` is the hub's `/inbox` in every environment, and the Customer Portal's `default_return_url` with it.
 
 ## Domain model
@@ -59,7 +59,7 @@ Idempotency: as the RPCs. A retried subscribe makes one customer (Stripe idempot
 
 ### CSP
 
-`form-action` on the signed-in inbox page and the two routes admits `'self'` and the Stripe hosts Checkout and the portal answer with, since browsers apply `form-action` to a form's redirects. The builder takes the hosts from a staging Checkout and portal session (Managed Payments may serve Checkout from a host other than `checkout.stripe.com`) and lists them as constants in `internal/api`, with a black-box test that the URL the fake returns is on a listed host. Signed-out pages keep `form-action 'self'`.
+`form-action` on the signed-in inbox page and the two routes admits `'self'` and the Stripe hosts Checkout and the portal answer with, since browsers apply `form-action` to a form's redirects: `https://checkout.stripe.com` and `https://billing.stripe.com`, read from a staging Managed Payments Checkout Session and portal session on 2026-11-20. They are constants in `internal/api`; the fake Stripe answers on the same hosts, and a black-box test checks each redirect's host is in the page's `form-action`. Signed-out pages keep `form-action 'self'`.
 
 ### The inbox page (changed)
 
