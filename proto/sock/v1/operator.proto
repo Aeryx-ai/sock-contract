@@ -264,8 +264,8 @@ message HumanLimitRequest {
 }
 // Sets the human's override to granted in the same transaction. NOT_FOUND
 // for an unknown id; FIELD_INVALID when granted is not 1 to the ceiling;
-// CONFLICT when declined, or approved with another value. Approving again
-// with the same granted succeeds and records nothing.
+// LIMIT_REQUEST_DECIDED when declined, or approved with another value.
+// Approving again with the same granted succeeds and records nothing.
 message ApproveLimitRequestRequest {
   string request_id = 1;
   int32 granted = 2;
@@ -273,8 +273,8 @@ message ApproveLimitRequestRequest {
 message ApproveLimitRequestResponse {
   LimitRequest request = 1;
 }
-// NOT_FOUND for an unknown id; CONFLICT when approved. Declining again
-// succeeds and records nothing.
+// NOT_FOUND for an unknown id; LIMIT_REQUEST_DECIDED when approved.
+// Declining again succeeds and records nothing.
 message DeclineLimitRequestRequest {
   string request_id = 1;
 }

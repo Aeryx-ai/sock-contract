@@ -2256,8 +2256,8 @@ func (x *HumanLimitRequest) GetEffective() int32 {
 
 // Sets the human's override to granted in the same transaction. NOT_FOUND
 // for an unknown id; FIELD_INVALID when granted is not 1 to the ceiling;
-// CONFLICT when declined, or approved with another value. Approving again
-// with the same granted succeeds and records nothing.
+// LIMIT_REQUEST_DECIDED when declined, or approved with another value.
+// Approving again with the same granted succeeds and records nothing.
 type ApproveLimitRequestRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
@@ -2354,8 +2354,8 @@ func (x *ApproveLimitRequestResponse) GetRequest() *LimitRequest {
 	return nil
 }
 
-// NOT_FOUND for an unknown id; CONFLICT when approved. Declining again
-// succeeds and records nothing.
+// NOT_FOUND for an unknown id; LIMIT_REQUEST_DECIDED when approved.
+// Declining again succeeds and records nothing.
 type DeclineLimitRequestRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`

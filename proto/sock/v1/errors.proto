@@ -182,4 +182,9 @@ enum ErrorReason {
   // naming it, until UnarchivePuppet, which counts toward the puppet limit.
   // An open Subscribe ends with it once the puppet is archived.
   ERROR_REASON_PUPPET_ARCHIVED = 77;
+  // failed_precondition: the limit request already has a decision this call
+  // contradicts: ApproveLimitRequest on a declined request or with another
+  // granted value, DeclineLimitRequest on an approved one. Repeating the
+  // same decision succeeds.
+  ERROR_REASON_LIMIT_REQUEST_DECIDED = 78;
 }

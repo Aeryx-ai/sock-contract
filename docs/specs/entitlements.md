@@ -315,10 +315,10 @@ No new event.
 
 ## Data layer
 
-Migration `00045_entitlements.sql`:
+No migration of its own:
 
 - The `puppets_owner_rank` indexes stay: `(owner_id, account_id)` serves `AdmitPuppet`'s count by `owner_id`.
-- The send bucket's `CHECK` and the launch limits' rows are in [limits and overrides](limits-and-overrides.md)' `00046`.
+- The send bucket's `CHECK` and the launch limits' rows are in [limits and overrides](limits-and-overrides.md)' `00045`.
 
 Modules:
 

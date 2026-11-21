@@ -899,8 +899,8 @@ export const HumanLimitRequestSchema: GenMessage<HumanLimitRequest> = /*@__PURE_
 /**
  * Sets the human's override to granted in the same transaction. NOT_FOUND
  * for an unknown id; FIELD_INVALID when granted is not 1 to the ceiling;
- * CONFLICT when declined, or approved with another value. Approving again
- * with the same granted succeeds and records nothing.
+ * LIMIT_REQUEST_DECIDED when declined, or approved with another value.
+ * Approving again with the same granted succeeds and records nothing.
  *
  * @generated from message sock.v1.ApproveLimitRequestRequest
  */
@@ -941,8 +941,8 @@ export const ApproveLimitRequestResponseSchema: GenMessage<ApproveLimitRequestRe
   messageDesc(file_sock_v1_operator, 40);
 
 /**
- * NOT_FOUND for an unknown id; CONFLICT when approved. Declining again
- * succeeds and records nothing.
+ * NOT_FOUND for an unknown id; LIMIT_REQUEST_DECIDED when approved.
+ * Declining again succeeds and records nothing.
  *
  * @generated from message sock.v1.DeclineLimitRequestRequest
  */

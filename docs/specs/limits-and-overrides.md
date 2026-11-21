@@ -296,7 +296,7 @@ Puppets and machine keys cannot request limits.
 
 ## API
 
-New error reasons `LIMIT_REQUEST_PENDING` (`already_exists`): the human has a pending request for this key; `LIMIT_REQUEST_TOO_SOON` (`failed_precondition`): their last request for this key was declined less than 30 days ago, and the message names the date they can ask again. `LIMIT_REACHED` and `GROUP_FULL` messages add "request more with `sock limits request`" or the apps' button.
+New error reasons `LIMIT_REQUEST_DECIDED` (`failed_precondition`): approving or declining contradicts the request's decision; `LIMIT_REQUEST_PENDING` (`already_exists`): the human has a pending request for this key; `LIMIT_REQUEST_TOO_SOON` (`failed_precondition`): their last request for this key was declined less than 30 days ago, and the message names the date they can ask again. `LIMIT_REACHED` and `GROUP_FULL` messages add "request more with `sock limits request`" or the apps' button.
 
 ### IdentityService (human)
 
@@ -318,8 +318,8 @@ New error reasons `LIMIT_REQUEST_PENDING` (`already_exists`): the human has a pe
 | `SetFeatureFlagOverride` | Operator | `full` | `account_id`, `key`, `enabled` | `override` | `FIELD_INVALID`, `NOT_FOUND` | Idempotent; records an action | `FeatureFlagOverride.Set` |
 | `ClearFeatureFlagOverride` | Operator | `full` | `account_id`, `key` | none | `FIELD_INVALID`, `NOT_FOUND` | Idempotent; records an action | `FeatureFlagOverride.Clear` |
 | `ListLimitRequests` | Operator | `full` or `read` | `state` filter (pending, approved, declined, any), `page_token` | `requests`, each as `ListMyLimitRequests` plus `account_id`, the human's handle and their effective value for the key; `next_page_token` | `FIELD_INVALID` (`page_token`) | Read | none |
-| `ApproveLimitRequest` | Operator | `full` | `request_id`, `granted` | `request` | `FIELD_INVALID` (`granted`), `NOT_FOUND`, `CONFLICT` when declined or approved with another value | Idempotent for the same `granted` | `LimitRequest.Approve` |
-| `DeclineLimitRequest` | Operator | `full` | `request_id` | `request` | `NOT_FOUND`, `CONFLICT` when approved | Idempotent | `LimitRequest.Decline` |
+| `ApproveLimitRequest` | Operator | `full` | `request_id`, `granted` | `request` | `FIELD_INVALID` (`granted`), `NOT_FOUND`, `LIMIT_REQUEST_DECIDED` when declined or approved with another value | Idempotent for the same `granted` | `LimitRequest.Approve` |
+| `DeclineLimitRequest` | Operator | `full` | `request_id` | `request` | `NOT_FOUND`, `LIMIT_REQUEST_DECIDED` when approved | Idempotent | `LimitRequest.Decline` |
 
 `GetFeatureFlags` and `SetFeatureFlag` are unchanged.
 
@@ -333,7 +333,7 @@ Limits and overrides emit nothing: Messaging reads limits from the in-memory set
 
 ## Data layer
 
-Migration `00046_limits.sql`. Next to each table, the query each index serves.
+Migrations `00045_limits.sql` (limits and overrides) and `00046_limit_requests.sql` (requests, decisions and mail). Next to each table, the query each index serves.
 
 ```sql
 CREATE TABLE identity.limits (
