@@ -1,6 +1,6 @@
 # Limits, account overrides and limit requests
 
-Pass 1, draft. Context: Identity, read by Messaging. Changes [feature flags](feature-flags.md) and [entitlements](entitlements.md); unchanged objects are not repeated. Decision record: [ADR 62](https://github.com/Aeryx-ai/sock-server/blob/main/docs/adr/contract/0062-limits-are-operator-settings-with-account-overrides-and-requests.md).
+Pass 1, approved. Context: Identity, read by Messaging. Changes [feature flags](feature-flags.md) and [entitlements](entitlements.md); unchanged objects are not repeated. Decision record: [ADR 62](https://github.com/Aeryx-ai/sock-server/blob/main/docs/adr/contract/0062-limits-are-operator-settings-with-account-overrides-and-requests.md).
 
 What changes:
 

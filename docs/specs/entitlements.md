@@ -1,6 +1,6 @@
 # Entitlements and Pro modules
 
-Pass 1, draft. Contexts: Identity, Messaging, Notification rules (new). Changes [plans](plans.md); builds on [feature flags](feature-flags.md). Unchanged objects are not repeated. Decision record: [ADR 61](https://github.com/Aeryx-ai/sock-server/blob/main/docs/adr/contract/0061-pro-grants-new-features-and-every-human-shares-the-launch-limits.md).
+Pass 1, approved. Contexts: Identity, Messaging, Notification rules (new). Changes [plans](plans.md); builds on [feature flags](feature-flags.md). Unchanged objects are not repeated. Decision record: [ADR 61](https://github.com/Aeryx-ai/sock-server/blob/main/docs/adr/contract/0061-pro-grants-new-features-and-every-human-shares-the-launch-limits.md).
 
 What changes:
 
