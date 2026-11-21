@@ -360,6 +360,9 @@ Modules:
 
 - `extension` ships `Module`, the registry, `Host` with `Entitled`, `DB` and `Logger`, and `NotificationPolicy` with `Deliver` and `Silence`. `Escalate`, `Hold` with `Host.Push`, and module migrations come with the smart notifications pass: `Hold` without `Host.Push` would lose a notification, and `Escalate` needs a push field and the apps' Time Sensitive capability.
 - An archived puppet's token is refused `PUPPET_ARCHIVED` (decided during implementation, above).
+- A module's `Service` carries `New(opts ...connect.HandlerOption)`, so the hub builds it with its auth interceptor; `extension.Caller(ctx)` gives the module the authenticated human (a puppet's owner). Module service paths live under `/sockpro.`, and configuring procedures must sit under their own service, so a module can neither take over nor gate a hub procedure.
+- A message's `Decide` calls run at once under one shared 2-second deadline, entitlements loaded in one query; a slow module cannot hold the fan-out past its lease.
+- `Host.DB` is the hub's pool. A module role limited to its own schema is tracked for before any module leaves the repo.
 
 ## Open questions
 
