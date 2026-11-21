@@ -177,4 +177,9 @@ enum ErrorReason {
   // declined less than 30 days ago (RequestLimitIncrease). The message names
   // the date they can ask again.
   ERROR_REASON_LIMIT_REQUEST_TOO_SOON = 76;
+  // failed_precondition: the puppet is archived (Puppet.archived_at). Every
+  // call with its token, and MintPuppetToken and IssueConnectorPuppetToken
+  // naming it, until UnarchivePuppet, which counts toward the puppet limit.
+  // An open Subscribe ends with it once the puppet is archived.
+  ERROR_REASON_PUPPET_ARCHIVED = 77;
 }

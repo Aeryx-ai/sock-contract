@@ -175,6 +175,11 @@ const (
 	// declined less than 30 days ago (RequestLimitIncrease). The message names
 	// the date they can ask again.
 	ErrorReason_ERROR_REASON_LIMIT_REQUEST_TOO_SOON ErrorReason = 76
+	// failed_precondition: the puppet is archived (Puppet.archived_at). Every
+	// call with its token, and MintPuppetToken and IssueConnectorPuppetToken
+	// naming it, until UnarchivePuppet, which counts toward the puppet limit.
+	// An open Subscribe ends with it once the puppet is archived.
+	ErrorReason_ERROR_REASON_PUPPET_ARCHIVED ErrorReason = 77
 )
 
 // Enum value maps for ErrorReason.
@@ -223,6 +228,7 @@ var (
 		74: "ERROR_REASON_FEATURE_REQUIRED",
 		75: "ERROR_REASON_LIMIT_REQUEST_PENDING",
 		76: "ERROR_REASON_LIMIT_REQUEST_TOO_SOON",
+		77: "ERROR_REASON_PUPPET_ARCHIVED",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED":                 0,
@@ -268,6 +274,7 @@ var (
 		"ERROR_REASON_FEATURE_REQUIRED":            74,
 		"ERROR_REASON_LIMIT_REQUEST_PENDING":       75,
 		"ERROR_REASON_LIMIT_REQUEST_TOO_SOON":      76,
+		"ERROR_REASON_PUPPET_ARCHIVED":             77,
 	}
 )
 
@@ -351,7 +358,7 @@ const file_sock_v1_errors_proto_rawDesc = "" +
 	"\n" +
 	"\x14sock/v1/errors.proto\x12\asock.v1\"9\n" +
 	"\tErrorInfo\x12,\n" +
-	"\x06reason\x18\x01 \x01(\x0e2\x14.sock.v1.ErrorReasonR\x06reason*\x87\f\n" +
+	"\x06reason\x18\x01 \x01(\x0e2\x14.sock.v1.ErrorReasonR\x06reason*\xa9\f\n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aERROR_REASON_TOKEN_INVALID\x10\x01\x12$\n" +
@@ -396,7 +403,8 @@ const file_sock_v1_errors_proto_rawDesc = "" +
 	"\x1fERROR_REASON_SECTION_NAME_TAKEN\x10I\x12!\n" +
 	"\x1dERROR_REASON_FEATURE_REQUIRED\x10J\x12&\n" +
 	"\"ERROR_REASON_LIMIT_REQUEST_PENDING\x10K\x12'\n" +
-	"#ERROR_REASON_LIMIT_REQUEST_TOO_SOON\x10LB\x90\x01\n" +
+	"#ERROR_REASON_LIMIT_REQUEST_TOO_SOON\x10L\x12 \n" +
+	"\x1cERROR_REASON_PUPPET_ARCHIVED\x10MB\x90\x01\n" +
 	"\vcom.sock.v1B\vErrorsProtoP\x01Z7github.com/aeryx-ai/sock-contract/gen/go/sock/v1;sockv1\xa2\x02\x03SXX\xaa\x02\aSock.V1\xca\x02\aSock\\V1\xe2\x02\x13Sock\\V1\\GPBMetadata\xea\x02\bSock::V1b\x06proto3"
 
 var (

@@ -83,7 +83,7 @@ Nothing here is stored. A lapse or grant moves the state at the next check, with
 #### Account (changed behaviors)
 
 - `AdmitPuppet()` (`CreatePuppet`, consent's Allow, `UnarchivePuppet`): refuses `LIMIT_REACHED` when the human already has their effective `puppets` limit of unarchived non-system puppets. A human already past the limit keeps every puppet and creates or unarchives none until under it.
-- `MintPuppetToken`, `IssueConnectorPuppetToken` and every call made with a puppet token: no plan clause.
+- `MintPuppetToken`, `IssueConnectorPuppetToken` and every call made with a puppet token: no plan clause. An archived puppet is refused `PUPPET_ARCHIVED`: archiving revokes no token, so without it a human could archive 10 working puppets, keep their tokens working and create 10 more. Clients unarchive before resuming a puppet, as ADR 27's session cycle already does.
 
 Removed: `Plan()`'s limits, `Covers(puppet)`, `PassProGate`'s remaining callers, the auth interceptor's Pro policy.
 
@@ -294,7 +294,7 @@ New error reason `FEATURE_REQUIRED` (`failed_precondition`): the caller's plan d
 | `CreatePuppet` (changed) | Human, machine key | As today | As today, the limit clause `Account.AdmitPuppet()` | As today | As today | `LIMIT_REACHED` | As today | `Account.AdmitPuppet()` |
 | `UnarchivePuppet` (changed) | Human, machine key | As today | As today, and `Account.AdmitPuppet()` | As today | As today | Adds `LIMIT_REACHED` | As today | `Account.AdmitPuppet()`, then as today |
 | `ListPuppets` (changed) | Human, machine key | As today | As today | As today | `waitlisted` always false (kept for wire compatibility) | As today | Read | none |
-| `MintPuppetToken`, `IssueConnectorPuppetToken`, every puppet-token call (changed) | As today | As today | No plan clause | As today | As today | `SUBSCRIPTION_REQUIRED` no longer returned | As today | As today |
+| `MintPuppetToken`, `IssueConnectorPuppetToken`, every puppet-token call (changed) | As today | As today | No plan clause; the puppet not archived | As today | As today | `PUPPET_ARCHIVED` for an archived puppet; `SUBSCRIPTION_REQUIRED` no longer returned | As today | As today |
 | `CreateGroup`, `AddMember` (changed) | Human | As today | Member count within the group's limit | As today | As today | `GROUP_FULL` | As today | `Conversation.StartGroup`, `Conversation.AddMember` |
 | A module RPC that creates or changes configuration | As the module's spec says | As today | The module's rule, and the subject entitled | The module's | The module's | `FEATURE_REQUIRED` when not entitled | The module's | The module's aggregate |
 | A module RPC that reads or deletes configuration | As above | As today | The module's rule. No entitlement: a lapsed human sees and removes dormant state | The module's | The module's | The module's | The module's | The module's aggregate |
